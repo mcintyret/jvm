@@ -9,7 +9,7 @@ import java.util.Map;
  * User: tommcintyre
  * Date: 5/20/14
  */
-public class NativeImplemntationRegistry {
+public class NativeImplementationRegistry {
 
     private static final Map<ClassNameAndMethodSignature, NativeImplementation> NATIVE_EXECUTION_MAP = new HashMap<>();
 

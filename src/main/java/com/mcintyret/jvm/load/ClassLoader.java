@@ -17,7 +17,7 @@ import com.mcintyret.jvm.core.domain.ReferenceType;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.domain.Types;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
-import com.mcintyret.jvm.core.nativeimpls.NativeImplemntationRegistry;
+import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
 import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
 import com.mcintyret.jvm.core.nativeimpls.SystemNatives;
 import com.mcintyret.jvm.core.oop.OopClass;
@@ -254,7 +254,9 @@ public class ClassLoader {
     private void executeStaticInitMethod(ClassObject co) {
         Method staticInit = co.findMethod("<clinit>", "()V", true);
         if (staticInit != null) {
+            System.out.println("Executing static init method on " + co.getType());
             Utils.executeMethod(staticInit, new int[staticInit.getCode().getMaxLocals()]);
+            System.out.println("Finished static init method on " + co.getType());
         }
     }
 
@@ -265,7 +267,7 @@ public class ClassLoader {
             return new InterfaceMethod(info.getModifiers(), info.getAttributes(), mis.sig);
         } else {
             if (info.hasModifier(Modifier.NATIVE)) {
-                NativeImplementation nativeImplementation = NativeImplemntationRegistry.getNativeExecution(mis.className, mis.sig);
+                NativeImplementation nativeImplementation = NativeImplementationRegistry.getNativeExecution(mis.className, mis.sig);
                 if (nativeImplementation == null) {
 //                throw new IllegalStateException("No NativeImplementation registered for " + mis.className + "." + mis.sig);
                     System.out.println("NATIVE METHOD MISSING: " + mis.className + "." + mis.sig);

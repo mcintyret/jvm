@@ -1,7 +1,7 @@
 import com.mcintyret.jvm.core.*;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationAdapter;
-import com.mcintyret.jvm.core.nativeimpls.NativeImplemntationRegistry;
+import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.load.*;
 
@@ -16,7 +16,7 @@ public class GiveItAllAGo {
 
         String mainClass = "com/mcintyret2/jvm/test/Main";
 
-        NativeImplemntationRegistry.registerNative(new NativeImplementationAdapter(mainClass, MethodSignature.parse("print", "(Ljava/lang/String;)V")) {
+        NativeImplementationRegistry.registerNative(new NativeImplementationAdapter(mainClass, MethodSignature.parse("print", "(Ljava/lang/String;)V")) {
             @Override
             public NativeReturn execute(int[] args) {
                 System.out.println("NATIVE METHOD!!!: " + Utils.toString(Heap.getOop(args[0])));

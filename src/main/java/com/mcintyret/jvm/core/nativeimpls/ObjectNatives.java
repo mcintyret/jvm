@@ -63,7 +63,7 @@ public enum ObjectNatives implements NativeImplementation {
 
     static void registerNatives(Class<? extends NativeImplementation> clazz) {
         for (NativeImplementation val : clazz.getEnumConstants()) {
-            NativeImplemntationRegistry.registerNative(val);
+            NativeImplementationRegistry.registerNative(val);
         }
     }
 }
