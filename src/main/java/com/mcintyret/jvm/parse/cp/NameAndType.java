@@ -10,4 +10,12 @@ public class NameAndType {
         this.descriptorIndex = descriptorIndex;
         this.nameIndex = nameIndex;
     }
+
+    public int getNameIndex() {
+        return nameIndex;
+    }
+
+    public int getDescriptorIndex() {
+        return descriptorIndex;
+    }
 }

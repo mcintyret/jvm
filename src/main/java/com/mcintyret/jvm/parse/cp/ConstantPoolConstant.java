@@ -15,49 +15,49 @@ public enum ConstantPoolConstant {
     FIELD_REF(9) {
         @Override
         public Object parse(ByteIterator bi) {
-            return new FieldReference(bi.nextShort(), bi.nextShort());
+            return new CpFieldReference(bi.nextShort(), bi.nextShort());
         }
     },
     METHOD_REF(10) {
         @Override
         public Object parse(ByteIterator bi) {
-            return new MethodReference(bi.nextShort(), bi.nextShort());
+            return new CpMethodReference(bi.nextShort(), bi.nextShort());
         }
     },
     INTERFACE_METHOD_REF(11) {
         @Override
         public Object parse(ByteIterator bi) {
-            return new InterfaceMethodReference(bi.nextShort(), bi.nextShort());
+            return new CpInterfaceMethodReference(bi.nextShort(), bi.nextShort());
         }
     },
     STRING(8) {
         @Override
         public Object parse(ByteIterator bi) {
-            return new String(bi.nextShort());
+            return new CpString(bi.nextShort());
         }
     },
     INTEGER(3) {
         @Override
         public Object parse(ByteIterator bi) {
-            return new Int(bi.nextInt());
+            return new CpInt(bi.nextInt());
         }
     },
     FLOAT(4) {
         @Override
         public Object parse(ByteIterator bi) {
-            return new Float(bi.nextInt());
+            return new CpFloat(bi.nextInt());
         }
     },
     LONG(5) {
         @Override
         public Object parse(ByteIterator bi) {
-            return new Long(bi.nextInt(), bi.nextInt());
+            return new CpLong(bi.nextInt(), bi.nextInt());
         }
     },
     DOUBLE(6) {
         @Override
         public Object parse(ByteIterator bi) {
-            return new Double(bi.nextInt(), bi.nextInt());
+            return new CpDouble(bi.nextInt(), bi.nextInt());
         }
     },
     NAME_AND_TYPE(12) {

@@ -19,3 +19,7 @@ method dispatch
  Bytecode instructions
 
  Synchronization
+
+ GC
+
+String Pool!

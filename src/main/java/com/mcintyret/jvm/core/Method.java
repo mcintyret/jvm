@@ -22,7 +22,7 @@ public class Method {
         return byteCode;
     }
 
-    public MethodSignature getMethodSignature() {
+    public MethodSignature getSignature() {
         return methodSignature;
     }
 

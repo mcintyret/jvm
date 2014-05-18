@@ -16,7 +16,7 @@ class InvokeSpecial extends OpCode {
 
         Method method = ref.getInstanceMethod();
 
-        int[] values = new int[method.getMethodSignature().getArgTypes().size() + 1];
+        int[] values = new int[method.getSignature().getArgTypes().size() + 1];
         values[0] = opAddress;
         for (int i = 1; i < values.length; i++) {
             values[i] = ctx.getStack().pop();

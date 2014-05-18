@@ -5,8 +5,8 @@ import com.mcintyret.jvm.core.Field;
 
 public class FieldReference extends AbstractReference {
 
-    public FieldReference(ClassObject classObject, int methodIndex) {
-        super(classObject, methodIndex);
+    public FieldReference(ClassObject classObject, int fieldIndex) {
+        super(classObject, fieldIndex);
     }
 
     public Field getInstanceField() {

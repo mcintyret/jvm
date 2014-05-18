@@ -8,6 +8,8 @@ public class Oop {
 
     private final int[] fields;
 
+    private int address;
+
     public Oop(ClassObject classObject, MarkRef markRef, int[] fields) {
         this.classObject = classObject;
         this.markRef = markRef;
@@ -24,5 +26,13 @@ public class Oop {
 
     public int[] getFields() {
         return fields;
+    }
+
+    public int getAddress() {
+        return address;
+    }
+
+    public void setAddress(int address) {
+        this.address = address;
     }
 }

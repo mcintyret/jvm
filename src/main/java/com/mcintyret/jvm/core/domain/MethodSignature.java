@@ -3,7 +3,6 @@ package com.mcintyret.jvm.core.domain;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 public class MethodSignature {
 
@@ -20,56 +19,16 @@ public class MethodSignature {
         }
         List<Type> argTypes = new ArrayList<>(4);
         while (it.peek() != ')') {
-            argTypes.add(parseType(it));
+            argTypes.add(Types.parseType(it));
         }
         it.next(); // get rid of the ')'
         argTypes = argTypes.isEmpty() ? Collections.emptyList() : argTypes;
 
-        Type returnType = parseType(it);
+        Type returnType = Types.parseType(it);
 
         return new MethodSignature(name, argTypes, returnType);
     }
 
-    private static Type parseType(CharIterator it) {
-        int arrayDimensions = 0;
-        char[] classBuffer = null;
-        int classIndex = 0;
-        while (it.hasNext()) {
-            char c = it.next();
-            if (classBuffer == null) {
-                switch (c) {
-                    case 'I':
-                        return toType(SimpleType.INTEGER, arrayDimensions);
-                    case 'J':
-                        return toType(SimpleType.LONG, arrayDimensions);
-                    case 'Z':
-                        return toType(SimpleType.BOOLEAN, arrayDimensions);
-                    case 'B':
-                        return toType(SimpleType.BYTE, arrayDimensions);
-                    case 'C':
-                        return toType(SimpleType.CHAR, arrayDimensions);
-                    case 'F':
-                        return toType(SimpleType.FLOAT, arrayDimensions);
-                    case 'D':
-                        return toType(SimpleType.DOUBLE, arrayDimensions);
-                    case 'L':
-                        // TODO: is there an actual maximum to this? Or a better way to do it?
-                        classBuffer = new char[1000];
-                }
-            } else {
-                if (c == ';') {
-                    return ReferenceType.forClass(new String(classBuffer));
-                } else {
-                    classBuffer[classIndex++] = c;
-                }
-            }
-        }
-        throw new IllegalStateException();
-    }
-
-    private static Type toType(Type type, int arrayDimensions) {
-        return arrayDimensions == 0 ? type : ArrayType.create(type, arrayDimensions);
-    }
 
     public MethodSignature(String name, List<Type> argTypes, Type returnType) {
         this.name = name;
@@ -100,7 +59,6 @@ public class MethodSignature {
     }
 
     public String getName() {
-
         return name;
     }
 
@@ -112,32 +70,14 @@ public class MethodSignature {
         return returnType;
     }
 
-    private static class CharIterator {
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(name).append(":(");
 
-        private final CharSequence seq;
-
-        int i = 0;
-
-        private CharIterator(CharSequence seq) {
-            this.seq = seq;
+        for (Type argType : argTypes) {
+            sb.append(argType);
         }
-
-        char next() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            return seq.charAt(i++);
-        }
-
-        char peek() {
-            if (!hasNext()) {
-                throw new NoSuchElementException();
-            }
-            return seq.charAt(i);
-        }
-
-        boolean hasNext() {
-            return i != seq.length() - 1;
-        }
+        return sb.append(')').append(returnType).toString();
     }
+
 }

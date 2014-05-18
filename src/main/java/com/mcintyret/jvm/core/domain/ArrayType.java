@@ -50,4 +50,13 @@ public final class ArrayType implements Type {
         result = 31 * result + dimensions;
         return result;
     }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < dimensions; i++) {
+            sb.append('[');
+        }
+        return sb.append(type).toString();
+    }
 }

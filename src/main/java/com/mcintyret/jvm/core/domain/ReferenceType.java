@@ -45,4 +45,9 @@ public final class ReferenceType implements Type {
     public int hashCode() {
         return className.hashCode();
     }
+
+    @Override
+    public String toString() {
+        return "L" + className + ";";
+    }
 }

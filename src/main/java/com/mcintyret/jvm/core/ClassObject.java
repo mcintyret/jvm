@@ -1,8 +1,11 @@
 package com.mcintyret.jvm.core;
 
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
+import com.mcintyret.jvm.core.domain.ReferenceType;
 
 public class ClassObject {
+
+    private final ReferenceType type;
 
     private final ClassObject parent;
 
@@ -18,15 +21,16 @@ public class ClassObject {
 
     private final int[] staticFieldValues;
 
-    public ClassObject(ClassObject parent, ConstantPool constantPool, Method[] instanceMethods, Method[] staticMethods,
-                       Field[] instanceFields, Field[] staticFields, int[] staticFieldValues) {
+    public ClassObject(ReferenceType type, ClassObject parent, ConstantPool constantPool, Method[] instanceMethods,
+                       Method[] staticMethods, Field[] instanceFields, Field[] staticFields) {
+        this.type = type;
         this.parent = parent;
         this.constantPool = constantPool;
         this.instanceMethods = instanceMethods;
         this.staticMethods = staticMethods;
         this.instanceFields = instanceFields;
         this.staticFields = staticFields;
-        this.staticFieldValues = staticFieldValues;
+        this.staticFieldValues = newFieldsValuesArray(staticFields);
     }
 
     // For invokevirtual and invokespecial
@@ -64,5 +68,23 @@ public class ClassObject {
 
     public Field[] getStaticFields() {
         return staticFields;
+    }
+
+    public Oop newObject() {
+        return new Oop(this, null, newFieldsValuesArray(instanceFields));
+    }
+
+    private static int[] newFieldsValuesArray(Field[] fields) {
+        Field lastField = fields[fields.length - 1];
+        int size = lastField.getOffset() + lastField.getType().getSimpleType().getWidth();
+        return new int[size];
+    }
+
+    public ReferenceType getType() {
+        return type;
+    }
+
+    public Method[] getStaticMethods() {
+        return staticMethods;
     }
 }

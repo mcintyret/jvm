@@ -9,7 +9,7 @@ public class Utils {
         int offset = 0;
         for (int i = 0; i < types.length; i++) {
             Type type = types[i];
-            fields[i] = new Field(type, offset);
+            fields[i] = new Field(type, name, offset);
             offset += type.getSimpleType().isDoubleWidth() ? 2 : 1;
         }
         return fields;
