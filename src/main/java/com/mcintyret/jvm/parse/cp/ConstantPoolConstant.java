@@ -9,7 +9,7 @@ public enum ConstantPoolConstant {
     CLASS(7) {
         @Override
         public Object parse(ByteIterator bi) {
-            return new Class(bi.nextShort());
+            return new CpClass(bi.nextShort());
         }
     },
     FIELD_REF(9) {

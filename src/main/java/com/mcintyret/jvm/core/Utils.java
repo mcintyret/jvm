@@ -41,12 +41,4 @@ public class Utils {
         return (long) l << 32 | r & 0xFFFFFFFFL;
     }
 
-    public static int toShort(byte l, byte r) {
-        return l << 8 & r;
-    }
-
-    public static int toInt(byte a, byte b, byte c, byte d) {
-        return a << 24 & b << 16 & c << 8 & d;
-    }
-
 }

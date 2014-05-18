@@ -42,8 +42,4 @@ public enum Modifier {
         }
         return mods;
     }
-
-    public int getVal() {
-        return val;
-    }
 }

@@ -1,6 +1,9 @@
 package com.mcintyret.jvm.parse.attribute;
 
 import com.mcintyret.jvm.core.ByteIterator;
+import com.mcintyret.jvm.parse.attribute.annotation.Annotation;
+import com.mcintyret.jvm.parse.attribute.annotation.RuntimeInvisibleAnnotations;
+import com.mcintyret.jvm.parse.attribute.annotation.RuntimeVisibleAnnotations;
 
 public enum AttributeType {
     CONSTANT_VALUE("ConstantValue") {
@@ -29,6 +32,12 @@ public enum AttributeType {
                 bi.nextInt(),
                 Exception.PARSER.parseMulti(bi)
             );
+        }
+    },
+    ENCLOSING_METHOD("EnclosingMethod") {
+        @Override
+        Attribute parse(ByteIterator bi, Parser<Attribute> attributeParser) {
+            return new EnclosingMethod(bi.nextInt(), bi.nextShort(), bi.nextShort());
         }
     },
     INNER_CLASSES("InnerClasses") {
@@ -74,6 +83,18 @@ public enum AttributeType {
         @Override
         Attribute parse(ByteIterator bi, Parser<Attribute> attributeParser) {
             return new Deprecated(bi.nextInt());
+        }
+    },
+    RUNTIME_VISIBLE_ANNOTATIONS("RuntimeVisibleAnnotations") {
+        @Override
+        Attribute parse(ByteIterator bi, Parser<Attribute> attributeParser) {
+            return new RuntimeVisibleAnnotations(bi.nextInt(), Annotation.PARSER.parseMulti(bi));
+        }
+    },
+    RUNTIME_INVISIBLE_ANNOTATIONS("RuntimeInvisibleAnnotations") {
+        @Override
+        Attribute parse(ByteIterator bi, Parser<Attribute> attributeParser) {
+            return new RuntimeInvisibleAnnotations(bi.nextInt(), Annotation.PARSER.parseMulti(bi));
         }
     };
 
