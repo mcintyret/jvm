@@ -38,7 +38,7 @@ public class Utils {
     }
 
     public static long toLong(int l, int r) {
-        return ((long) l) << 32 & r;
+        return (long) l << 32 | r & 0xFFFFFFFFL;
     }
 
     public static int toShort(byte l, byte r) {
