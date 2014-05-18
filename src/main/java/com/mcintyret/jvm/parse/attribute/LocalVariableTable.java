@@ -6,8 +6,8 @@ public class LocalVariableTable extends Attribute {
 
     private final List<LocalVariable> localVariables;
 
-    protected LocalVariableTable(int length, List<LocalVariable> localVariables) {
-        super(length);
+    protected LocalVariableTable(List<LocalVariable> localVariables) {
+        super(AttributeType.LOCAL_VARIABLE_TABLE);
         this.localVariables = localVariables;
     }
 }

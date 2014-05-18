@@ -6,8 +6,8 @@ public class LineNumberTable extends Attribute {
 
     private final List<LineNumber> lineNumbers;
 
-    protected LineNumberTable(int length, List<LineNumber> lineNumbers) {
-        super(length);
+    protected LineNumberTable(List<LineNumber> lineNumbers) {
+        super(AttributeType.LINE_NUMBER_TABLE);
         this.lineNumbers = lineNumbers;
     }
 }

@@ -4,8 +4,8 @@ public class SourceFile extends Attribute {
 
     private final int sourcefileIndex;
 
-    SourceFile(int length, int sourcefileIndex) {
-        super(length);
+    SourceFile(int sourcefileIndex) {
+        super(AttributeType.SOURCE_FILE);
         this.sourcefileIndex = sourcefileIndex;
     }
 }

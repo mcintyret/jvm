@@ -1,6 +1,6 @@
-package com.mcintyret.jvm.core;
+package com.mcintyret.jvm.core.domain;
 
-public enum Type {
+public enum SimpleType implements Type {
     BOOLEAN,
     BYTE,
     SHORT,
@@ -9,6 +9,7 @@ public enum Type {
     LONG,
     FLOAT,
     DOUBLE,
+    VOID,
     REF;
 
     public boolean isDoubleWidth() {
@@ -16,6 +17,8 @@ public enum Type {
             case LONG:
             case DOUBLE:
                 return true;
+            case VOID:
+                throw new UnsupportedOperationException();
             default:
                 return false;
         }
@@ -25,4 +28,8 @@ public enum Type {
         return isDoubleWidth() ? 2 : 1;
     }
 
+    @Override
+    public SimpleType getSimpleType() {
+        return this;
+    }
 }

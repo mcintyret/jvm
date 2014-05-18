@@ -15,7 +15,7 @@ public class New extends OpCode {
 
         Field[] fields = clazz.getInstanceFields();
         Field lastField = fields[fields.length - 1];
-        int size = lastField.getOffset() + lastField.getType().getWidth();
+        int size = lastField.getOffset() + lastField.getType().getSimpleType().getWidth();
 
         Oop newOop = new Oop(clazz, null, new int[size]);
         ctx.getStack().push(Heap.allocate(newOop));

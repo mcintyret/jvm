@@ -6,8 +6,8 @@ public class EnclosingMethod extends Attribute {
 
     private final int methodIndex;
 
-    protected EnclosingMethod(int length, int classIndex, int methodIndex) {
-        super(length);
+    protected EnclosingMethod(int classIndex, int methodIndex) {
+        super(AttributeType.ENCLOSING_METHOD);
         this.classIndex = classIndex;
         this.methodIndex = methodIndex;
     }

@@ -9,6 +9,8 @@ import com.mcintyret.jvm.parse.attribute.Parser;
 import com.mcintyret.jvm.parse.cp.ConstantPoolConstant;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class ClassFileReader {
 
@@ -56,6 +58,12 @@ public class ClassFileReader {
         if (bi.nextInt() != MAGIC_NUMBER) {
             throw new IllegalArgumentException();
         }
+    }
+
+    public static void main(String[] args) throws IOException {
+        String file = "/Users/mcintyret2/Github/jvm/target/classes/com/mcintyret/jvm/core/Accessor.class";
+        ClassFile cf = new ClassFileReader().read(Files.newInputStream(Paths.get(file)));
+        System.out.println(cf);
     }
 
 }

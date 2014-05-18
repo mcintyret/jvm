@@ -6,8 +6,8 @@ public class InnerClass extends Attribute {
 
     private final List<InnerClassDetails> icds;
 
-    public InnerClass(int length, List<InnerClassDetails> icds) {
-        super(length);
+    public InnerClass(List<InnerClassDetails> icds) {
+        super(AttributeType.INNER_CLASSES);
         this.icds = icds;
     }
 }

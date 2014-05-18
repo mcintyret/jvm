@@ -1,5 +1,7 @@
 package com.mcintyret.jvm.core;
 
+import com.mcintyret.jvm.core.domain.Type;
+
 public class Field {
 
     private final Type type;

@@ -41,6 +41,10 @@ public class ClassObject {
         }
     }
 
+    public Method[] getInstanceMethods() {
+        return instanceMethods;
+    }
+
     // For invokestatic
     public Method getStaticMethod(int i) {
         return staticMethods[i];

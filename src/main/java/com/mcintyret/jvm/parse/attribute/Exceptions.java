@@ -6,8 +6,8 @@ public class Exceptions extends Attribute {
 
     private final List<Exception> exceptions;
 
-    public Exceptions(int length, List<Exception> exceptions) {
-        super(length);
+    public Exceptions(List<Exception> exceptions) {
+        super(AttributeType.EXCEPTIONS);
         this.exceptions = exceptions;
     }
 }

@@ -12,6 +12,7 @@ public class FieldOrMethodInfo {
 
     private final int descriptorIndex;
 
+    // TODO: EnumMap?
     private final List<Attribute> attributes;
 
     public FieldOrMethodInfo(int accessFlags, int nameIndex, int descriptorIndex, List<Attribute> attributes) {
@@ -24,4 +25,21 @@ public class FieldOrMethodInfo {
     public boolean hasModifier(Modifier modifier) {
         return modifiers.contains(modifier);
     }
+
+    public int getNameIndex() {
+        return nameIndex;
+    }
+
+    public int getDescriptorIndex() {
+        return descriptorIndex;
+    }
+
+    public List<Attribute> getAttributes() {
+        return attributes;
+    }
+
+    public Set<Modifier> getModifiers() {
+        return modifiers;
+    }
+
 }
