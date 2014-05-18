@@ -1,0 +1,52 @@
+package com.mcintyret.jvm.core;
+
+public class Utils {
+
+    public static Field[] makeFields(Type[] types) {
+        Field[] fields = new Field[types.length];
+        int offset = 0;
+        for (int i = 0; i < types.length; i++) {
+            Type type = types[i];
+            fields[i] = new Field(type, offset);
+            offset += type.isDoubleWidth() ? 2 : 1;
+        }
+        return fields;
+    }
+
+    public static void putField(WordStack stack, int[] fields, Field field) {
+        int offset = field.getOffset();
+        if (field.getType().isDoubleWidth()) {
+            int two = stack.pop();
+            int one = stack.pop();
+            fields[offset++] = one;
+            fields[offset] = two;
+        } else {
+            fields[offset] = stack.pop();
+        }
+    }
+
+    public static void getField(WordStack stack, int[] fields, Field field) {
+        int offset = field.getOffset();
+        if (field.getType().isDoubleWidth()) {
+            int one = fields[offset++];
+            int two = fields[offset];
+            stack.push(one);
+            stack.push(two);
+        } else {
+            stack.push(fields[offset]);
+        }
+    }
+
+    public static long toLong(int l, int r) {
+        return ((long) l) << 32 & r;
+    }
+
+    public static int toShort(byte l, byte r) {
+        return l << 8 & r;
+    }
+
+    public static int toInt(byte a, byte b, byte c, byte d) {
+        return a << 24 & b << 16 & c << 8 & d;
+    }
+
+}

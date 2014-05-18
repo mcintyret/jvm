@@ -1,0 +1,9 @@
+package com.mcintyret.jvm.core.opcode.store;
+
+class FStore_2 extends SingleWidthStore_2 {
+
+    @Override
+    public byte getByte() {
+        return 0x45;
+    }
+}

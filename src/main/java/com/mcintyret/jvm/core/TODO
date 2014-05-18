@@ -1,0 +1,21 @@
+method dispatch
+- virtual
+- interface
+- special
+
+ Types
+ - primitives
+ - reference
+
+ OopTable
+
+ Execution stack
+ - actual stack
+ - bytecode
+ - arguments
+
+ Program stack ( = stack<execution stack>)
+
+ Bytecode instructions
+
+ Synchronization
