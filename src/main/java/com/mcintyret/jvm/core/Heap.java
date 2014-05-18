@@ -11,6 +11,8 @@ public class Heap {
 
     public static final int NULL_POINTER = 0;
 
+    private static final StringPool STRING_POOL = new StringPool();
+
     public static Oop getOop(int address) {
         if (address == NULL_POINTER) {
             return null;
@@ -28,6 +30,10 @@ public class Heap {
         return heapAllocationPointer++;
     }
 
+    public static int intern(String string) {
+        return STRING_POOL.intern(string);
+    }
+
     private static class StringPool {
 
         private static final ClassObject STRING_CLASS = null; // TODO!
@@ -35,6 +41,7 @@ public class Heap {
         private final Map<String, Oop> lookupMap = new HashMap<>();
 
         public int intern(String string) {
+            // TODO: Actually create the string object!
             Oop oop = lookupMap.get(string);
             if (oop == null) {
                 oop = STRING_CLASS.newObject();

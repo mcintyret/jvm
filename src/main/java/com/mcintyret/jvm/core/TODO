@@ -22,4 +22,6 @@ method dispatch
 
  GC
 
-String Pool!
+String Pool / Interning
+
+Native methods

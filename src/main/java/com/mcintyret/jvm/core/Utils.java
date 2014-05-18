@@ -4,15 +4,8 @@ import com.mcintyret.jvm.core.domain.Type;
 
 public class Utils {
 
-    public static Field[] makeFields(Type[] types) {
-        Field[] fields = new Field[types.length];
-        int offset = 0;
-        for (int i = 0; i < types.length; i++) {
-            Type type = types[i];
-            fields[i] = new Field(type, name, offset);
-            offset += type.getSimpleType().isDoubleWidth() ? 2 : 1;
-        }
-        return fields;
+    public static OopArray newArray(Type type, int size) {
+        return new OopArray(null, null, new int[size * type.getSimpleType().getWidth()], type);
     }
 
     public static void putField(WordStack stack, int[] fields, Field field) {

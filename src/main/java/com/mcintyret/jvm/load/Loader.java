@@ -3,6 +3,7 @@ package com.mcintyret.jvm.load;
 import com.mcintyret.jvm.core.ByteCode;
 import com.mcintyret.jvm.core.ClassObject;
 import com.mcintyret.jvm.core.Field;
+import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.Method;
 import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
@@ -189,7 +190,9 @@ public class Loader {
             Object obj = constantPool[i];
 
             if (obj instanceof CpString) {
-                translated[i] = ((CpString) obj).getStringIndex();
+                int index = ((CpString) obj).getStringIndex();
+                String string = (String) constantPool[index];
+                translated[i] = Heap.intern(string);
             } else if (obj instanceof CpInt) {
                 translated[i] = ((CpInt) obj).getIntBits();
             } else if (obj instanceof CpFloat) {
@@ -201,8 +204,7 @@ public class Loader {
                 CpDouble cpDouble = (CpDouble) obj;
                 translated[i] = Utils.toLong(cpDouble.getHighBits(), cpDouble.getLowBits());
             } else if (obj instanceof CpClass) {
-                // Not strictly needed but probably handy
-                translated[i] = ReferenceType.forClass((String) constantPool[((CpClass) obj).getNameIndex()]);
+                translated[i] = load((String) constantPool[((CpClass) obj).getNameIndex()]);
             } else if (obj instanceof CpFieldReference) {
                 CpFieldReference cfr = (CpFieldReference) obj;
 
@@ -321,10 +323,8 @@ public class Loader {
 
             MethodDetails that = (MethodDetails) o;
 
-            if (!clazz.equals(that.clazz)) return false;
-            if (!signature.equals(that.signature)) return false;
+            return clazz.equals(that.clazz) && signature.equals(that.signature);
 
-            return true;
         }
 
         @Override

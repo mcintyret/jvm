@@ -1,5 +1,9 @@
 package com.mcintyret.jvm.core.domain;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 public enum SimpleType implements Type {
     BOOLEAN("Z"),
     BYTE("B"),
@@ -11,6 +15,16 @@ public enum SimpleType implements Type {
     DOUBLE("D"),
     VOID("V"),
     REF("Probably shouldn't see this");
+
+    private static final Map<Character, SimpleType> MAP = makeMap();
+
+    private static Map<Character, SimpleType> makeMap() {
+        Map<Character, SimpleType> map = new HashMap<>();
+        for (SimpleType st : values()) {
+            map.put(st.str.charAt(0), st);
+        }
+        return Collections.unmodifiableMap(map);
+    }
 
     private final String str;
 
@@ -42,5 +56,17 @@ public enum SimpleType implements Type {
     @Override
     public SimpleType getSimpleType() {
         return this;
+    }
+
+    public static SimpleType forChar(char ch) {
+        return MAP.get(ch);
+    }
+
+    public static SimpleType forByte(byte b) {
+        return forChar((char) b);
+    }
+
+    public static SimpleType forString(String str) {
+        return forChar(str.charAt(0));
     }
 }
