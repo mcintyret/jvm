@@ -283,11 +283,11 @@ public class Loader {
         return (String) constantPool[cpClass.getNameIndex()];
     }
 
-    private static final Comparator<FieldOrMethodInfo> PRIVATE_LAST_COMPARATOR = (a, b) -> {
-        if (a.hasModifier(Modifier.PRIVATE)) {
-            return b.hasModifier(Modifier.PRIVATE) ? 0 : -1;
+    private static final Comparator<FomiAndMethodSig> PRIVATE_LAST_COMPARATOR = (a, b) -> {
+        if (a.fomi.hasModifier(Modifier.PRIVATE)) {
+            return b.fomi.hasModifier(Modifier.PRIVATE) ? 0 : -1;
         } else {
-            return !b.hasModifier(Modifier.PRIVATE) ? 0 : 1;
+            return !b.fomi.hasModifier(Modifier.PRIVATE) ? 0 : 1;
         }
     };
 
