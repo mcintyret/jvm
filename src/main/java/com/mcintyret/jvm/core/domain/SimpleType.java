@@ -5,20 +5,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 public enum SimpleType implements Type {
-    BOOLEAN("Z"),
-    BYTE("B"),
-    SHORT("S"),
-    CHAR("C"),
-    INTEGER("I"),
-    LONG("J"),
-    FLOAT("F"),
-    DOUBLE("D"),
-    VOID("V"),
-    REF("Probably shouldn't see this");
+    BOOLEAN("Z", 4),
+    BYTE("B", 8),
+    SHORT("S", 9),
+    CHAR("C", 5),
+    INTEGER("I", 10),
+    LONG("J", 11),
+    FLOAT("F", 6),
+    DOUBLE("D", 7),
+    VOID("V", -1),
+    REF("L", -1);
 
-    private static final Map<Character, SimpleType> MAP = makeMap();
+    private static final Map<Character, SimpleType> CHAR_MAP = makeCharMap();
 
-    private static Map<Character, SimpleType> makeMap() {
+    private static final Map<Byte, SimpleType> BYTE_MAP = makeByteMap();
+
+    private static Map<Character, SimpleType> makeCharMap() {
         Map<Character, SimpleType> map = new HashMap<>();
         for (SimpleType st : values()) {
             map.put(st.str.charAt(0), st);
@@ -26,10 +28,21 @@ public enum SimpleType implements Type {
         return Collections.unmodifiableMap(map);
     }
 
+    private static Map<Byte, SimpleType> makeByteMap() {
+        Map<Byte, SimpleType> map = new HashMap<>();
+        for (SimpleType st : values()) {
+            map.put(st.b, st);
+        }
+        return Collections.unmodifiableMap(map);
+    }
+
     private final String str;
 
-    private SimpleType(String str) {
+    private final byte b;
+
+    private SimpleType(String str, int i) {
         this.str = str;
+        this.b = (byte) i;
     }
 
     @Override
@@ -59,11 +72,11 @@ public enum SimpleType implements Type {
     }
 
     public static SimpleType forChar(char ch) {
-        return MAP.get(ch);
+        return CHAR_MAP.get(ch);
     }
 
     public static SimpleType forByte(byte b) {
-        return forChar((char) b);
+        return BYTE_MAP.get(b);
     }
 
     public static SimpleType forString(String str) {

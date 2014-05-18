@@ -12,10 +12,13 @@ public class Method {
 
     private final Set<Modifier> modifiers;
 
-    public Method(ByteCode byteCode, MethodSignature methodSignature, Set<Modifier> modifiers) {
+    private final int maxLocalVariables;
+
+    public Method(ByteCode byteCode, MethodSignature methodSignature, Set<Modifier> modifiers, int maxLocalVariables) {
         this.byteCode = byteCode;
         this.methodSignature = methodSignature;
         this.modifiers = modifiers;
+        this.maxLocalVariables = maxLocalVariables;
     }
 
     public ByteCode getByteCode() {
@@ -28,5 +31,9 @@ public class Method {
 
     public boolean hasModifier(Modifier modifier) {
         return modifiers.contains(modifier);
+    }
+
+    public int getMaxLocalVariables() {
+        return maxLocalVariables;
     }
 }

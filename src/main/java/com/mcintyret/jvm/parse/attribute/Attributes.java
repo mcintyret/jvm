@@ -1,7 +1,5 @@
-package com.mcintyret.jvm.parse.attribute.annotation;
+package com.mcintyret.jvm.parse.attribute;
 
-import com.mcintyret.jvm.parse.attribute.Attribute;
-import com.mcintyret.jvm.parse.attribute.AttributeType;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -11,7 +9,9 @@ public class Attributes {
 
     public Attributes(Iterable<Attribute> attributes) {
         for (Attribute attribute : attributes) {
-            this.attributes.put(attribute.getType(), attribute);
+            if (attribute != null) {
+                this.attributes.put(attribute.getType(), attribute);
+            }
         }
     }
 

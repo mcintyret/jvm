@@ -11,12 +11,13 @@ abstract class DoubleWidthAStore extends OpCode {
     @Override
     public final void execute(OperationContext ctx) {
         WordStack stack = ctx.getStack();
-        OopArray array = (OopArray) Heap.getOop(stack.pop());
-
-        int index = stack.pop() * 2;
 
         int val2 = stack.pop();
         int val1 = stack.pop();
+
+        int index = stack.pop() * 2;
+
+        OopArray array = (OopArray) Heap.getOop(stack.pop());
 
         array.getFields()[index] = val1;
         array.getFields()[index] = val2;

@@ -26,4 +26,8 @@ public class Code extends Attribute {
     public byte[] getCode() {
         return code;
     }
+
+    public int getMaxLocals() {
+        return maxLocals;
+    }
 }

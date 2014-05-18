@@ -42,7 +42,7 @@ public class OpCodes {
     public static OpCode getOpcode(byte b) {
         OpCode opCode = OP_CODE_MAP.get(b);
         if (opCode == null) {
-            throw new IllegalArgumentException("No opcode corresponds to byte '" + b + "'");
+            throw new IllegalArgumentException("No opcode corresponds to byte '" + String.format("%02X", b) + "'");
         }
         return opCode;
     }

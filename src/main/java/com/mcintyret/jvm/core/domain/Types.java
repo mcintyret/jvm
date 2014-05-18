@@ -13,24 +13,16 @@ public class Types {
         while (it.hasNext()) {
             char c = it.next();
             if (classBuffer == null) {
-                switch (c) {
-                    case 'I':
-                        return toType(SimpleType.INTEGER, arrayDimensions);
-                    case 'J':
-                        return toType(SimpleType.LONG, arrayDimensions);
-                    case 'Z':
-                        return toType(SimpleType.BOOLEAN, arrayDimensions);
-                    case 'B':
-                        return toType(SimpleType.BYTE, arrayDimensions);
-                    case 'C':
-                        return toType(SimpleType.CHAR, arrayDimensions);
-                    case 'F':
-                        return toType(SimpleType.FLOAT, arrayDimensions);
-                    case 'D':
-                        return toType(SimpleType.DOUBLE, arrayDimensions);
-                    case 'L':
+                if (c == '[') {
+                    arrayDimensions++;
+                } else {
+                    SimpleType simpleType = SimpleType.forChar(c);
+                    if (simpleType == SimpleType.REF) {
                         // TODO: is there an actual maximum to this? Or a better way to do it?
                         classBuffer = new char[1000];
+                    } else if (simpleType != null) {
+                        return toType(simpleType, arrayDimensions);
+                    }
                 }
             } else {
                 if (c == ';') {

@@ -75,6 +75,9 @@ public class ClassObject {
     }
 
     private static int[] newFieldsValuesArray(Field[] fields) {
+        if (fields.length == 0) {
+            return new int[0];
+        }
         Field lastField = fields[fields.length - 1];
         int size = lastField.getOffset() + lastField.getType().getSimpleType().getWidth();
         return new int[size];

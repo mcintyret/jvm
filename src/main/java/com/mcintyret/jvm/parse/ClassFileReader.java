@@ -5,6 +5,7 @@ import com.mcintyret.jvm.core.ByteBufferIterator;
 import com.mcintyret.jvm.core.ByteIterator;
 import com.mcintyret.jvm.parse.attribute.Attribute;
 import com.mcintyret.jvm.parse.attribute.AttributeParser;
+import com.mcintyret.jvm.parse.attribute.Attributes;
 import com.mcintyret.jvm.parse.attribute.Parser;
 import com.mcintyret.jvm.parse.cp.ConstantPoolConstant;
 import java.io.IOException;
@@ -49,7 +50,7 @@ public class ClassFileReader {
 
         classFile.setFields(fieldOrMethodInfoParser.parseMulti(bi));
         classFile.setMethods(fieldOrMethodInfoParser.parseMulti(bi));
-        classFile.setAttributes(attributeParser.parseMulti(bi));
+        classFile.setAttributes(new Attributes(attributeParser.parseMulti(bi)));
 
         return classFile;
     }

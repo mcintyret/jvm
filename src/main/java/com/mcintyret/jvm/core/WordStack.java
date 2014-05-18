@@ -29,7 +29,7 @@ public class WordStack {
         if (head == 0) {
             throw new NoSuchElementException();
         }
-        return stack[head--];
+        return stack[--head];
     }
 
     public void push(float f) {

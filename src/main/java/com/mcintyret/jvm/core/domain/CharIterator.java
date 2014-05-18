@@ -27,6 +27,6 @@ class CharIterator {
     }
 
     boolean hasNext() {
-        return i != seq.length() - 1;
+        return i != seq.length();
     }
 }

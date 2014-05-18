@@ -1,7 +1,6 @@
 package com.mcintyret.jvm.parse;
 
-import com.mcintyret.jvm.parse.attribute.Attribute;
-import java.util.List;
+import com.mcintyret.jvm.parse.attribute.Attributes;
 import java.util.Set;
 
 public class FieldOrMethodInfo {
@@ -12,10 +11,9 @@ public class FieldOrMethodInfo {
 
     private final int descriptorIndex;
 
-    // TODO: EnumMap?
-    private final List<Attribute> attributes;
+    private final Attributes attributes;
 
-    public FieldOrMethodInfo(int accessFlags, int nameIndex, int descriptorIndex, List<Attribute> attributes) {
+    public FieldOrMethodInfo(int accessFlags, int nameIndex, int descriptorIndex, Attributes attributes) {
         this.modifiers = Modifier.translate(accessFlags);
         this.nameIndex = nameIndex;
         this.descriptorIndex = descriptorIndex;
@@ -34,7 +32,7 @@ public class FieldOrMethodInfo {
         return descriptorIndex;
     }
 
-    public List<Attribute> getAttributes() {
+    public Attributes getAttributes() {
         return attributes;
     }
 

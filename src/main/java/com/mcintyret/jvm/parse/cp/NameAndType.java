@@ -6,9 +6,9 @@ public class NameAndType {
 
     private final int descriptorIndex;
 
-    public NameAndType(int descriptorIndex, int nameIndex) {
-        this.descriptorIndex = descriptorIndex;
+    public NameAndType(int nameIndex, int descriptorIndex) {
         this.nameIndex = nameIndex;
+        this.descriptorIndex = descriptorIndex;
     }
 
     public int getNameIndex() {

@@ -6,7 +6,7 @@ class ISub extends BinaryIntOp {
 
     @Override
     protected int binaryOp(int a, int b) {
-        return a - b;
+        return b - a;
     }
 
     @Override

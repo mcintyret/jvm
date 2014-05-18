@@ -2,6 +2,7 @@ package com.mcintyret.jvm.parse;
 
 import com.mcintyret.jvm.core.ByteIterator;
 import com.mcintyret.jvm.parse.attribute.Attribute;
+import com.mcintyret.jvm.parse.attribute.Attributes;
 import com.mcintyret.jvm.parse.attribute.Parser;
 
 public class FieldOrMethodInfoParser implements Parser<FieldOrMethodInfo> {
@@ -18,7 +19,7 @@ public class FieldOrMethodInfoParser implements Parser<FieldOrMethodInfo> {
             bi.nextShort(),
             bi.nextShort(),
             bi.nextShort(),
-            attributeParser.parseMulti(bi)
+            new Attributes(attributeParser.parseMulti(bi))
         );
     }
 }

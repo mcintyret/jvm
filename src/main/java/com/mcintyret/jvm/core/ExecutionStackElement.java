@@ -29,11 +29,6 @@ public class ExecutionStackElement implements OperationContext {
         opCode.execute(this);
     }
 
-    public boolean isComplete() {
-        return !byteIterator.hasNext();
-    }
-
-
     @Override
     public ByteIterator getByteIterator() {
         return byteIterator;

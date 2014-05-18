@@ -6,7 +6,7 @@ class LSub extends BinaryLongOp {
 
     @Override
     protected long binaryOp(long a, long b) {
-        return a - b;
+        return b - a;
     }
 
     @Override

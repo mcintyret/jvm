@@ -6,7 +6,7 @@ class FRem extends BinaryFloatOp {
 
     @Override
     protected float binaryOp(float a, float b) {
-        return a % b;
+        return b % a;
     }
 
     @Override

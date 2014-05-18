@@ -11,9 +11,10 @@ abstract class SingleWidthALoad extends OpCode {
     @Override
     public final void execute(OperationContext ctx) {
         WordStack stack = ctx.getStack();
-        OopArray array = (OopArray) Heap.getOop(stack.pop());
 
         int index = stack.pop();
+
+        OopArray array = (OopArray) Heap.getOop(stack.pop());
 
         stack.push(array.getFields()[index]);
     }

@@ -112,6 +112,7 @@ public enum AttributeType {
                 return at;
             }
         }
-        throw new IllegalArgumentException("No AttributeType named " + str);
+        System.err.println("No AttributeType named " + str);
+        return null;
     }
 }

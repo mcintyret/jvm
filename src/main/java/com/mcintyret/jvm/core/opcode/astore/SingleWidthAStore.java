@@ -10,11 +10,11 @@ abstract class SingleWidthAStore extends OpCode {
     @Override
     public final void execute(OperationContext ctx) {
         WordStack stack = ctx.getStack();
-        OopArray array = (OopArray) Heap.getOop(stack.pop());
-
-        int index = stack.pop();
 
         int val = stack.pop();
+        int index = stack.pop();
+        OopArray array = (OopArray) Heap.getOop(stack.pop());
+
 
         array.getFields()[index] = val;
     }

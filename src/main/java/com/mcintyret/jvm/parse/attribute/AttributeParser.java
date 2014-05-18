@@ -14,6 +14,12 @@ public class AttributeParser implements Parser<Attribute> {
     public Attribute parse(ByteIterator bi) {
         int index = bi.nextShort();
         String name = (String) constantPool[index];
-        return AttributeType.forString(name).parse(bi, this);
+        AttributeType at = AttributeType.forString(name);
+        if (at == null) {
+            // not found - need to skip the buffer!
+            bi.nextBytes(bi.nextInt());
+            return null;
+        }
+        return at.parse(bi, this);
     }
 }

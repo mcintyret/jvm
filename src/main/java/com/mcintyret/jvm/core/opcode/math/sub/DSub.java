@@ -6,7 +6,7 @@ class DSub extends BinaryDoubleOp {
 
     @Override
     protected double binaryOp(double a, double b) {
-        return a - b;
+        return b - a;
     }
 
     @Override

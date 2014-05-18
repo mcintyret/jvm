@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.parse;
 
-import com.mcintyret.jvm.parse.attribute.Attribute;
+import com.mcintyret.jvm.parse.attribute.Attributes;
 import java.util.List;
 
 public class ClassFile {
@@ -23,7 +23,7 @@ public class ClassFile {
 
     private List<FieldOrMethodInfo> methods;
 
-    private List<Attribute> attributes;
+    private Attributes attributes;
 
     public int getMinorVersion() {
         return minorVersion;
@@ -97,11 +97,11 @@ public class ClassFile {
         this.methods = methods;
     }
 
-    public List<Attribute> getAttributes() {
+    public Attributes getAttributes() {
         return attributes;
     }
 
-    public void setAttributes(List<Attribute> attributes) {
+    public void setAttributes(Attributes attributes) {
         this.attributes = attributes;
     }
 }

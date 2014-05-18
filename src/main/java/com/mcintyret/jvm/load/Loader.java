@@ -17,7 +17,6 @@ import com.mcintyret.jvm.parse.ClassFile;
 import com.mcintyret.jvm.parse.ClassFileReader;
 import com.mcintyret.jvm.parse.FieldOrMethodInfo;
 import com.mcintyret.jvm.parse.Modifier;
-import com.mcintyret.jvm.parse.attribute.Attribute;
 import com.mcintyret.jvm.parse.attribute.AttributeType;
 import com.mcintyret.jvm.parse.attribute.Code;
 import com.mcintyret.jvm.parse.cp.CpClass;
@@ -41,6 +40,7 @@ import java.util.Map;
 
 import static com.mcintyret.jvm.core.Assert.assertNotNull;
 import static java.util.Arrays.asList;
+import static java.util.Arrays.copyOf;
 
 public class Loader {
 
@@ -51,6 +51,10 @@ public class Loader {
     private final Map<MethodDetails, MethodReference> methods = new HashMap<>();
 
     private final Map<String, ClassObject> classes = new HashMap<>();
+
+    public ClassObject getClassObject(String className) {
+        return classes.get(className);
+    }
 
     public void load(Iterable<InputStream> classFileStreams) throws IOException {
         ClassFileReader reader = new ClassFileReader();
@@ -68,6 +72,7 @@ public class Loader {
     private ClassObject load(String className) {
         ClassObject co = classes.get(className);
         if (co == null) {
+            System.out.println("Loading: " + className);
             ClassFile file = assertNotNull(classFiles.remove(className));
 
             ClassObject parent = null;
@@ -77,15 +82,14 @@ public class Loader {
                 parent = load(parentClass);
             }
 
-            co = makeClassObject(file, parent);
-            classes.put(className, co);
+            co = makeClassObject(className, file, parent);
         }
         return co;
     }
 
-    private ClassObject makeClassObject(ClassFile file, ClassObject parent) {
+    private ClassObject makeClassObject(String className, ClassFile file, ClassObject parent) {
         // Methods - sorting out the VTable
-        ReferenceType type = ReferenceType.forClass(getClassName(file.getThisClass(), file.getConstantPool()));
+        ReferenceType type = ReferenceType.forClass(className);
 
         List<Method> staticMethods = new ArrayList<>();
         List<FomiAndMethodSig> instanceMethods = new LinkedList<>();
@@ -147,11 +151,12 @@ public class Loader {
         Field[] translatedInstanceFields = translateFields(parent == null ? new ArrayList<>() :
             new ArrayList<>(asList(parent.getInstanceFields())), instanceFields, file.getConstantPool());
 
+        Object[] newConstantPool = new Object[file.getConstantPool().length];
 
         ClassObject co = new ClassObject(
             type,
             parent,
-            translateConstantPool(file.getConstantPool()),
+            new ConstantPool(newConstantPool),
             orderedMethods.toArray(new Method[orderedMethods.size()]),
             staticMethods.toArray(new Method[staticMethods.size()]),
             translatedInstanceFields,
@@ -162,6 +167,10 @@ public class Loader {
         cacheFields(co, co.getStaticFields());
         cacheMethods(co, co.getInstanceMethods());
         cacheMethods(co, co.getStaticMethods());
+
+        classes.put(className, co);
+
+        translateConstantPool(file.getConstantPool(), newConstantPool);
 
         return co;
     }
@@ -184,8 +193,7 @@ public class Loader {
         }
     }
 
-    private ConstantPool translateConstantPool(Object[] constantPool) {
-        Object[] translated = new Object[constantPool.length];
+    private void translateConstantPool(Object[] constantPool, Object[] translated) {
         for (int i = 1; i < constantPool.length; i++) {
             Object obj = constantPool[i];
 
@@ -204,7 +212,11 @@ public class Loader {
                 CpDouble cpDouble = (CpDouble) obj;
                 translated[i] = Utils.toLong(cpDouble.getHighBits(), cpDouble.getLowBits());
             } else if (obj instanceof CpClass) {
-                translated[i] = load((String) constantPool[((CpClass) obj).getNameIndex()]);
+                String className = (String) constantPool[((CpClass) obj).getNameIndex()];
+                if (!className.startsWith("[")) {
+                    // Don't want to load the array classes here...
+                    translated[i] = load(className);
+                }
             } else if (obj instanceof CpFieldReference) {
                 CpFieldReference cfr = (CpFieldReference) obj;
 
@@ -242,8 +254,6 @@ public class Loader {
             }
             // TODO: interface methods!
         }
-
-        return new ConstantPool(translated);
     }
 
     private static Field[] translateFields(List<Field> fields, List<FieldOrMethodInfo> fomis, Object[] constantPool) {
@@ -264,17 +274,15 @@ public class Loader {
 
     private static Method translateMethod(FomiAndMethodSig fms) {
         FieldOrMethodInfo info = fms.fomi;
-        byte[] code = null;
+        byte[] byteCode = null;
 
-        for (Attribute a : info.getAttributes()) {
-            if (a.getType() == AttributeType.CODE) {
-                code = ((Code) a).getCode();
-                break;
-            }
+        Code code = (Code) info.getAttributes().getAttribute(AttributeType.CODE);
+        if (code != null) {
+            byteCode = code.getCode();
         }
 
         // code could still be null if this is an ABSTRACT or NATIVE method
-        return new Method(new ByteCode(code), fms.sig, info.getModifiers());
+        return new Method(new ByteCode(byteCode), fms.sig, info.getModifiers(), code.getMaxLocals());
     }
 
 
@@ -388,5 +396,7 @@ public class Loader {
                 '}';
         }
     }
+
+
 
 }

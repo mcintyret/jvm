@@ -1,27 +1,25 @@
 package com.mcintyret.jvm.core;
 
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Deque;
 
 public class ExecutionStack {
 
-    private final Stack<ExecutionStackElement> stack;
-
-    public ExecutionStack(Stack<ExecutionStackElement> stack) {
-        this.stack = stack;
-    }
+    private final Deque<ExecutionStackElement> stack = new ArrayDeque<>();
 
     public void execute() {
-        ExecutionStackElement current;
+        ExecutionStackElement current = null;
+        ExecutionStackElement prev;
         while(true) {
+            prev = current;
             current = stack.peek();
             if (current == null) {
+                System.out.println("Last variables: " + Arrays.toString(prev.getVariables()));
                 // Done!!
                 break;
             } else {
                 current.executeNextInstruction();
-                if (current.isComplete()) {
-                    stack.pop();
-                }
             }
         }
     }
