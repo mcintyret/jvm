@@ -1,6 +1,6 @@
-package com.mcintyret.jvm.core.opcode.condition;
+package com.mcintyret.jvm.core.opcode.branch;
 
-public class If_ICmpLT extends BinaryCondition {
+class If_ICmpGT extends BinaryCondition {
 
     @Override
     protected boolean conditionMet(int a, int b) {
@@ -9,6 +9,6 @@ public class If_ICmpLT extends BinaryCondition {
 
     @Override
     public byte getByte() {
-        return (byte) 0xA1;
+        return (byte) 0xA3;
     }
 }

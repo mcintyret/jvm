@@ -1,10 +1,10 @@
-package com.mcintyret.jvm.core.opcode.condition;
+package com.mcintyret.jvm.core.opcode.branch;
 
-public class If_ICmpGE extends BinaryCondition {
+class If_ICmpGE extends BinaryCondition {
 
     @Override
     protected boolean conditionMet(int a, int b) {
-        return a >= b;
+        return a <= b;
     }
 
     @Override

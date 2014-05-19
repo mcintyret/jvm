@@ -1,6 +1,6 @@
-package com.mcintyret.jvm.core.opcode.condition;
+package com.mcintyret.jvm.core.opcode.branch;
 
-public class If_ACmpEq extends BinaryCondition {
+class If_ICmpEq extends BinaryCondition {
 
     @Override
     protected boolean conditionMet(int a, int b) {
@@ -9,7 +9,6 @@ public class If_ACmpEq extends BinaryCondition {
 
     @Override
     public byte getByte() {
-        return (byte) 0xA5;
+        return (byte) 0x9F;
     }
 }
-

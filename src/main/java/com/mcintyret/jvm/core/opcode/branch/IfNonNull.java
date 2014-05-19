@@ -1,8 +1,8 @@
-package com.mcintyret.jvm.core.opcode.condition;
+package com.mcintyret.jvm.core.opcode.branch;
 
 import com.mcintyret.jvm.core.Heap;
 
-public class IfNonNull extends UnaryCondition {
+class IfNonNull extends UnaryCondition {
 
     @Override
     protected boolean conditionMet(int pop) {

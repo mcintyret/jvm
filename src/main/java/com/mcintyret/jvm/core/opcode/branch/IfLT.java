@@ -1,4 +1,4 @@
-package com.mcintyret.jvm.core.opcode.condition;
+package com.mcintyret.jvm.core.opcode.branch;
 
 class IfLT extends UnaryCondition {
 
