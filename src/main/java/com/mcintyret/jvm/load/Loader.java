@@ -63,6 +63,10 @@ public class Loader {
             classFiles.put(getClassName(file.getThisClass(), file.getConstantPool()), file);
         }
 
+        // Needs to be done first so we can handle String literals
+        // TODO this is rubbish
+        load(Heap.STRING_CLASS_NAME);
+
         while (!classFiles.isEmpty()) {
             load(classFiles.keySet().iterator().next());
         }
@@ -168,6 +172,10 @@ public class Loader {
         cacheMethods(co, co.getStaticMethods());
 
         classes.put(className, co);
+
+        if (className.equals(Heap.STRING_CLASS_NAME)) {
+            Heap.setStringClass(co);
+        }
 
         translateConstantPool(file.getConstantPool(), newConstantPool);
 

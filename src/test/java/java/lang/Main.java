@@ -8,9 +8,10 @@ public class Main {
 //        array[5] = 17;
 //        int res = array[a - 1] + a;
 
-        char[] chars = {'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'};
+//        char[] chars = {'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'};
 
-        String str = new String(chars);
+
+        String str = "HELLO WORLD";
 
         String reversed = reverse(str);
     }

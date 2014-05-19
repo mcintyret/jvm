@@ -6,7 +6,7 @@ import java.io.IOException;
 public class GiveItAllAGo {
 
     public static void main(String[] args) throws IOException {
-        ClassPath classPath = new DirectoryClassPath("/Users/mcintyret2/Github/jvm/target/test-classes/java/lang");
+        ClassPath classPath = new DirectoryClassPath("/Users/tommcintyre/Workspace/jvm/target/test-classes/java/lang");
 
         String mainClass = "java/lang/Main";
 
