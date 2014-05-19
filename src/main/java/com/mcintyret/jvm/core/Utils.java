@@ -8,18 +8,6 @@ public class Utils {
         return new OopArray(null, null, new int[size * type.getSimpleType().getWidth()], type);
     }
 
-    public static void putField(WordStack stack, int[] fields, Field field) {
-        int offset = field.getOffset();
-        if (field.getType().getSimpleType().isDoubleWidth()) {
-            int two = stack.pop();
-            int one = stack.pop();
-            fields[offset++] = one;
-            fields[offset] = two;
-        } else {
-            fields[offset] = stack.pop();
-        }
-    }
-
     public static void getField(WordStack stack, int[] fields, Field field) {
         int offset = field.getOffset();
         if (field.getType().getSimpleType().isDoubleWidth()) {

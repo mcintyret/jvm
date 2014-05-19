@@ -40,7 +40,6 @@ import java.util.Map;
 
 import static com.mcintyret.jvm.core.Assert.assertNotNull;
 import static java.util.Arrays.asList;
-import static java.util.Arrays.copyOf;
 
 public class Loader {
 
@@ -274,15 +273,19 @@ public class Loader {
 
     private static Method translateMethod(FomiAndMethodSig fms) {
         FieldOrMethodInfo info = fms.fomi;
-        byte[] byteCode = null;
+        if (info.hasModifier(Modifier.NATIVE)) {
+           throw new RuntimeException("TODO!!");
+        } else {
+            byte[] byteCode = null;
 
-        Code code = (Code) info.getAttributes().getAttribute(AttributeType.CODE);
-        if (code != null) {
-            byteCode = code.getCode();
+            Code code = (Code) info.getAttributes().getAttribute(AttributeType.CODE);
+            if (code != null) {
+                byteCode = code.getCode();
+            }
+            // code could still be null if this is an ABSTRACT or NATIVE method
+            return new Method(new ByteCode(byteCode), fms.sig, info.getModifiers(), code.getMaxLocals());
+
         }
-
-        // code could still be null if this is an ABSTRACT or NATIVE method
-        return new Method(new ByteCode(byteCode), fms.sig, info.getModifiers(), code.getMaxLocals());
     }
 
 
@@ -396,7 +399,6 @@ public class Loader {
                 '}';
         }
     }
-
 
 
 }

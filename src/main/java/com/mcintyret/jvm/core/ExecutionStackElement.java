@@ -26,6 +26,7 @@ public class ExecutionStackElement implements OperationContext {
 
     public void executeNextInstruction() {
         OpCode opCode = OpCodes.getOpcode(byteIterator.next());
+        System.out.println(opCode);
         opCode.execute(this);
     }
 

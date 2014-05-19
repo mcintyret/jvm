@@ -6,8 +6,6 @@ import com.mcintyret.jvm.core.constantpool.FieldReference;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 
-import static com.mcintyret.jvm.core.Utils.putField;
-
 public class PutStatic extends OpCode {
 
     @Override
@@ -19,7 +17,11 @@ public class PutStatic extends OpCode {
 
         int[] fields = fieldRef.getClassObject().getStaticFieldValues();
 
-        putField(stack, fields, field);
+        int offset = field.getOffset();
+        if (field.getType().getSimpleType().isDoubleWidth()) {
+            fields[offset + 1] = stack.pop();
+        }
+        fields[offset] = stack.pop();
     }
 
 

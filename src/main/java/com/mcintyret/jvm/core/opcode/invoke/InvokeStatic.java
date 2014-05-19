@@ -17,7 +17,7 @@ class InvokeStatic extends OpCode {
 
         int[] values = new int[method.getMaxLocalVariables()];
         int args = method.getSignature().getArgTypes().size();
-        for (int i = 0; i < args; i++) {
+        for (int i = args - 1; i >= 0; i--) {
             values[i] = ctx.getStack().pop();
         }
 

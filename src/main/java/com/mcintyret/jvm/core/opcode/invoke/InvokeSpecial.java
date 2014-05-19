@@ -10,18 +10,17 @@ class InvokeSpecial extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        int opAddress = ctx.getStack().pop();
 
         MethodReference ref = (MethodReference) ctx.getConstantPool().get(ctx.getByteIterator().nextShort());
 
         Method method = ref.getInstanceMethod();
 
         int[] values = new int[method.getMaxLocalVariables()];
-        values[0] = opAddress;
         int args = method.getSignature().getArgTypes().size();
-        for (int i = 1; i <= args; i++) {
+        for (int i = args; i >= 1; i--) {
             values[i] = ctx.getStack().pop();
         }
+        values[0] = ctx.getStack().pop();
 
         ctx.getExecutionStack().push(
             new ExecutionStackElement(method.getByteCode(), values, ref.getClassObject().getConstantPool(), ctx.getExecutionStack()));
