@@ -22,7 +22,7 @@ abstract class Invoke extends OpCode {
         MethodReference ref = (MethodReference) ctx.getConstantPool().get(ctx.getByteIterator().nextShort());
         Method method = ref.getMethod();
 
-        int args = method.getSignature().getArgTypes().size();
+        int args = method.getSignature().getLength();
         int[] values = new int[Math.max(args, method.getMaxLocalVariables() + shift)];
         for (int i = args - (1 - shift); i >= shift; i--) {
             values[i] = ctx.getStack().pop();

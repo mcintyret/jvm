@@ -70,6 +70,14 @@ public class MethodSignature {
         return returnType;
     }
 
+    public int getLength() {
+        int length = 0;
+        for (Type argType : argTypes) {
+            length += argType.getSimpleType().getWidth();
+        }
+        return length;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder(name).append(":(");

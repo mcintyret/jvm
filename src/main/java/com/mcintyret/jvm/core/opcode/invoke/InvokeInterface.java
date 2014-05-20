@@ -19,7 +19,7 @@ class InvokeInterface extends OpCode {
         MethodReference ref = (MethodReference) ctx.getConstantPool().get(ctx.getByteIterator().nextShort());
         Method method = ref.getMethod();
 
-        int args = method.getSignature().getArgTypes().size();
+        int args = method.getSignature().getLength();
         int[] values = new int[args + 1];
         for (int i = args; i >= 1; i--) {
             values[i] = ctx.getStack().pop();
