@@ -1,27 +1,7 @@
-method dispatch
-- virtual
-- interface
-- special
+Synchronization
 
- Types
- - primitives
- - reference
+GC
 
- OopTable
+Threading
 
- Execution stack
- - actual stack
- - bytecode
- - arguments
-
- Program stack ( = stack<execution stack>)
-
- Bytecode instructions
-
- Synchronization
-
- GC
-
-String Pool / Interning
-
-Native methods
+Exception handling

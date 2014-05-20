@@ -184,6 +184,7 @@ public class Loader {
             type,
             file.getModifiers(),
             parent,
+            ifaces,
             new ConstantPool(newConstantPool),
             orderedMethods.toArray(new Method[orderedMethods.size()]),
             staticMethods.toArray(new Method[staticMethods.size()]),
