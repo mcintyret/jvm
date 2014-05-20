@@ -1,4 +1,4 @@
-package java.lang;
+package com.mcintyret.jvm.test;
 
 public interface Foo {
 
