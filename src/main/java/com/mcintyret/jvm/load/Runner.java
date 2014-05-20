@@ -15,7 +15,7 @@ public class Runner {
     public void run(ClassPath classPath, String mainClassName, String... args) throws IOException {
         Loader loader = new Loader();
 
-        loader.load(classPath.getClassFileStreams());
+        loader.load(classPath);
 
         ClassObject mainClass = loader.getClassObject(mainClassName);
 

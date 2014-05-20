@@ -1,15 +1,7 @@
 package com.mcintyret.jvm.load;
 
-import com.mcintyret.jvm.core.ByteCode;
+import com.mcintyret.jvm.core.*;
 import com.mcintyret.jvm.core.clazz.ClassObject;
-import com.mcintyret.jvm.core.Field;
-import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.MagicClasses;
-import com.mcintyret.jvm.core.Method;
-import com.mcintyret.jvm.core.NativeExecution;
-import com.mcintyret.jvm.core.NativeExecutionRegistry;
-import com.mcintyret.jvm.core.NativeMethod;
-import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.constantpool.FieldReference;
 import com.mcintyret.jvm.core.constantpool.InterfaceMethodReference;
@@ -24,24 +16,11 @@ import com.mcintyret.jvm.parse.MemberInfo;
 import com.mcintyret.jvm.parse.Modifier;
 import com.mcintyret.jvm.parse.attribute.AttributeType;
 import com.mcintyret.jvm.parse.attribute.Code;
-import com.mcintyret.jvm.parse.cp.CpClass;
-import com.mcintyret.jvm.parse.cp.CpDouble;
-import com.mcintyret.jvm.parse.cp.CpFieldReference;
-import com.mcintyret.jvm.parse.cp.CpFloat;
-import com.mcintyret.jvm.parse.cp.CpInt;
-import com.mcintyret.jvm.parse.cp.CpLong;
-import com.mcintyret.jvm.parse.cp.CpMethodReference;
-import com.mcintyret.jvm.parse.cp.CpString;
-import com.mcintyret.jvm.parse.cp.NameAndType;
+import com.mcintyret.jvm.parse.cp.*;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
+import java.util.*;
 
 import static com.mcintyret.jvm.core.Assert.assertNotNull;
 import static java.util.Arrays.asList;
@@ -56,50 +35,46 @@ public class Loader {
 
     private final Map<String, ClassObject> classes = new HashMap<>();
 
-    public ClassObject getClassObject(String className) {
-        return classes.get(className);
-    }
 
-    public void load(Iterable<InputStream> classFileStreams) throws IOException {
+    public void load(ClassPath classPath) throws IOException {
         ClassFileReader reader = new ClassFileReader();
 
-        for (InputStream stream : classFileStreams) {
+        for (InputStream stream : classPath.getClassFileStreams()) {
             ClassFile file = reader.read(stream);
             classFiles.put(getClassName(file.getThisClass(), file.getConstantPool()), file);
         }
 
-        // Needs to be done first so we can handle String literals
-        // TODO this is rubbish
-        load(MagicClasses.JAVA_LANG_STRING);
-
-        while (!classFiles.isEmpty()) {
-            load(classFiles.keySet().iterator().next());
-        }
+        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_OBJECT));
+        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_STRING));
+        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLONEABLE));
+        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_IO_SERIALIZABLE));
     }
 
-    private ClassObject load(String className) {
+    public ClassObject getClassObject(String className) {
         ClassObject co = classes.get(className);
         if (co == null) {
             System.out.println("Loading: " + className);
-            ClassFile file = assertNotNull(classFiles.remove(className));
+            ClassFile file = assertNotNull(classFiles.remove(className), "No class file for " + className);
 
             ClassObject parent = null;
             int parentIndex = file.getSuperClass();
             if (parentIndex != 0) {
                 String parentClass = getClassName(parentIndex, file.getConstantPool());
-                parent = load(parentClass);
+                parent = getClassObject(parentClass);
             }
 
             co = makeClassObject(className, file, parent);
+            classes.put(className, co);
         }
         return co;
     }
 
+    // Superclasses and interfaces are recursively loaded
     private ClassObject makeClassObject(String className, ClassFile file, ClassObject parent) {
         // Load all interfaces first
         ClassObject[] ifaces = new ClassObject[file.getInterfaces().length];
         for (int i = 0; i < ifaces.length; i++) {
-            ifaces[0] = load(getClassName(file.getInterfaces()[i], file.getConstantPool()));
+            ifaces[0] = getClassObject(getClassName(file.getInterfaces()[i], file.getConstantPool()));
         }
 
         // Methods - sorting out the VTable
@@ -177,20 +152,18 @@ public class Loader {
         Field[] translatedStaticFields = translateFields(new ArrayList<>(staticFields.size()), staticFields, file.getConstantPool());
 
         Field[] translatedInstanceFields = translateFields(parent == null ? new ArrayList<>() :
-            new ArrayList<>(asList(parent.getInstanceFields())), instanceFields, file.getConstantPool());
-
-        Object[] newConstantPool = new Object[file.getConstantPool().length];
+                new ArrayList<>(asList(parent.getInstanceFields())), instanceFields, file.getConstantPool());
 
         ClassObject co = new ClassObject(
-            type,
-            file.getModifiers(),
-            parent,
-            ifaces,
-            new ConstantPool(newConstantPool),
-            orderedMethods.toArray(new Method[orderedMethods.size()]),
-            staticMethods.toArray(new Method[staticMethods.size()]),
-            translatedInstanceFields,
-            translatedStaticFields
+                type,
+                file.getModifiers(),
+                parent,
+                ifaces,
+                new ConstantPool(file.getConstantPool(), this),
+                orderedMethods.toArray(new Method[orderedMethods.size()]),
+                staticMethods.toArray(new Method[staticMethods.size()]),
+                translatedInstanceFields,
+                translatedStaticFields
         );
 
         cacheFields(co, co.getInstanceFields());
@@ -199,11 +172,7 @@ public class Loader {
         cacheMethods(co, co.getInstanceMethods(), false);
         cacheMethods(co, co.getStaticMethods(), true);
 
-        classes.put(className, co);
-
-        MagicClasses.registerClass(co);
-
-        translateConstantPool(file.getConstantPool(), newConstantPool);
+        translateSimpleConstantPool(file.getConstantPool());
 
         return co;
     }
@@ -233,8 +202,8 @@ public class Loader {
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
             MethodReference ref = co.hasAttribute(Modifier.INTERFACE) ?
-                new InterfaceMethodReference(co, i) :
-                new MethodReference(co, i, isStatic);
+                    new InterfaceMethodReference(co, i) :
+                    new MethodReference(co, i, isStatic);
             MethodKey details = new MethodKey(co.getType(), method.getSignature());
             this.methods.put(details, ref);
             method.setMethodReference(ref);
@@ -250,68 +219,20 @@ public class Loader {
         }
     }
 
-    private void translateConstantPool(Object[] constantPool, Object[] translated) {
+
+    private void translateSimpleConstantPool(Object[] constantPool) {
         for (int i = 1; i < constantPool.length; i++) {
             Object obj = constantPool[i];
-
-            if (obj instanceof CpString) {
-                int index = ((CpString) obj).getStringIndex();
-                String string = (String) constantPool[index];
-                translated[i] = Heap.intern(string);
-            } else if (obj instanceof CpInt) {
-                translated[i] = ((CpInt) obj).getIntBits();
+            if (obj instanceof CpInt) {
+                constantPool[i] = ((CpInt) obj).getIntBits();
             } else if (obj instanceof CpFloat) {
-                translated[i] = ((CpFloat) obj).getFloatBits();
+                constantPool[i] = ((CpFloat) obj).getFloatBits();
             } else if (obj instanceof CpLong) {
                 CpLong cpLong = (CpLong) obj;
-                translated[i] = Utils.toLong(cpLong.getHighBits(), cpLong.getLowBits());
+                constantPool[i] = Utils.toLong(cpLong.getHighBits(), cpLong.getLowBits());
             } else if (obj instanceof CpDouble) {
                 CpDouble cpDouble = (CpDouble) obj;
-                translated[i] = Utils.toLong(cpDouble.getHighBits(), cpDouble.getLowBits());
-            } else if (obj instanceof CpClass) {
-                String className = (String) constantPool[((CpClass) obj).getNameIndex()];
-                if (!className.startsWith("[")) {
-                    // Don't want to load the array classes here...
-                    translated[i] = load(className);
-                }
-            } else if (obj instanceof CpFieldReference) {
-                CpFieldReference cfr = (CpFieldReference) obj;
-
-                String clazz = getClassName(cfr.getClassIndex(), constantPool);
-                ClassObject co = classes.get(clazz);
-                if (co == null) {
-                    co = load(clazz);
-                }
-
-                NameAndType nat = (NameAndType) constantPool[cfr.getNameAndTypeIndex()];
-                String name = (String) constantPool[nat.getNameIndex()];
-                Type type = Types.parseType((String) constantPool[nat.getDescriptorIndex()]);
-
-                FieldKey fd = new FieldKey(co.getType(), name, type);
-                FieldReference fr = assertNotNull(fields.get(fd), "No FieldReference for " + fd);
-                translated[i] = fr;
-            } else if (obj instanceof CpMethodReference) {
-                CpMethodReference cmr = (CpMethodReference) obj;
-
-                String clazz = getClassName(cmr.getClassIndex(), constantPool);
-                ClassObject co = classes.get(clazz);
-                if (co == null) {
-                    co = load(clazz);
-                }
-
-                NameAndType nat = (NameAndType) constantPool[cmr.getNameAndTypeIndex()];
-                String name = (String) constantPool[nat.getNameIndex()];
-                String descriptor = (String) constantPool[nat.getDescriptorIndex()];
-
-                MethodSignature methodSignature = MethodSignature.parse(name, descriptor);
-
-                MethodKey md = new MethodKey(co.getType(), methodSignature);
-                MethodReference mr = assertNotNull(methods.get(md), "No MethodReference for " + md);
-                translated[i] = mr;
-            } else if (obj instanceof String || obj instanceof NameAndType) {
-                // Not dealt with directly
-            } else {
-                throw new AssertionError("Unexpected type: " + obj.getClass());
+                constantPool[i] = Utils.toLong(cpDouble.getHighBits(), cpDouble.getLowBits());
             }
         }
     }
@@ -344,6 +265,46 @@ public class Loader {
             return !b.mi.hasModifier(Modifier.PRIVATE) ? 0 : 1;
         }
     };
+
+    public ClassObject translate(CpClass cpClass, Object[] constantPool) {
+        String className = (String) constantPool[cpClass.getNameIndex()];
+        return getClassObject(className);
+    }
+
+    public FieldReference translate(CpFieldReference cfr, Object[] constantPool) {
+        ClassObject co = findClassObject(cfr, constantPool);
+
+        NameAndType nat = (NameAndType) constantPool[cfr.getNameAndTypeIndex()];
+        String name = (String) constantPool[nat.getNameIndex()];
+        Type type = Types.parseType((String) constantPool[nat.getDescriptorIndex()]);
+
+        FieldKey fd = new FieldKey(co.getType(), name, type);
+        return assertNotNull(fields.get(fd), "No FieldReference for " + fd);
+    }
+
+    public MethodReference translate(CpMethodReference cmr, Object[] constantPool) {
+        ClassObject co = findClassObject(cmr, constantPool);
+
+        NameAndType nat = (NameAndType) constantPool[cmr.getNameAndTypeIndex()];
+        String name = (String) constantPool[nat.getNameIndex()];
+        String descriptor = (String) constantPool[nat.getDescriptorIndex()];
+
+        MethodSignature methodSignature = MethodSignature.parse(name, descriptor);
+
+        MethodKey md = new MethodKey(co.getType(), methodSignature);
+        return assertNotNull(methods.get(md), "No MethodReference for " + md);
+    }
+
+    private ClassObject findClassObject(CpReference ref, Object[] constantPool) {
+        int classIndex = ref.getClassIndex();
+        if (constantPool[classIndex] instanceof ClassObject) {
+            return (ClassObject) constantPool[classIndex];
+        }
+        String clazz = getClassName(classIndex, constantPool);
+        ClassObject co = getClassObject(clazz);
+        constantPool[classIndex] = co;
+        return co;
+    }
 
     private static class MethodInfoAndSig {
 
@@ -394,9 +355,9 @@ public class Loader {
         @Override
         public String toString() {
             return "MethodKey{" +
-                "clazz=" + clazz +
-                ", signature=" + signature +
-                '}';
+                    "clazz=" + clazz +
+                    ", signature=" + signature +
+                    '}';
         }
     }
 
@@ -439,10 +400,10 @@ public class Loader {
         @Override
         public String toString() {
             return "FieldKey{" +
-                "clazz=" + clazz +
-                ", type=" + type +
-                ", name='" + name + '\'' +
-                '}';
+                    "clazz=" + clazz +
+                    ", type=" + type +
+                    ", name='" + name + '\'' +
+                    '}';
         }
     }
 

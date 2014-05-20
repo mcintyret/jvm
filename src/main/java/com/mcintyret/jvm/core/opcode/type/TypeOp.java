@@ -13,7 +13,7 @@ abstract class TypeOp extends OpCode {
     public final void execute(OperationContext ctx) {
         WordStack stack = ctx.getStack();
         int address = stack.pop();
-        ClassObject type = (ClassObject) ctx.getConstantPool().get(ctx.getByteIterator().nextShort());
+        ClassObject type = ctx.getConstantPool().getClassObject(ctx.getByteIterator().nextShort());
         if (address == Heap.NULL_POINTER) {
             handleNull(stack);
         } else {

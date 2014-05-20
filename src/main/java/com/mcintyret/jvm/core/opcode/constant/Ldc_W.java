@@ -7,7 +7,7 @@ class Ldc_W extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        Integer i = (Integer) ctx.getConstantPool().get(ctx.getByteIterator().nextShort());
+        int i = ctx.getConstantPool().getSingleWidth(ctx.getByteIterator().nextShort());
 
         ctx.getStack().push(i);
     }

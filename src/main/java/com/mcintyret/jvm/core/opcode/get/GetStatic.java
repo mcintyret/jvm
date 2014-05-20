@@ -10,7 +10,7 @@ class GetStatic extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        FieldReference ref = (FieldReference) ctx.getConstantPool().get(ctx.getByteIterator().nextShort());
+        FieldReference ref = ctx.getConstantPool().getFieldReference(ctx.getByteIterator().nextShort());
         Field field = ref.getStaticField();
 
         Utils.getField(ctx.getStack(), ref.getClassObject().getStaticFieldValues(), field);

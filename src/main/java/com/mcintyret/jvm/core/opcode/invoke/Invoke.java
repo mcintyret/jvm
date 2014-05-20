@@ -19,7 +19,7 @@ abstract class Invoke extends OpCode {
         boolean isStatic = isStatic();
         int shift = isStatic ? 0 : 1;
 
-        MethodReference ref = (MethodReference) ctx.getConstantPool().get(ctx.getByteIterator().nextShort());
+        MethodReference ref = ctx.getConstantPool().getMethodReference(ctx.getByteIterator().nextShort());
         Method method = ref.getMethod();
 
         int args = method.getSignature().getLength();

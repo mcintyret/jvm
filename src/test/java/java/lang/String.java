@@ -1,6 +1,8 @@
 package java.lang;
 
-public final class String {
+import java.io.Serializable;
+
+public final class String implements Serializable {
     /**
      * The value is used for character storage.
      */

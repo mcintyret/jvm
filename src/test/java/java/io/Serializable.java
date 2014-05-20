@@ -1,4 +1,4 @@
 package java.io;
 
-public class Serializable {
+public interface Serializable {
 }

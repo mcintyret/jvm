@@ -72,6 +72,24 @@ public enum ConstantPoolConstant {
             int length = bi.nextShort();
             return new java.lang.String(bi.nextBytes(length));
         }
+    },
+    INVOKE_DYNAMIC_INFO(18) {
+        @Override
+        public Object parse(ByteIterator bi) {
+            return new CpInvokeDynamicInfo(bi.nextShort(), bi.nextShort());
+        }
+    },
+    METHOD_HANDLE(15) {
+        @Override
+        public Object parse(ByteIterator bi) {
+            return new CpMethodHandle(bi.next(), bi.nextShort());
+        }
+    },
+    METHOD_TYPE(16) {
+        @Override
+        public Object parse(ByteIterator bi) {
+            return new CpMethodType(bi.nextShort());
+        }
     };
 
     private final byte b;

@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.parse.cp;
 
-abstract class CpReference {
+public abstract class CpReference {
 
     private final int classIndex;
 

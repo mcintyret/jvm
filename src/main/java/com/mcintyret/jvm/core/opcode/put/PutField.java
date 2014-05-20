@@ -12,7 +12,7 @@ public class PutField extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        FieldReference fieldRef = (FieldReference) ctx.getConstantPool().get(ctx.getByteIterator().nextShort());
+        FieldReference fieldRef = ctx.getConstantPool().getFieldReference(ctx.getByteIterator().nextShort());
         Field field = fieldRef.getInstanceField();
 
         putField(ctx.getStack(), field);

@@ -5,3 +5,9 @@ GC
 Threading
 
 Exception handling
+
+Bytecode verification
+
+Native method implementations
+
+Remove Reflections dependency

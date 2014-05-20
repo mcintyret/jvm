@@ -13,7 +13,7 @@ class GetField extends OpCode {
     public void execute(OperationContext ctx) {
         int oopAddress = ctx.getStack().pop();
 
-        FieldReference ref = (FieldReference) ctx.getConstantPool().get(ctx.getByteIterator().nextShort());
+        FieldReference ref = ctx.getConstantPool().getFieldReference(ctx.getByteIterator().nextShort());
         Field field = ref.getInstanceField();
 
         Utils.getField(ctx.getStack(), Heap.getOop(oopAddress).getFields(), field);

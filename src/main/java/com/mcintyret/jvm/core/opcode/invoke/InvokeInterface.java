@@ -16,7 +16,7 @@ class InvokeInterface extends OpCode {
     @Override
     public final void execute(OperationContext ctx) {
 
-        MethodReference ref = (MethodReference) ctx.getConstantPool().get(ctx.getByteIterator().nextShort());
+        MethodReference ref = ctx.getConstantPool().getMethodReference(ctx.getByteIterator().nextShort());
         Method method = ref.getMethod();
 
         int args = method.getSignature().getLength();

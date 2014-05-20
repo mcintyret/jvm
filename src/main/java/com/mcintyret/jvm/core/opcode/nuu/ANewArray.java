@@ -10,7 +10,7 @@ class ANewArray extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        ClassObject clazz = (ClassObject) ctx.getConstantPool().get(ctx.getByteIterator().nextShort());
+        ClassObject clazz = ctx.getConstantPool().getClassObject(ctx.getByteIterator().nextShort());
 
         ctx.getStack().push(Heap.allocate(Utils.newArray(clazz.getType(), ctx.getStack().pop())));
     }

@@ -8,11 +8,9 @@ import java.io.IOException;
 public class GiveItAllAGo {
 
     public static void main(String[] args) throws IOException {
-        ClassPath classPath = new DirectoryClassPath(System.getProperty("user.dir") + "/target/test-classes/java/lang");
+        ClassPath classPath = new DirectoryClassPath(System.getProperty("user.dir") + "/target/test-classes/java");
 
-        int[][][] ints = new int[12][][];
-
-        String mainClass = "java/lang/Main";
+        String mainClass = "java/test/Main";
 
         NativeExecutionRegistry.registerNativeExecution(mainClass,
                 MethodSignature.parse("print", "(Ljava/lang/String;)V"), localArgs -> {

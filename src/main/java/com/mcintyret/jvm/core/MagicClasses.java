@@ -36,7 +36,7 @@ public class MagicClasses {
     }
 
     public static ClassObject getMagicClass(String className) {
-        return assertNotNull(MAGIC_CLASSES.get(className));
+        return assertNotNull(MAGIC_CLASSES.get(className), className + " not found");
     }
 
 }

@@ -12,7 +12,7 @@ public class PutStatic extends OpCode {
     public void execute(OperationContext ctx) {
         WordStack stack = ctx.getStack();
 
-        FieldReference fieldRef = (FieldReference) ctx.getConstantPool().get(ctx.getByteIterator().nextShort());
+        FieldReference fieldRef = ctx.getConstantPool().getFieldReference(ctx.getByteIterator().nextShort());
         Field field = fieldRef.getStaticField();
 
         int[] fields = fieldRef.getClassObject().getStaticFieldValues();
