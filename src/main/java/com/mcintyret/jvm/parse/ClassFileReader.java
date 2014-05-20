@@ -45,8 +45,8 @@ public class ClassFileReader {
         classFile.setInterfaces(interfaces);
 
         Parser<Attribute> attributeParser = new AttributeParser(cp);
-        Parser<FieldOrMethodInfo> fieldOrMethodInfoParser =
-            new FieldOrMethodInfoParser(attributeParser);
+        Parser<MemberInfo> fieldOrMethodInfoParser =
+            new MemberInfoParser(attributeParser);
 
         classFile.setFields(fieldOrMethodInfoParser.parseMulti(bi));
         classFile.setMethods(fieldOrMethodInfoParser.parseMulti(bi));

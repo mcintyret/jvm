@@ -3,7 +3,7 @@ package com.mcintyret.jvm.parse;
 import com.mcintyret.jvm.parse.attribute.Attributes;
 import java.util.Set;
 
-public class FieldOrMethodInfo {
+public class MemberInfo {
 
     private final Set<Modifier> modifiers;
 
@@ -13,7 +13,7 @@ public class FieldOrMethodInfo {
 
     private final Attributes attributes;
 
-    public FieldOrMethodInfo(int accessFlags, int nameIndex, int descriptorIndex, Attributes attributes) {
+    public MemberInfo(int accessFlags, int nameIndex, int descriptorIndex, Attributes attributes) {
         this.modifiers = Modifier.translate(accessFlags);
         this.nameIndex = nameIndex;
         this.descriptorIndex = descriptorIndex;

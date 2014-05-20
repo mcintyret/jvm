@@ -2,6 +2,7 @@ package com.mcintyret.jvm.parse;
 
 import com.mcintyret.jvm.parse.attribute.Attributes;
 import java.util.List;
+import java.util.Set;
 
 public class ClassFile {
 
@@ -11,7 +12,7 @@ public class ClassFile {
 
     private Object[] constantPool;
 
-    private int accessFlags;
+    private Set<Modifier> modifiers;
 
     private int thisClass;
 
@@ -19,9 +20,9 @@ public class ClassFile {
 
     private int[] interfaces;
 
-    private List<FieldOrMethodInfo> fields;
+    private List<MemberInfo> fields;
 
-    private List<FieldOrMethodInfo> methods;
+    private List<MemberInfo> methods;
 
     private Attributes attributes;
 
@@ -49,12 +50,12 @@ public class ClassFile {
         this.constantPool = constantPool;
     }
 
-    public int getAccessFlags() {
-        return accessFlags;
+    public boolean hasModifier(Modifier modifier) {
+        return modifiers.contains(modifier);
     }
 
     public void setAccessFlags(int accessFlags) {
-        this.accessFlags = accessFlags;
+        this.modifiers = Modifier.translate(accessFlags);
     }
 
     public int getThisClass() {
@@ -81,19 +82,19 @@ public class ClassFile {
         this.interfaces = interfaces;
     }
 
-    public List<FieldOrMethodInfo> getFields() {
+    public List<MemberInfo> getFields() {
         return fields;
     }
 
-    public void setFields(List<FieldOrMethodInfo> fields) {
+    public void setFields(List<MemberInfo> fields) {
         this.fields = fields;
     }
 
-    public List<FieldOrMethodInfo> getMethods() {
+    public List<MemberInfo> getMethods() {
         return methods;
     }
 
-    public void setMethods(List<FieldOrMethodInfo> methods) {
+    public void setMethods(List<MemberInfo> methods) {
         this.methods = methods;
     }
 
@@ -103,5 +104,9 @@ public class ClassFile {
 
     public void setAttributes(Attributes attributes) {
         this.attributes = attributes;
+    }
+
+    public Set<Modifier> getModifiers() {
+        return modifiers;
     }
 }

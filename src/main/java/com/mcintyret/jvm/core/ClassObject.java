@@ -2,10 +2,14 @@ package com.mcintyret.jvm.core;
 
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.domain.ReferenceType;
+import com.mcintyret.jvm.parse.Modifier;
+import java.util.Set;
 
 public class ClassObject {
 
     private final ReferenceType type;
+
+    private final Set<Modifier> modifiers;
 
     private final ClassObject parent;
 
@@ -21,9 +25,10 @@ public class ClassObject {
 
     private final int[] staticFieldValues;
 
-    public ClassObject(ReferenceType type, ClassObject parent, ConstantPool constantPool, Method[] instanceMethods,
-                       Method[] staticMethods, Field[] instanceFields, Field[] staticFields) {
+    public ClassObject(ReferenceType type, Set<Modifier> modifiers, ClassObject parent, ConstantPool constantPool,
+                       Method[] instanceMethods, Method[] staticMethods, Field[] instanceFields, Field[] staticFields) {
         this.type = type;
+        this.modifiers = modifiers;
         this.parent = parent;
         this.constantPool = constantPool;
         this.instanceMethods = instanceMethods;
@@ -89,5 +94,9 @@ public class ClassObject {
 
     public Method[] getStaticMethods() {
         return staticMethods;
+    }
+
+    public boolean hasAttribute(Modifier modifier) {
+        return modifiers.contains(modifier);
     }
 }

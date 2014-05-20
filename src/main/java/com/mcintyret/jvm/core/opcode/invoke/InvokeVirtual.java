@@ -7,9 +7,4 @@ class InvokeVirtual extends Invoke {
     public byte getByte() {
         return (byte) 0xB6;
     }
-
-    @Override
-    protected boolean isStatic() {
-        return false;
-    }
 }

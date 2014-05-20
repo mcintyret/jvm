@@ -20,7 +20,7 @@ abstract class Invoke extends OpCode {
         int shift = isStatic ? 0 : 1;
 
         MethodReference ref = (MethodReference) ctx.getConstantPool().get(ctx.getByteIterator().nextShort());
-        Method method = isStatic ? ref.getStaticMethod() : ref.getInstanceMethod();
+        Method method = ref.getMethod();
 
         int args = method.getSignature().getArgTypes().size();
         int[] values = new int[Math.max(args, method.getMaxLocalVariables() + shift)];
@@ -39,7 +39,10 @@ abstract class Invoke extends OpCode {
         }
     }
 
-    protected abstract boolean isStatic();
+    protected boolean isStatic() {
+        // Common case
+        return false;
+    }
 
 
 }

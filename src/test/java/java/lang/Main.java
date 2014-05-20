@@ -3,19 +3,31 @@ package java.lang;
 public class Main {
 
     public static void main(String[] args) {
-//        int[] array = new int[10];
-//        int a = 6;
-//        array[5] = 17;
-//        int res = array[a - 1] + a;
+        interfaceMethods();
+//        simpleIntArrays();
+//        stringsAndNatives();
+    }
 
-//        char[] chars = {'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'};
+    private static void interfaceMethods() {
+        Foo foo = new FooBar();
+        print(foo.doFoo());
+    }
 
-
+    private static void stringsAndNatives() {
         String str = "HELLO WORLD";
 
         String reversed = reverse(str);
 
         print(reversed);
+    }
+
+    private static void simpleIntArrays() {
+        int[] array = new int[10];
+        int a = 6;
+        array[5] = 17;
+        int res = array[a - 1] + a;
+
+        char[] chars = {'h', 'e', 'l', 'l', 'o', ' ', 'w', 'o', 'r', 'l', 'd'};
     }
 
     private static String reverse(String in) {

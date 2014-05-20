@@ -5,17 +5,17 @@ import com.mcintyret.jvm.parse.attribute.Attribute;
 import com.mcintyret.jvm.parse.attribute.Attributes;
 import com.mcintyret.jvm.parse.attribute.Parser;
 
-public class FieldOrMethodInfoParser implements Parser<FieldOrMethodInfo> {
+public class MemberInfoParser implements Parser<MemberInfo> {
 
     private final Parser<Attribute> attributeParser;
 
-    public FieldOrMethodInfoParser(Parser<Attribute> attributeParser) {
+    public MemberInfoParser(Parser<Attribute> attributeParser) {
         this.attributeParser = attributeParser;
     }
 
     @Override
-    public FieldOrMethodInfo parse(ByteIterator bi) {
-        return new FieldOrMethodInfo(
+    public MemberInfo parse(ByteIterator bi) {
+        return new MemberInfo(
             bi.nextShort(),
             bi.nextShort(),
             bi.nextShort(),
