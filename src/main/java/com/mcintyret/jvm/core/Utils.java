@@ -1,11 +1,16 @@
 package com.mcintyret.jvm.core;
 
+import com.mcintyret.jvm.core.clazz.ArrayClassObject;
+import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.domain.Type;
+import com.mcintyret.jvm.core.oop.Oop;
+import com.mcintyret.jvm.core.oop.OopArray;
 
 public class Utils {
 
     public static OopArray newArray(Type type, int size) {
-        return new OopArray(null, null, new int[size * type.getSimpleType().getWidth()], type);
+        ArrayClassObject aco = ArrayClassObject.forType(ArrayType.create(type, 1));
+        return new OopArray(aco, null, new int[size * type.getSimpleType().getWidth()]);
     }
 
     public static void getField(WordStack stack, int[] fields, Field field) {

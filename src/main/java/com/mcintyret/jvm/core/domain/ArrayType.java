@@ -5,7 +5,7 @@ import java.util.Map;
 
 public final class ArrayType implements Type {
 
-    private final Type type;
+    private final Type componentType;
 
     private final int dimensions;
 
@@ -21,9 +21,9 @@ public final class ArrayType implements Type {
         return canonical;
     }
 
-    private ArrayType(Type type, int dimensions) {
+    private ArrayType(Type componentType, int dimensions) {
         // Type should not be an ArrayType
-        this.type = type;
+        this.componentType = componentType;
         this.dimensions = dimensions;
     }
 
@@ -40,13 +40,13 @@ public final class ArrayType implements Type {
         ArrayType arrayType = (ArrayType) o;
 
         return dimensions == arrayType.dimensions
-            && type.equals(arrayType.type);
+            && componentType.equals(arrayType.componentType);
 
     }
 
     @Override
     public int hashCode() {
-        int result = type.hashCode();
+        int result = componentType.hashCode();
         result = 31 * result + dimensions;
         return result;
     }
@@ -57,6 +57,10 @@ public final class ArrayType implements Type {
         for (int i = 0; i < dimensions; i++) {
             sb.append('[');
         }
-        return sb.append(type).toString();
+        return sb.append(componentType).toString();
+    }
+
+    public Type getComponentType() {
+        return componentType;
     }
 }

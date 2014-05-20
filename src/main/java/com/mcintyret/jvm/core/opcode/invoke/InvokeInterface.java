@@ -4,9 +4,9 @@ import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.Method;
 import com.mcintyret.jvm.core.NativeMethod;
-import com.mcintyret.jvm.core.Oop;
 import com.mcintyret.jvm.core.constantpool.InterfaceMethodReference;
 import com.mcintyret.jvm.core.constantpool.MethodReference;
+import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.parse.Modifier;
@@ -27,7 +27,7 @@ class InvokeInterface extends OpCode {
         values[0] = ctx.getStack().pop();
 
         InterfaceMethodReference imr = (InterfaceMethodReference) method.getMethodReference();
-        Oop oop = Heap.getOop(values[0]);
+        OopClass oop = Heap.getOopClass(values[0]);
 
         method = imr.getMethodForImplementation(oop.getClassObject().getType().getClassName());
 

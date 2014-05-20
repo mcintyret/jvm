@@ -1,0 +1,46 @@
+package com.mcintyret.jvm.core.clazz;
+
+import com.mcintyret.jvm.core.MagicClasses;
+import com.mcintyret.jvm.core.domain.ArrayType;
+import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.parse.Modifier;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+public class ArrayClassObject extends AbstractClassObject {
+
+    private static final ClassObject PARENT = MagicClasses.getMagicClass(MagicClasses.JAVA_LANG_OBJECT);
+
+    private static final ClassObject[] INTERFACES = {
+        MagicClasses.getMagicClass(MagicClasses.JAVA_LANG_CLONEABLE),
+        MagicClasses.getMagicClass(MagicClasses.JAVA_IO_SERIALIZABLE)
+    };
+
+    private static final Set<Modifier> MODIFIERS = EnumSet.of(Modifier.PUBLIC, Modifier.FINAL, Modifier.ABSTRACT);
+
+    private static final Map<ArrayType, ArrayClassObject> CACHE = new HashMap<>();
+
+    public static ArrayClassObject forType(ArrayType type) {
+        ArrayClassObject aco = CACHE.get(type);
+        if (aco == null) {
+            aco = new ArrayClassObject(type);
+            CACHE.put(type, aco);
+        }
+        return aco;
+    }
+
+    private final ArrayType arrayType;
+
+    private ArrayClassObject(ArrayType arrayType) {
+        super(PARENT, INTERFACES, MODIFIERS);
+        this.arrayType = arrayType;
+    }
+
+    @Override
+    public ArrayType getType() {
+        return arrayType;
+    }
+
+}

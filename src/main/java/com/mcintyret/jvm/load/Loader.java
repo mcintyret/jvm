@@ -1,9 +1,10 @@
 package com.mcintyret.jvm.load;
 
 import com.mcintyret.jvm.core.ByteCode;
-import com.mcintyret.jvm.core.ClassObject;
+import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.Field;
 import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.MagicClasses;
 import com.mcintyret.jvm.core.Method;
 import com.mcintyret.jvm.core.NativeExecution;
 import com.mcintyret.jvm.core.NativeExecutionRegistry;
@@ -69,7 +70,7 @@ public class Loader {
 
         // Needs to be done first so we can handle String literals
         // TODO this is rubbish
-        load(Heap.STRING_CLASS_NAME);
+        load(MagicClasses.JAVA_LANG_STRING);
 
         while (!classFiles.isEmpty()) {
             load(classFiles.keySet().iterator().next());
@@ -200,9 +201,7 @@ public class Loader {
 
         classes.put(className, co);
 
-        if (className.equals(Heap.STRING_CLASS_NAME)) {
-            Heap.setStringClass(co);
-        }
+        MagicClasses.registerClass(co);
 
         translateConstantPool(file.getConstantPool(), newConstantPool);
 

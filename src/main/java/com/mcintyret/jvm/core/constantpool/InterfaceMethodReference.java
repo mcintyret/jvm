@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.core.constantpool;
 
-import com.mcintyret.jvm.core.ClassObject;
+import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.Method;
 import java.util.HashMap;
 import java.util.Map;

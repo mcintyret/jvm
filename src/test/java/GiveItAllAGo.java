@@ -10,6 +10,8 @@ public class GiveItAllAGo {
     public static void main(String[] args) throws IOException {
         ClassPath classPath = new DirectoryClassPath(System.getProperty("user.dir") + "/target/test-classes/java/lang");
 
+        int[][][] ints = new int[12][][];
+
         String mainClass = "java/lang/Main";
 
         NativeExecutionRegistry.registerNativeExecution(mainClass,

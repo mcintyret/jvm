@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.load;
 
-import com.mcintyret.jvm.core.ClassObject;
+import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.ExecutionStack;
 import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;

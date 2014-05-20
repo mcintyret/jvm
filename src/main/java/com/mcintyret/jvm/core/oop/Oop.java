@@ -1,8 +1,9 @@
-package com.mcintyret.jvm.core;
+package com.mcintyret.jvm.core.oop;
 
-public class Oop {
+import com.mcintyret.jvm.core.MarkRef;
+import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 
-    private final ClassObject classObject;
+public abstract class Oop {
 
     private final MarkRef markRef;
 
@@ -10,15 +11,12 @@ public class Oop {
 
     private int address;
 
-    public Oop(ClassObject classObject, MarkRef markRef, int[] fields) {
-        this.classObject = classObject;
+    public Oop(MarkRef markRef, int[] fields) {
         this.markRef = markRef;
         this.fields = fields;
     }
 
-    public ClassObject getClassObject() {
-        return classObject;
-    }
+    public abstract AbstractClassObject getClassObject();
 
     public MarkRef getMarkRef() {
         return markRef;

@@ -2,7 +2,7 @@ package com.mcintyret.jvm.core.opcode.put;
 
 import com.mcintyret.jvm.core.Field;
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.Oop;
+import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.WordStack;
 import com.mcintyret.jvm.core.constantpool.FieldReference;
 import com.mcintyret.jvm.core.opcode.OpCode;

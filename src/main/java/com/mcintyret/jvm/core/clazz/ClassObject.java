@@ -1,19 +1,16 @@
-package com.mcintyret.jvm.core;
+package com.mcintyret.jvm.core.clazz;
 
+import com.mcintyret.jvm.core.Field;
+import com.mcintyret.jvm.core.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.domain.ReferenceType;
+import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.parse.Modifier;
 import java.util.Set;
 
-public class ClassObject {
+public class ClassObject extends AbstractClassObject {
 
     private final ReferenceType type;
-
-    private final Set<Modifier> modifiers;
-
-    private final ClassObject parent;
-
-    private final ClassObject[] interfaces;
 
     private final ConstantPool constantPool;
 
@@ -30,10 +27,8 @@ public class ClassObject {
     public ClassObject(ReferenceType type, Set<Modifier> modifiers, ClassObject parent, ClassObject[] interfaces,
                        ConstantPool constantPool, Method[] instanceMethods, Method[] staticMethods,
                        Field[] instanceFields, Field[] staticFields) {
+        super(parent, interfaces, modifiers);
         this.type = type;
-        this.modifiers = modifiers;
-        this.parent = parent;
-        this.interfaces = interfaces;
         this.constantPool = constantPool;
         this.instanceMethods = instanceMethods;
         this.staticMethods = staticMethods;
@@ -79,8 +74,8 @@ public class ClassObject {
         return staticFields;
     }
 
-    public Oop newObject() {
-        return new Oop(this, null, newFieldsValuesArray(instanceFields));
+    public OopClass newObject() {
+        return new OopClass(this, null, newFieldsValuesArray(instanceFields));
     }
 
     private static int[] newFieldsValuesArray(Field[] fields) {
@@ -92,6 +87,7 @@ public class ClassObject {
         return new int[size];
     }
 
+    @Override
     public ReferenceType getType() {
         return type;
     }
@@ -100,36 +96,5 @@ public class ClassObject {
         return staticMethods;
     }
 
-    public boolean hasAttribute(Modifier modifier) {
-        return modifiers.contains(modifier);
-    }
 
-    // TODO: can this be made more efficient?
-    public boolean isInstanceOf(ClassObject type) {
-        if (type == this) {
-            return true;
-        }
-        boolean argIsInterface = type.hasAttribute(Modifier.INTERFACE);
-
-        if (hasAttribute(Modifier.INTERFACE) && !argIsInterface) {
-            return false;
-        }
-
-        if (argIsInterface) {
-            for (ClassObject iface : interfaces) {
-                if (iface.isInstanceOf(type)) {
-                    return true;
-                }
-            }
-        } else {
-            ClassObject co = parent;
-            while (co != null) {
-                if (co.isInstanceOf(type)) {
-                    return true;
-                }
-                co = co.parent;
-            }
-        }
-        return false;
-    }
 }

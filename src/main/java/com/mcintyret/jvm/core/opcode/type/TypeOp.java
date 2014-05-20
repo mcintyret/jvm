@@ -1,8 +1,8 @@
 package com.mcintyret.jvm.core.opcode.type;
 
-import com.mcintyret.jvm.core.ClassObject;
+import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.Oop;
+import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.WordStack;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OperationContext;

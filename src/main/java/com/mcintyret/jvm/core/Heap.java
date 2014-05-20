@@ -1,13 +1,16 @@
 package com.mcintyret.jvm.core;
 
+import com.mcintyret.jvm.core.clazz.ArrayClassObject;
+import com.mcintyret.jvm.core.clazz.ClassObject;
+import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.domain.SimpleType;
-
+import com.mcintyret.jvm.core.oop.Oop;
+import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.core.oop.OopClass;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Heap {
-
-    public static final String STRING_CLASS_NAME = "java/lang/String";
 
     private static ClassObject STRING_CLASS;
 
@@ -19,13 +22,6 @@ public class Heap {
 
     private static final StringPool STRING_POOL = new StringPool();
 
-    public static void setStringClass(ClassObject stringClass) {
-        if (!stringClass.getType().getClassName().equals(STRING_CLASS_NAME)) {
-            throw new IllegalArgumentException("Expected " + STRING_CLASS_NAME + " but was " + stringClass.getType().getClassName());
-        }
-        Heap.STRING_CLASS = stringClass;
-    }
-
     public static Oop getOop(int address) {
         if (address == NULL_POINTER) {
             return null;
@@ -36,6 +32,15 @@ public class Heap {
         }
         return oop;
     }
+
+    public static OopClass getOopClass(int address) {
+        return (OopClass) getOop(address);
+    }
+
+    public static OopArray getOopArray(int address) {
+        return (OopArray) getOop(address);
+    }
+
 
     public static int allocate(Oop oop) {
         OOP_TABLE[heapAllocationPointer] = oop;
@@ -53,6 +58,11 @@ public class Heap {
 
         public int intern(String string) {
             // This is pretty fragile because if Sting ever changes this will need to change too
+
+            if (STRING_CLASS == null) {
+                STRING_CLASS = MagicClasses.getMagicClass("java/lang/String");
+            }
+
             Oop stringOop = lookupMap.get(string);
             if (stringOop == null) {
                 stringOop = STRING_CLASS.newObject();
@@ -62,7 +72,8 @@ public class Heap {
                 for (int i = 0; i < string.length(); i++) {
                     chars[i] = string.charAt(i);
                 }
-                OopArray charArrayOop = new OopArray(null, null, chars, SimpleType.CHAR);
+                ArrayClassObject co = ArrayClassObject.forType(ArrayType.create(SimpleType.CHAR, 1));
+                OopArray charArrayOop = new OopArray(co, null, chars);
                 int charArrayAddress = Heap.allocate(charArrayOop);
 
                 stringOop.getFields()[0] = charArrayAddress;

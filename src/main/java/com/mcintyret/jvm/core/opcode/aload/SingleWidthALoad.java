@@ -1,7 +1,7 @@
 package com.mcintyret.jvm.core.opcode.aload;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.OopArray;
+import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.WordStack;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OperationContext;
