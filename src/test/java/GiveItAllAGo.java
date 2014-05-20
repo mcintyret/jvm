@@ -1,3 +1,5 @@
+import com.mcintyret.jvm.core.*;
+import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.load.ClassPath;
 import com.mcintyret.jvm.load.DirectoryClassPath;
 import com.mcintyret.jvm.load.Runner;
@@ -6,9 +8,15 @@ import java.io.IOException;
 public class GiveItAllAGo {
 
     public static void main(String[] args) throws IOException {
-        ClassPath classPath = new DirectoryClassPath("/Users/tommcintyre/Workspace/jvm/target/test-classes/java/lang");
+        ClassPath classPath = new DirectoryClassPath(System.getProperty("user.dir") + "/target/test-classes/java/lang");
 
         String mainClass = "java/lang/Main";
+
+        NativeExecutionRegistry.registerNativeExecution(mainClass,
+                MethodSignature.parse("print", "(Ljava/lang/String;)V"), localArgs -> {
+                    System.out.println("NATIVE METHOD!!!: " + Utils.toString(Heap.getOop(localArgs[0])));
+                    return NativeReturn.forVoid();
+                });
 
         new Runner().run(classPath, mainClass);
     }

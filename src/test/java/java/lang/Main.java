@@ -14,6 +14,8 @@ public class Main {
         String str = "HELLO WORLD";
 
         String reversed = reverse(str);
+
+        print(reversed);
     }
 
     private static String reverse(String in) {
@@ -23,4 +25,6 @@ public class Main {
         }
         return new String(chars);
     }
+
+    private static native void print(String in);
 }

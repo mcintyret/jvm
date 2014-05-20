@@ -24,4 +24,14 @@ public class Utils {
         return (long) l << 32 | r & 0xFFFFFFFFL;
     }
 
+    public static String toString(Oop stringOop) {
+        OopArray charArray = (OopArray) Heap.getOop(stringOop.getFields()[0]);
+
+        char[] chars = new char[charArray.getLength()];
+        for (int i = 0; i < chars.length; i++) {
+            chars[i] = (char) charArray.getFields()[i];
+        }
+        return new String(chars);
+    }
+
 }

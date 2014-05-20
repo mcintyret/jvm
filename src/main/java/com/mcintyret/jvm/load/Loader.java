@@ -1,11 +1,6 @@
 package com.mcintyret.jvm.load;
 
-import com.mcintyret.jvm.core.ByteCode;
-import com.mcintyret.jvm.core.ClassObject;
-import com.mcintyret.jvm.core.Field;
-import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.Method;
-import com.mcintyret.jvm.core.Utils;
+import com.mcintyret.jvm.core.*;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.constantpool.FieldReference;
 import com.mcintyret.jvm.core.constantpool.MethodReference;
@@ -99,9 +94,9 @@ public class Loader {
 
         for (FieldOrMethodInfo method : file.getMethods()) {
             if (method.hasModifier(Modifier.STATIC)) {
-                staticMethods.add(translateMethod(new FomiAndMethodSig(method, file.getConstantPool())));
+                staticMethods.add(translateMethod(new FomiAndMethodSig(method, file.getConstantPool(), className)));
             } else {
-                instanceMethods.add(new FomiAndMethodSig(method, file.getConstantPool()));
+                instanceMethods.add(new FomiAndMethodSig(method, file.getConstantPool(), className));
             }
         }
 
@@ -282,7 +277,11 @@ public class Loader {
     private static Method translateMethod(FomiAndMethodSig fms) {
         FieldOrMethodInfo info = fms.fomi;
         if (info.hasModifier(Modifier.NATIVE)) {
-           throw new RuntimeException("TODO!!");
+            NativeExecution nativeExecution = NativeExecutionRegistry.getNativeExecution(fms.className, fms.sig);
+            if (nativeExecution == null) {
+                throw new IllegalStateException("No NativeExecution registered for " + fms.className + "." + fms.sig);
+            }
+            return new NativeMethod(fms.sig, info.getModifiers(), nativeExecution);
         } else {
             byte[] byteCode = null;
 
@@ -292,7 +291,6 @@ public class Loader {
             }
             // code could still be null if this is an ABSTRACT or NATIVE method
             return new Method(new ByteCode(byteCode), fms.sig, info.getModifiers(), code.getMaxLocals());
-
         }
     }
 
@@ -312,12 +310,15 @@ public class Loader {
 
     private static class FomiAndMethodSig {
 
+        private final String className;
+
         private final FieldOrMethodInfo fomi;
 
         private final MethodSignature sig;
 
-        private FomiAndMethodSig(FieldOrMethodInfo fomi, Object[] constantPool) {
+        private FomiAndMethodSig(FieldOrMethodInfo fomi, Object[] constantPool, String className) {
             this.fomi = fomi;
+            this.className = className;
             String name = (String) constantPool[fomi.getNameIndex()];
             String descriptor = (String) constantPool[fomi.getDescriptorIndex()];
             sig = MethodSignature.parse(name, descriptor);

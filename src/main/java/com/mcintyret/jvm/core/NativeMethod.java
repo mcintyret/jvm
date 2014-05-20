@@ -6,14 +6,14 @@ import java.util.Set;
 
 public class NativeMethod extends Method {
 
-    private final java.lang.reflect.Method method;
+    private final NativeExecution nativeExecution;
 
-    public NativeMethod(MethodSignature methodSignature, Set<Modifier> modifiers, java.lang.reflect.Method method) {
+    public NativeMethod(MethodSignature methodSignature, Set<Modifier> modifiers, NativeExecution nativeExecution) {
         super(null, methodSignature, modifiers, -1);
-        this.method = method;
+        this.nativeExecution = nativeExecution;
     }
 
-    public java.lang.reflect.Method getMethod() {
-        return method;
+    public NativeExecution getNativeExecution() {
+        return nativeExecution;
     }
 }
