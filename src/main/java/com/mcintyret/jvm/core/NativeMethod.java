@@ -10,7 +10,7 @@ public class NativeMethod extends Method {
     private final NativeImplementation nativeImplementation;
 
     public NativeMethod(MethodSignature methodSignature, Set<Modifier> modifiers, NativeImplementation nativeImplementation) {
-        super(null, methodSignature, modifiers, -1);
+        super(null, methodSignature, modifiers, 0);
         this.nativeImplementation = nativeImplementation;
     }
 

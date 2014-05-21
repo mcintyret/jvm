@@ -1,5 +1,6 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
+import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.WordStack;
 
 /**
@@ -9,6 +10,8 @@ import com.mcintyret.jvm.core.WordStack;
 public interface NativeReturn {
 
     static final NativeReturn FOR_VOID = stack -> {};
+
+    static final NativeReturn FOR_NULL = forInt(Heap.NULL_POINTER);
 
     public static NativeReturn forInt(int i) {
         return stack -> {
@@ -22,9 +25,15 @@ public interface NativeReturn {
         };
     }
 
+    public static NativeReturn forNull() {
+        return FOR_NULL;
+    }
+
     public static NativeReturn forVoid() {
         return FOR_VOID;
     }
+
+
 
     void applyToStack(WordStack stack);
 

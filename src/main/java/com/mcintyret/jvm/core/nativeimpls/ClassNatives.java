@@ -13,6 +13,18 @@ public enum ClassNatives implements NativeImplementation {
         public NativeReturn execute(int[] args) {
             return NativeReturn.forVoid();
         }
+    },
+    DESIRED_ASSERTION_STATUS_0("desiredAssertionStatus0", "(Ljava/lang/Class;)Z") {
+        @Override
+        public NativeReturn execute(int[] args) {
+            return NativeReturn.forInt(0); // false
+        }
+    },
+    GET_CLASSLOADER_0("getClassLoader0", "()Ljava/lang/ClassLoader;") {
+        @Override
+        public NativeReturn execute(int[] args) {
+            return NativeReturn.forNull();
+        }
     };
 
     private final MethodSignature methodSignature;
