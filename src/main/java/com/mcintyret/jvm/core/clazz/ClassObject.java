@@ -6,6 +6,7 @@ import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.domain.ReferenceType;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.parse.Modifier;
+
 import java.util.Set;
 
 public class ClassObject extends AbstractClassObject {
@@ -34,28 +35,11 @@ public class ClassObject extends AbstractClassObject {
         this.staticMethods = staticMethods;
         this.instanceFields = instanceFields;
         this.staticFields = staticFields;
-        this.staticFieldValues = newFieldsValuesArray(staticFields);
-    }
-
-    // For invokevirtual and invokespecial
-    public Method getInstanceMethod(int i) {
-        ClassObject co = this;
-        while (true) {
-            Method method = co.instanceMethods[i];
-            if (method != null) {
-                return method;
-            }
-            co = co.parent;
-        }
+        this.staticFieldValues = newInstanceFieldsValuesArray(staticFields);
     }
 
     public Method[] getInstanceMethods() {
         return instanceMethods;
-    }
-
-    // For invokestatic
-    public Method getStaticMethod(int i) {
-        return staticMethods[i];
     }
 
     public ConstantPool getConstantPool() {
@@ -75,10 +59,14 @@ public class ClassObject extends AbstractClassObject {
     }
 
     public OopClass newObject() {
-        return new OopClass(this, null, newFieldsValuesArray(instanceFields));
+        return newObject(DefaultNewObjectCreator.INSTANCE);
     }
 
-    private static int[] newFieldsValuesArray(Field[] fields) {
+    <O extends OopClass> O newObject(NewObjectCreator<O> objectCreator) {
+        return objectCreator.newObject(this, newInstanceFieldsValuesArray(instanceFields));
+    }
+
+    private static int[] newInstanceFieldsValuesArray(Field[] fields) {
         if (fields.length == 0) {
             return new int[0];
         }
@@ -96,5 +84,19 @@ public class ClassObject extends AbstractClassObject {
         return staticMethods;
     }
 
+    interface NewObjectCreator<O extends OopClass> {
+
+        O newObject(ClassObject clazz, int[] fields);
+
+    }
+
+    private enum DefaultNewObjectCreator implements NewObjectCreator<OopClass> {
+        INSTANCE;
+
+        @Override
+        public OopClass newObject(ClassObject clazz, int[] fields) {
+            return new OopClass(clazz, null, fields);
+        }
+    }
 
 }

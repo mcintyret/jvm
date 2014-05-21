@@ -47,4 +47,10 @@ public class Method {
     public void setMethodReference(MethodReference methodReference) {
         this.methodReference = methodReference;
     }
+
+    @Override
+    public String toString() {
+        return "Method: " + methodSignature;
+    }
+
 }

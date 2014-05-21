@@ -54,6 +54,12 @@ public enum SystemNatives implements NativeImplementation {
         public NativeReturn execute(int[] args) {
             return NativeReturn.forLong(System.nanoTime());
         }
+    },
+    IDENTITY_HASH_CODE("identityHashCode", "(Ljava/lang/Object;)I") {
+        @Override
+        public NativeReturn execute(int[] args) {
+            return ObjectNatives.HASHCODE.execute(args);
+        }
     };
 
     private final MethodSignature methodSignature;

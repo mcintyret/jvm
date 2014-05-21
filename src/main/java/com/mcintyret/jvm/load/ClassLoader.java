@@ -48,6 +48,7 @@ public class ClassLoader {
         MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_OBJECT));
         MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLONEABLE));
         MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_IO_SERIALIZABLE));
+        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLASS));
         MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_STRING));
     }
 
@@ -193,6 +194,7 @@ public class ClassLoader {
     private void executeStaticInitMethod(ClassObject co) {
         for (Method method : co.getStaticMethods()) {
             if (method.getSignature().getName().equals("<clinit>")) {
+                System.out.println("Executing static initializer: " + co.getType().getClassName() + "." + method.getSignature());
                 ExecutionStack stack = new ExecutionStack();
 
                 stack.push(new ExecutionStackElement(method.getByteCode(), new int[method.getMaxLocalVariables()], co.getConstantPool(), stack));
@@ -221,7 +223,7 @@ public class ClassLoader {
             if (code != null) {
                 byteCode = code.getCode();
             }
-            // code could still be null if this is an ABSTRACT or NATIVE method
+            // code could still be null if this is an ABSTRACT method
             return new Method(new ByteCode(byteCode), mis.sig, info.getModifiers(), code == null ? -1 : code.getMaxLocals());
         }
     }

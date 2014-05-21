@@ -20,4 +20,5 @@ public class MethodReference extends AbstractReference {
     private Method getMethod(int index, Method[] methods) {
         return methods[index];
     }
+
 }

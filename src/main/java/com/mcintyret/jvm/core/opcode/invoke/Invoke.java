@@ -32,6 +32,8 @@ abstract class Invoke extends OpCode {
             values[0] = ctx.getStack().pop();
         }
 
+        System.out.println("Invoking " + ref.getClassObject().getType().getClassName() + "." + method.getSignature());
+
         if (method.hasModifier(Modifier.NATIVE)) {
             NativeImplementation nativeImplementation = ((NativeMethod) method).getNativeImplementation();
             if (nativeImplementation == null) {

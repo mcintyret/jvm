@@ -26,7 +26,7 @@ public class Types {
                 }
             } else {
                 if (c == ';') {
-                    return ReferenceType.forClass(new String(classBuffer));
+                    return ReferenceType.forClass(new String(classBuffer, 0, classIndex));
                 } else {
                     classBuffer[classIndex++] = c;
                 }

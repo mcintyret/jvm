@@ -1,7 +1,9 @@
 package com.mcintyret.jvm.core.constantpool;
 
 import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.clazz.ClassCache;
 import com.mcintyret.jvm.core.clazz.ClassObject;
+import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.cp.CpClass;
 import com.mcintyret.jvm.parse.cp.CpFieldReference;
@@ -24,6 +26,10 @@ public class ConstantPool {
             return (ClassObject) constantPool[i];
         }
 
+        return translactClassObject(i);
+    }
+
+    private ClassObject translactClassObject(int i) {
         ClassObject obj = loader.translate((CpClass) constantPool[i], constantPool);
         constantPool[i] = obj;
         return obj;
@@ -49,13 +55,24 @@ public class ConstantPool {
         return ref;
     }
 
-    // can return Long or Int
-    // TODO: avoid autoboxing?
     public int getSingleWidth(int i) {
         if (constantPool[i] instanceof CpString) {
             int index = ((CpString) constantPool[i]).getStringIndex();
             String string = (String) constantPool[index];
             constantPool[i] = Heap.intern(string);
+        } else {
+            ClassObject co = null;
+            // Asking for a class literal - this takes a bit of fiddling
+            if (constantPool[i] instanceof CpClass) {
+                co = translactClassObject(i);
+            } else if (constantPool[i] instanceof ClassObject) {
+                co = (ClassObject) constantPool[i];
+            }
+            if (co != null) {
+                OopClass oop = ClassCache.getOopClass((ClassObject) constantPool[i]);
+                return oop.getAddress();
+            }
+
         }
         return (int) constantPool[i];
     }

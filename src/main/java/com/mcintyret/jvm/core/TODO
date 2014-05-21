@@ -11,3 +11,9 @@ Bytecode verification
 Native method implementations
 
 Remove Reflections dependency
+
+is RegisterNatives a special case for native methods?
+
+JMX?
+
+Reflection?
