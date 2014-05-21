@@ -1,10 +1,13 @@
 package com.mcintyret.jvm.load;
 
-import java.io.IOException;
-import java.io.InputStream;
+import com.google.common.collect.Iterators;
 
-public interface ClassPath {
+import java.util.Iterator;
 
-    Iterable<InputStream> getClassFileStreams() throws IOException;
+public interface ClassPath extends Iterable<ClassFileResource> {
+
+    default Iterator<ClassFileResource> classFileFilteringIterator(Iterator<ClassFileResource> it) {
+        return Iterators.filter(it, classFileResource -> classFileResource.getName().endsWith(".class"));
+    }
 
 }

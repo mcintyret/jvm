@@ -13,7 +13,13 @@ public class AttributeParser implements Parser<Attribute> {
     @Override
     public Attribute parse(ByteIterator bi) {
         int index = bi.nextShort();
-        String name = (String) constantPool[index];
+        String name;
+        try {
+            name = (String) constantPool[index];
+        } catch (Throwable t) {
+            System.out.println("Looking for String at index " + index + " but found " + constantPool[index]);
+            throw t;
+        }
         AttributeType at = AttributeType.forString(name);
         if (at == null) {
             // not found - need to skip the buffer!

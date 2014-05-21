@@ -35,12 +35,12 @@ public class Loader {
 
     private final Map<String, ClassObject> classes = new HashMap<>();
 
-
     public void load(ClassPath classPath) throws IOException {
         ClassFileReader reader = new ClassFileReader();
 
-        for (InputStream stream : classPath.getClassFileStreams()) {
-            ClassFile file = reader.read(stream);
+        for (ClassFileResource resource : classPath) {
+            System.out.println("Reading: " + resource.getName());
+            ClassFile file = reader.read(resource.getInputStream());
             classFiles.put(getClassName(file.getThisClass(), file.getConstantPool()), file);
         }
 

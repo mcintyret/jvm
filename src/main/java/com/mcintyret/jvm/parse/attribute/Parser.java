@@ -11,7 +11,10 @@ public interface Parser<T> {
         int size = bi.nextShort();
         List<T> list = size == 0 ? Collections.emptyList() : new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            list.add(parse(bi));
+//            System.out.println(i);
+            T t = parse(bi);
+//            System.out.println("Parsed: " + t);
+            list.add(t);
         }
         return list;
     }

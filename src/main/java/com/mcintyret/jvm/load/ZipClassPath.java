@@ -18,10 +18,14 @@ import java.util.zip.ZipInputStream;
  */
 public class ZipClassPath implements ClassPath {
 
-    private final File file;
+    private final ZipFile file;
 
     public ZipClassPath(File file) {
-        this.file = file;
+        try {
+            this.file = new ZipFile(file);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public ZipClassPath(String file) {
@@ -29,38 +33,20 @@ public class ZipClassPath implements ClassPath {
     }
 
     @Override
-    public Iterable<InputStream> getClassFileStreams() throws IOException {
-        return new ZipFileIterable(new ZipFile(file));
+    public Iterator<ClassFileResource> iterator() {
+        return classFileFilteringIterator(new Iterator<ClassFileResource>() {
+
+            private final Enumeration<? extends ZipEntry> it = file.entries();
+
+            @Override
+            public boolean hasNext() {
+                return it.hasMoreElements();
+            }
+
+            @Override
+            public ClassFileResource next() {
+                return new ZipClassFileResource(file, it.nextElement());
+            }
+        });
     }
-
-    private static class ZipFileIterable implements Iterable<InputStream> {
-        private final ZipFile zipFile;
-
-        private ZipFileIterable(ZipFile zipFile) {
-            this.zipFile = zipFile;
-        }
-
-        @Override
-        public Iterator<InputStream> iterator() {
-            return new Iterator<InputStream>() {
-
-                private final Enumeration<? extends ZipEntry> it = zipFile.entries();
-
-                @Override
-                public boolean hasNext() {
-                    return it.hasMoreElements();
-                }
-
-                @Override
-                public InputStream next() {
-                    try {
-                        return zipFile.getInputStream(it.nextElement());
-                    } catch (IOException e) {
-                        throw new IllegalStateException(e);
-                    }
-                }
-            };
-        }
-    }
-
 }

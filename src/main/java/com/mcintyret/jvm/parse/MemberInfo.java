@@ -40,4 +40,8 @@ public class MemberInfo {
         return modifiers;
     }
 
+    @Override
+    public String toString() {
+        return "Member Info: name: " + nameIndex + ", descriptor: " + descriptorIndex;
+    }
 }
