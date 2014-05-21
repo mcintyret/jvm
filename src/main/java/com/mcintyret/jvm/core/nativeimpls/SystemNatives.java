@@ -1,7 +1,6 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.MagicClasses;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.oop.OopArray;
@@ -10,7 +9,7 @@ import com.mcintyret.jvm.core.oop.OopArray;
  * User: tommcintyre
  * Date: 5/21/14
  */
-public enum SystemNatives implements NativeExecution {
+public enum SystemNatives implements NativeImplementation {
     ARRAY_COPY("arraycopy", "(Ljava/lang/Object;ILjava/lang/Object;II)V") {
         @Override
         public NativeReturn execute(int[] args) {
@@ -41,6 +40,13 @@ public enum SystemNatives implements NativeExecution {
         @Override
         public NativeReturn execute(int[] args) {
             return NativeReturn.forLong(System.currentTimeMillis());
+        }
+    },
+    REGISTER_NATIVES("registerNatives", "()V") {
+        @Override
+        public NativeReturn execute(int[] args) {
+            // Already done
+            return NativeReturn.forVoid();
         }
     },
     NANO_TIME("nanoTime", "()J") {

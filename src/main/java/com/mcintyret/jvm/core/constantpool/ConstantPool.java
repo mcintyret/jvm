@@ -2,7 +2,7 @@ package com.mcintyret.jvm.core.constantpool;
 
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ClassObject;
-import com.mcintyret.jvm.load.Loader;
+import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.cp.CpClass;
 import com.mcintyret.jvm.parse.cp.CpFieldReference;
 import com.mcintyret.jvm.parse.cp.CpMethodReference;
@@ -12,9 +12,9 @@ public class ConstantPool {
 
     private final Object[] constantPool;
 
-    private final Loader loader;
+    private final ClassLoader loader;
 
-    public ConstantPool(Object[] constantPool, Loader loader) {
+    public ConstantPool(Object[] constantPool, com.mcintyret.jvm.load.ClassLoader loader) {
         this.constantPool = constantPool;
         this.loader = loader;
     }

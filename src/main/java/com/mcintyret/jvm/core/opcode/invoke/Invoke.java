@@ -4,6 +4,7 @@ import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.Method;
 import com.mcintyret.jvm.core.NativeMethod;
 import com.mcintyret.jvm.core.constantpool.MethodReference;
+import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.parse.Modifier;
@@ -32,7 +33,11 @@ abstract class Invoke extends OpCode {
         }
 
         if (method.hasModifier(Modifier.NATIVE)) {
-            ((NativeMethod) method).getNativeExecution().execute(values).applyToStack(ctx.getStack());
+            NativeImplementation nativeImplementation = ((NativeMethod) method).getNativeImplementation();
+            if (nativeImplementation == null) {
+                throw new IllegalStateException("No Native implementation for " + ref.getClassObject().getType() + "." + method.getSignature());
+            }
+            nativeImplementation.execute(values).applyToStack(ctx.getStack());
         } else {
             ctx.getExecutionStack().push(
                     new ExecutionStackElement(method.getByteCode(), values, ref.getClassObject().getConstantPool(), ctx.getExecutionStack()));

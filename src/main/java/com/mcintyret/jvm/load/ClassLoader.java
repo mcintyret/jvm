@@ -10,8 +10,8 @@ import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.domain.ReferenceType;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.domain.Types;
-import com.mcintyret.jvm.core.nativeimpls.NativeExecution;
-import com.mcintyret.jvm.core.nativeimpls.NativeExecutionRegistry;
+import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
+import com.mcintyret.jvm.core.nativeimpls.NativeImplemntationRegistry;
 import com.mcintyret.jvm.parse.ClassFile;
 import com.mcintyret.jvm.parse.ClassFileReader;
 import com.mcintyret.jvm.parse.MemberInfo;
@@ -26,7 +26,7 @@ import java.util.*;
 import static com.mcintyret.jvm.core.Assert.assertNotNull;
 import static java.util.Arrays.asList;
 
-public class Loader {
+public class ClassLoader {
 
     private final Map<String, ClassFile> classFiles = new HashMap<>();
 
@@ -46,9 +46,9 @@ public class Loader {
         }
 
         MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_OBJECT));
-        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_STRING));
         MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLONEABLE));
         MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_IO_SERIALIZABLE));
+        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_STRING));
     }
 
     public ClassObject getClassObject(String className) {
@@ -66,6 +66,7 @@ public class Loader {
 
             co = makeClassObject(className, file, parent);
             classes.put(className, co);
+            executeStaticInitMethod(co);
         }
         return co;
     }
@@ -189,16 +190,30 @@ public class Loader {
         return co;
     }
 
+    private void executeStaticInitMethod(ClassObject co) {
+        for (Method method : co.getStaticMethods()) {
+            if (method.getSignature().getName().equals("<clinit>")) {
+                ExecutionStack stack = new ExecutionStack();
+
+                stack.push(new ExecutionStackElement(method.getByteCode(), new int[method.getMaxLocalVariables()], co.getConstantPool(), stack));
+
+                stack.execute();
+
+                return; // There is only one, so we know we're done now
+            }
+        }
+    }
+
     private static Method translateMethod(MethodInfoAndSig mis) {
         MemberInfo info = mis.mi;
 
         if (info.hasModifier(Modifier.NATIVE)) {
-            NativeExecution nativeExecution = NativeExecutionRegistry.getNativeExecution(mis.className, mis.sig);
-            if (nativeExecution == null) {
-//                throw new IllegalStateException("No NativeExecution registered for " + mis.className + "." + mis.sig);
+            NativeImplementation nativeImplementation = NativeImplemntationRegistry.getNativeExecution(mis.className, mis.sig);
+            if (nativeImplementation == null) {
+//                throw new IllegalStateException("No NativeImplementation registered for " + mis.className + "." + mis.sig);
                 System.out.println("NATIVE METHOD MISSING: " + mis.className + "." + mis.sig);
             }
-            return new NativeMethod(mis.sig, info.getModifiers(), nativeExecution);
+            return new NativeMethod(mis.sig, info.getModifiers(), nativeImplementation);
         } else {
             byte[] byteCode = null;
 

@@ -7,7 +7,7 @@ import com.mcintyret.jvm.core.domain.MethodSignature;
  * Date: 5/20/14
  */
 
-public interface NativeExecution {
+public interface NativeImplementation {
 
     NativeReturn execute(int[] args);
 

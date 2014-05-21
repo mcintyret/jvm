@@ -9,13 +9,10 @@ public class ExecutionStack {
     private final Deque<ExecutionStackElement> stack = new ArrayDeque<>();
 
     public void execute() {
-        ExecutionStackElement current = null;
-        ExecutionStackElement prev;
+        ExecutionStackElement current;
         while(true) {
-            prev = current;
             current = stack.peek();
             if (current == null) {
-                System.out.println("Last variables: " + Arrays.toString(prev.getVariables()));
                 // Done!!
                 break;
             } else {

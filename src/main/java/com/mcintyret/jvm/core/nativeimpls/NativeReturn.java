@@ -8,6 +8,8 @@ import com.mcintyret.jvm.core.WordStack;
  */
 public interface NativeReturn {
 
+    static final NativeReturn FOR_VOID = stack -> {};
+
     public static NativeReturn forInt(int i) {
         return stack -> {
             stack.push(i);
@@ -21,7 +23,7 @@ public interface NativeReturn {
     }
 
     public static NativeReturn forVoid() {
-        return stack -> {};
+        return FOR_VOID;
     }
 
     void applyToStack(WordStack stack);

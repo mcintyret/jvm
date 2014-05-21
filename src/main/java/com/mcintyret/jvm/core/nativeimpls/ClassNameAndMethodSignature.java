@@ -12,8 +12,8 @@ class ClassNameAndMethodSignature {
 
     private final MethodSignature methodSignature;
 
-    ClassNameAndMethodSignature(NativeExecution nativeExecution) {
-        this(nativeExecution.getClassName(), nativeExecution.getMethodSignature());
+    ClassNameAndMethodSignature(NativeImplementation nativeImplementation) {
+        this(nativeImplementation.getClassName(), nativeImplementation.getMethodSignature());
     }
 
     ClassNameAndMethodSignature(String className, MethodSignature methodSignature) {

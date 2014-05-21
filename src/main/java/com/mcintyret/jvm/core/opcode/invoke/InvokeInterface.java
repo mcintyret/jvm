@@ -39,7 +39,7 @@ class InvokeInterface extends OpCode {
         }
 
         if (method.hasModifier(Modifier.NATIVE)) {
-            ((NativeMethod) method).getNativeExecution().execute(values).applyToStack(ctx.getStack());
+            ((NativeMethod) method).getNativeImplementation().execute(values).applyToStack(ctx.getStack());
         } else {
             ctx.getExecutionStack().push(
                 new ExecutionStackElement(method.getByteCode(), values, oop.getClassObject().getConstantPool(), ctx.getExecutionStack()));

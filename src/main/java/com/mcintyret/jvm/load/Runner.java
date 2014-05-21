@@ -6,14 +6,21 @@ import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.Method;
 import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.nativeimpls.NativeImplemntationRegistry;
+import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
+
 import java.io.IOException;
 
 public class Runner {
 
     private static final MethodSignature MAIN_METHOD_SIGNATURE = MethodSignature.parse("main", "([Ljava/lang/String;)V");
 
+    static {
+        NativeImplemntationRegistry.registerNative(ObjectNatives.REGISTER_NATIVES);
+    }
+
     public void run(ClassPath classPath, String mainClassName, String... args) throws IOException {
-        Loader loader = new Loader();
+        ClassLoader loader = new ClassLoader();
 
         loader.load(classPath);
 
