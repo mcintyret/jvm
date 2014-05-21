@@ -1,21 +1,16 @@
 package com.mcintyret.jvm.parse.attribute;
 
+/**
+ * User: tommcintyre
+ * Date: 5/21/14
+ */
 public class Exception {
 
-    public static final Parser<Exception> PARSER = bi -> new Exception(bi.nextShort(), bi.nextShort(), bi.nextShort(), bi.nextShort());
+    public static final Parser<Exception> PARSER = bi -> new Exception(bi.nextShort());
 
-    private final int startPc;
+    private final int exceptionClassIndex;
 
-    private final int endPc;
-
-    private final int handlerPc;
-
-    private final int catchType;
-
-    private Exception(int startPc, int endPc, int handlerPc, int catchType) {
-        this.startPc = startPc;
-        this.endPc = endPc;
-        this.handlerPc = handlerPc;
-        this.catchType = catchType;
+    public Exception(int exceptionClassIndex) {
+        this.exceptionClassIndex = exceptionClassIndex;
     }
 }

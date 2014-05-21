@@ -1,4 +1,4 @@
-package java.test;
+package com.mcintyret2.jvm.test;
 
 public class FooBar implements Foo {
 

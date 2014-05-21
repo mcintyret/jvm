@@ -19,7 +19,7 @@ public enum AttributeType {
                 bi.nextShort(),
                 bi.nextShort(),
                 bi.nextBytes(bi.nextInt()),
-                Exception.PARSER.parseMulti(bi),
+                CodeException.PARSER.parseMulti(bi),
                 attributeParser.parseMulti(bi)
             );
         }
@@ -91,6 +91,12 @@ public enum AttributeType {
         Attribute doParse(ByteIterator bi, Parser<Attribute> attributeParser) {
             return new RuntimeInvisibleAnnotations(Annotation.PARSER.parseMulti(bi));
         }
+    },
+    SIGNATURE("Signature") {
+        @Override
+        Attribute doParse(ByteIterator bi, Parser<Attribute> attributeParser) {
+            return new Signature(bi.nextShort());
+        }
     };
 
     private final String string;
@@ -112,7 +118,7 @@ public enum AttributeType {
                 return at;
             }
         }
-        System.err.println("No AttributeType named " + str);
+//        System.err.println("No AttributeType named " + str);
         return null;
     }
 }

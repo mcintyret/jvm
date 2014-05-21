@@ -10,6 +10,8 @@ import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.domain.ReferenceType;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.domain.Types;
+import com.mcintyret.jvm.core.nativeimpls.NativeExecution;
+import com.mcintyret.jvm.core.nativeimpls.NativeExecutionRegistry;
 import com.mcintyret.jvm.parse.ClassFile;
 import com.mcintyret.jvm.parse.ClassFileReader;
 import com.mcintyret.jvm.parse.MemberInfo;
@@ -19,7 +21,6 @@ import com.mcintyret.jvm.parse.attribute.Code;
 import com.mcintyret.jvm.parse.cp.*;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.*;
 
 import static com.mcintyret.jvm.core.Assert.assertNotNull;
@@ -71,10 +72,12 @@ public class Loader {
 
     // Superclasses and interfaces are recursively loaded
     private ClassObject makeClassObject(String className, ClassFile file, ClassObject parent) {
+        boolean isInterface = file.hasModifier(Modifier.INTERFACE);
+
         // Load all interfaces first
         ClassObject[] ifaces = new ClassObject[file.getInterfaces().length];
         for (int i = 0; i < ifaces.length; i++) {
-            ifaces[0] = getClassObject(getClassName(file.getInterfaces()[i], file.getConstantPool()));
+            ifaces[i] = getClassObject(getClassName(file.getInterfaces()[i], file.getConstantPool()));
         }
 
         // Methods - sorting out the VTable
@@ -92,7 +95,7 @@ public class Loader {
         }
 
         instanceMethods.sort(PRIVATE_LAST_COMPARATOR);
-        Method[] parentMethods = parent != null ? parent.getInstanceMethods() : null;
+        Method[] parentMethods = parent != null && !isInterface ? parent.getInstanceMethods() : null;
         List<Method> orderedMethods = new ArrayList<>();
 
         if (parentMethods != null) {
@@ -137,22 +140,31 @@ public class Loader {
             }
         }
 
+        Field[] translatedStaticFields;
+        Field[] translatedInstanceFields;
 
-        // Fields
-        List<MemberInfo> staticFields = new ArrayList<>();
-        List<MemberInfo> instanceFields = new ArrayList<>();
-        for (MemberInfo field : file.getFields()) {
-            if (field.hasModifier(Modifier.STATIC)) {
-                staticFields.add(field);
-            } else {
-                instanceFields.add(field);
+        if (isInterface) {
+            translatedStaticFields = translatedInstanceFields = new Field[0];
+        } else {
+
+
+            // Fields
+            List<MemberInfo> staticFields = new ArrayList<>();
+            List<MemberInfo> instanceFields = new ArrayList<>();
+            for (MemberInfo field : file.getFields()) {
+                if (field.hasModifier(Modifier.STATIC)) {
+                    staticFields.add(field);
+                } else {
+                    instanceFields.add(field);
+                }
             }
+
+            translatedStaticFields = translateFields(new ArrayList<>(staticFields.size()), staticFields, file.getConstantPool());
+
+            translatedInstanceFields = translateFields(parent == null ? new ArrayList<>() :
+                    new ArrayList<>(asList(parent.getInstanceFields())), instanceFields, file.getConstantPool());
         }
 
-        Field[] translatedStaticFields = translateFields(new ArrayList<>(staticFields.size()), staticFields, file.getConstantPool());
-
-        Field[] translatedInstanceFields = translateFields(parent == null ? new ArrayList<>() :
-                new ArrayList<>(asList(parent.getInstanceFields())), instanceFields, file.getConstantPool());
 
         ClassObject co = new ClassObject(
                 type,
@@ -183,7 +195,8 @@ public class Loader {
         if (info.hasModifier(Modifier.NATIVE)) {
             NativeExecution nativeExecution = NativeExecutionRegistry.getNativeExecution(mis.className, mis.sig);
             if (nativeExecution == null) {
-                throw new IllegalStateException("No NativeExecution registered for " + mis.className + "." + mis.sig);
+//                throw new IllegalStateException("No NativeExecution registered for " + mis.className + "." + mis.sig);
+                System.out.println("NATIVE METHOD MISSING: " + mis.className + "." + mis.sig);
             }
             return new NativeMethod(mis.sig, info.getModifiers(), nativeExecution);
         } else {

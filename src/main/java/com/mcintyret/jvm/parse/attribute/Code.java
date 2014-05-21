@@ -10,16 +10,16 @@ public class Code extends Attribute {
 
     private final byte[] code;
 
-    private final List<Exception> exceptions;
+    private final List<CodeException> codeExceptions;
 
     private final List<Attribute> attributes;
 
-    Code(int maxStack, int maxLocals, byte[] code, List<Exception> exceptions, List<Attribute> attributes) {
+    Code(int maxStack, int maxLocals, byte[] code, List<CodeException> codeExceptions, List<Attribute> attributes) {
         super(AttributeType.CODE);
         this.maxStack = maxStack;
         this.maxLocals = maxLocals;
         this.code = code;
-        this.exceptions = exceptions;
+        this.codeExceptions = codeExceptions;
         this.attributes = attributes;
     }
 

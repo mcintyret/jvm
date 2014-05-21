@@ -12,10 +12,10 @@ public class MethodSignature {
 
     private final Type returnType;
 
-    public static MethodSignature parse(String name, String description) {
-        CharIterator it = new CharIterator(description);
+    public static MethodSignature parse(String name, String descriptor) {
+        CharIterator it = new CharIterator(descriptor);
         if (it.next() != '(') {
-            throw new IllegalArgumentException("Invalid description: " + description);
+            throw new IllegalArgumentException("Invalid descriptor: " + descriptor);
         }
         List<Type> argTypes = new ArrayList<>(4);
         while (it.peek() != ')') {

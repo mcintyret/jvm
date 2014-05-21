@@ -1,6 +1,7 @@
 package com.mcintyret.jvm.core;
 
 import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.nativeimpls.NativeExecution;
 import com.mcintyret.jvm.parse.Modifier;
 import java.util.Set;
 

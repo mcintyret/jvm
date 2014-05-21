@@ -1,11 +1,11 @@
-package java.test;
+package com.mcintyret2.jvm.test;
 
 public class Main {
 
     public static void main(String[] args) {
-        interfaceMethods();
+//        interfaceMethods();
 //        simpleIntArrays();
-//        stringsAndNatives();
+        stringsAndNatives();
     }
 
     private static void interfaceMethods() {

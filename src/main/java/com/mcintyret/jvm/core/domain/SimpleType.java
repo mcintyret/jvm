@@ -82,4 +82,16 @@ public enum SimpleType implements Type {
     public static SimpleType forString(String str) {
         return forChar(str.charAt(0));
     }
+
+    public boolean isPrimitive() {
+        switch (this) {
+            case REF:
+                return false;
+            case VOID:
+                throw new UnsupportedOperationException();
+            default:
+                return true;
+
+        }
+    }
 }

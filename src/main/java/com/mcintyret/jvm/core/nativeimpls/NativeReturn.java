@@ -1,4 +1,6 @@
-package com.mcintyret.jvm.core;
+package com.mcintyret.jvm.core.nativeimpls;
+
+import com.mcintyret.jvm.core.WordStack;
 
 /**
  * User: tommcintyre
