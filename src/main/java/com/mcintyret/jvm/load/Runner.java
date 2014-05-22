@@ -1,14 +1,16 @@
 package com.mcintyret.jvm.load;
 
-import com.mcintyret.jvm.core.clazz.ClassObject;
-import com.mcintyret.jvm.core.ExecutionStack;
-import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.Method;
+import com.mcintyret.jvm.core.Utils;
+import com.mcintyret.jvm.core.clazz.ArrayClassObject;
+import com.mcintyret.jvm.core.clazz.ClassObject;
+import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.domain.ReferenceType;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplemntationRegistry;
 import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
-
+import com.mcintyret.jvm.core.oop.OopArray;
 import java.io.IOException;
 
 public class Runner {
@@ -20,7 +22,7 @@ public class Runner {
     }
 
     public void run(ClassPath classPath, String mainClassName, String... args) throws IOException {
-        ClassLoader loader = new ClassLoader();
+        ClassLoader loader = ClassLoader.DEFAULT_CLASSLOADER;
 
         loader.load(classPath);
 
@@ -28,16 +30,14 @@ public class Runner {
 
         Method mainMethod = findMainMethod(mainClass);
 
-        int[] argRefs = new int[mainMethod.getMaxLocalVariables()];
+        ArrayClassObject aco = ArrayClassObject.forType(ArrayType.create(ReferenceType.forClass("java/lang/String"), 1));
+        OopArray array = aco.newArray(args.length);
         for (int i = 0; i < args.length; i++) {
-            argRefs[i] = Heap.intern(args[i]);
+            array.getFields()[i] = Heap.intern(args[i]);
         }
+        int[] actualArgs = new int[]{Heap.allocate(array)};
 
-        ExecutionStack stack = new ExecutionStack();
-
-        stack.push(new ExecutionStackElement(mainMethod.getByteCode(), argRefs, mainClass.getConstantPool(), stack));
-
-        stack.execute();
+        Utils.executeMethod(mainMethod, actualArgs);
 
         System.out.println("DONE!!!");
     }

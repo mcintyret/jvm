@@ -7,8 +7,4 @@ class InvokeStatic extends Invoke {
         return (byte) 0xB8;
     }
 
-    @Override
-    protected boolean isStatic() {
-        return true;
-    }
 }

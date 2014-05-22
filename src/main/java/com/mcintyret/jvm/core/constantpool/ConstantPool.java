@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.constantpool;
 
+import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.ClassCache;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.oop.OopClass;
@@ -35,22 +37,22 @@ public class ConstantPool {
         return obj;
     }
 
-    public FieldReference getFieldReference(int i) {
-        if (constantPool[i] instanceof FieldReference) {
-            return (FieldReference) constantPool[i];
+    public Field getField(int i) {
+        if (constantPool[i] instanceof Field) {
+            return (Field) constantPool[i];
         }
 
-        FieldReference ref = loader.translate((CpFieldReference) constantPool[i], constantPool);
+        Field ref = loader.translate((CpFieldReference) constantPool[i], constantPool);
         constantPool[i] = ref;
         return ref;
     }
 
-    public MethodReference getMethodReference(int i) {
-        if (constantPool[i] instanceof MethodReference) {
-            return (MethodReference) constantPool[i];
+    public Method getMethod(int i) {
+        if (constantPool[i] instanceof Method) {
+            return (Method) constantPool[i];
         }
 
-        MethodReference ref = loader.translate((CpMethodReference) constantPool[i], constantPool);
+        Method ref = loader.translate((CpMethodReference) constantPool[i], constantPool);
         constantPool[i] = ref;
         return ref;
     }

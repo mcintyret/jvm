@@ -1,11 +1,11 @@
 package com.mcintyret.jvm.core.opcode.invoke;
 
+import com.mcintyret.jvm.core.ByteCode;
 import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.Method;
-import com.mcintyret.jvm.core.NativeMethod;
-import com.mcintyret.jvm.core.constantpool.InterfaceMethodReference;
-import com.mcintyret.jvm.core.constantpool.MethodReference;
+import com.mcintyret.jvm.core.clazz.InterfaceMethod;
+import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.clazz.NativeMethod;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OperationContext;
@@ -16,8 +16,7 @@ class InvokeInterface extends OpCode {
     @Override
     public final void execute(OperationContext ctx) {
 
-        MethodReference ref = ctx.getConstantPool().getMethodReference(ctx.getByteIterator().nextShort());
-        Method method = ref.getMethod();
+        InterfaceMethod method = (InterfaceMethod) ctx.getConstantPool().getMethod(ctx.getByteIterator().nextShort());
 
         int args = method.getSignature().getLength();
         int[] values = new int[args + 1];
@@ -26,12 +25,11 @@ class InvokeInterface extends OpCode {
         }
         values[0] = ctx.getStack().pop();
 
-        InterfaceMethodReference imr = (InterfaceMethodReference) method.getMethodReference();
         OopClass oop = Heap.getOopClass(values[0]);
 
-        method = imr.getMethodForImplementation(oop.getClassObject().getType().getClassName());
+        Method implementation = method.getMethodForImplementation(oop.getClassObject().getType().getClassName());
 
-        int maxLocalVars = method.getMaxLocalVariables();
+        int maxLocalVars = implementation.getCode().getMaxLocals();
         if (maxLocalVars > values.length) {
             int[] tmp = new int[maxLocalVars];
             System.arraycopy(values, 0, tmp, 0, values.length);
@@ -39,10 +37,10 @@ class InvokeInterface extends OpCode {
         }
 
         if (method.hasModifier(Modifier.NATIVE)) {
-            ((NativeMethod) method).getNativeImplementation().execute(values).applyToStack(ctx.getStack());
+            ((NativeMethod) implementation).getNativeImplementation().execute(values).applyToStack(ctx.getStack());
         } else {
             ctx.getExecutionStack().push(
-                new ExecutionStackElement(method.getByteCode(), values, oop.getClassObject().getConstantPool(), ctx.getExecutionStack()));
+                new ExecutionStackElement(new ByteCode(implementation.getCode().getCode()), values, oop.getClassObject().getConstantPool(), ctx.getExecutionStack()));
         }
 
         ctx.getByteIterator().nextShort(); // InvokeInterface has 2 extra args which can be ignored

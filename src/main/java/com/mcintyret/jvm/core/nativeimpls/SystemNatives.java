@@ -1,9 +1,12 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.load.ClassLoader;
 
 /**
  * User: tommcintyre
@@ -45,6 +48,25 @@ public enum SystemNatives implements NativeImplementation {
     REGISTER_NATIVES("registerNatives", "()V") {
         @Override
         public NativeReturn execute(int[] args) {
+            // Good place to set StdOut
+            ClassObject fileDescriptor = CLASS_LOADER.getClassObject("java/io/FileDescriptor");
+            OopClass outFd = Heap.getOopClass(fileDescriptor.getStaticFieldValues()[1]);
+
+            ClassObject fileOutputStream = CLASS_LOADER.getClassObject("java/io/FileOutputStream");
+            OopClass fos = fileOutputStream.newObject();
+            Heap.allocate(fos);
+
+            OopClass lockObj = CLASS_LOADER.getClassObject("java/lang/Object").newObject();
+            Heap.allocate(lockObj);
+
+            fos.getFields()[0] = outFd.getAddress();
+            fos.getFields()[4] = lockObj.getAddress();
+
+
+
+
+
+
             // Already done
             return NativeReturn.forVoid();
         }
@@ -61,6 +83,8 @@ public enum SystemNatives implements NativeImplementation {
             return ObjectNatives.HASHCODE.execute(args);
         }
     };
+
+    private static final ClassLoader CLASS_LOADER = ClassLoader.DEFAULT_CLASSLOADER;
 
     private final MethodSignature methodSignature;
 

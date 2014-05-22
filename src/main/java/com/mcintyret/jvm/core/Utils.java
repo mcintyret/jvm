@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core;
 
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
+import com.mcintyret.jvm.core.clazz.Field;
+import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.oop.Oop;
@@ -37,6 +39,15 @@ public class Utils {
             chars[i] = (char) charArray.getFields()[i];
         }
         return new String(chars);
+    }
+
+    public static void executeMethod(Method method, int[] args) {
+        ExecutionStack stack = new ExecutionStack();
+
+        stack.push(new ExecutionStackElement(new ByteCode(method.getCode().getCode()), args,
+            method.getClassObject().getConstantPool(), stack));
+
+        stack.execute();
     }
 
 }

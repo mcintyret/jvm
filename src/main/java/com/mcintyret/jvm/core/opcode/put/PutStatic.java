@@ -1,8 +1,7 @@
 package com.mcintyret.jvm.core.opcode.put;
 
-import com.mcintyret.jvm.core.Field;
 import com.mcintyret.jvm.core.WordStack;
-import com.mcintyret.jvm.core.constantpool.FieldReference;
+import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 
@@ -12,10 +11,9 @@ public class PutStatic extends OpCode {
     public void execute(OperationContext ctx) {
         WordStack stack = ctx.getStack();
 
-        FieldReference fieldRef = ctx.getConstantPool().getFieldReference(ctx.getByteIterator().nextShort());
-        Field field = fieldRef.getStaticField();
+        Field field = ctx.getConstantPool().getField(ctx.getByteIterator().nextShort());
 
-        int[] fields = fieldRef.getClassObject().getStaticFieldValues();
+        int[] fields = field.getClassObject().getStaticFieldValues();
 
         int offset = field.getOffset();
         if (field.getType().getSimpleType().isDoubleWidth()) {

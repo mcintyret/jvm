@@ -38,6 +38,11 @@ public class ArrayClassObject extends AbstractClassObject {
         this.arrayType = arrayType;
     }
 
+    public OopArray newArray(int length) {
+        length *= arrayType.getComponentType().getSimpleType().getWidth();
+        return new OopArray(this, new int[length]);
+    }
+
     @Override
     public ArrayType getType() {
         return arrayType;

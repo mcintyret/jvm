@@ -1,16 +1,18 @@
-package com.mcintyret.jvm.core.constantpool;
+package com.mcintyret.jvm.core.clazz;
 
-import com.mcintyret.jvm.core.clazz.ClassObject;
-import com.mcintyret.jvm.core.Method;
+import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.parse.Modifier;
+import com.mcintyret.jvm.parse.attribute.Attributes;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
-public class InterfaceMethodReference extends MethodReference {
+public class InterfaceMethod extends Method {
 
     private final Map<String, Method> methodMap = new HashMap<>();
 
-    public InterfaceMethodReference(ClassObject classObject, int methodIndex) {
-        super(classObject, methodIndex, false);
+    public InterfaceMethod(Set<Modifier> modifiers, Attributes attributes, MethodSignature signature) {
+        super(modifiers, attributes, signature);
     }
 
     public void registerMethodForImplementation(String className, Method method) {
@@ -22,4 +24,5 @@ public class InterfaceMethodReference extends MethodReference {
     public Method getMethodForImplementation(String className) {
         return methodMap.get(className);
     }
+
 }
