@@ -13,7 +13,7 @@ class IInc extends OpCode {
     @Override
     public void execute(OperationContext ctx) {
         ByteIterator bi = ctx.getByteIterator();
-        ctx.getVariables()[bi.next()] += bi.next();
+        ctx.getVariables()[bi.nextByte()] += bi.nextByte();
     }
 
     @Override

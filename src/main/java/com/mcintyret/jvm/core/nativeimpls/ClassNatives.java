@@ -1,7 +1,12 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
+import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.MagicClasses;
+import com.mcintyret.jvm.core.Utils;
+import com.mcintyret.jvm.core.clazz.ClassCache;
 import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.domain.SimpleType;
+import com.mcintyret.jvm.core.oop.OopClass;
 
 /**
  * User: tommcintyre
@@ -24,6 +29,15 @@ public enum ClassNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(int[] args) {
             return NativeReturn.forNull();
+        }
+    },
+    GET_PRIMITIVE_CLASS("getPrimitiveClass", "(Ljava/lang/String;)Ljava/lang/Class;") {
+        @Override
+        public NativeReturn execute(int[] args) {
+            OopClass stringObj = Heap.getOopClass(args[0]);
+            String arg = Utils.toString(stringObj);
+            SimpleType st = SimpleType.valueOf(arg.toUpperCase());
+            return NativeReturn.forInt(ClassCache.getOopPrimitive(st).getAddress());
         }
     };
 

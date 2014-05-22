@@ -6,7 +6,7 @@ abstract class DoubleWidthStoreIndexed extends DoubleWidthStore {
 
     @Override
     protected final int getIndex(ByteIterator bytes) {
-        return bytes.next();
+        return bytes.nextByte();
     }
 
 }

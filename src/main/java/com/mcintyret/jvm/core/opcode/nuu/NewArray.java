@@ -10,7 +10,7 @@ class NewArray extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        SimpleType type = SimpleType.forByte(ctx.getByteIterator().next());
+        SimpleType type = SimpleType.forByte(ctx.getByteIterator().nextByte());
 
         ctx.getStack().push(Heap.allocate(Utils.newArray(type, ctx.getStack().pop())));
     }

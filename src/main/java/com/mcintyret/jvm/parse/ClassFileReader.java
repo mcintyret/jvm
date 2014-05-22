@@ -29,7 +29,7 @@ public class ClassFileReader {
         int cpCount = bi.nextShort();
         Object[] cp = new Object[cpCount];
         for (int i = 1; i < cpCount; i++) {
-            ConstantPoolConstant cpc = ConstantPoolConstant.forByte(bi.next());
+            ConstantPoolConstant cpc = ConstantPoolConstant.forByte(bi.nextByte());
             cp[i] = cpc.parse(bi);
             if (cpc == ConstantPoolConstant.DOUBLE || cpc == ConstantPoolConstant.LONG) {
                 i++;

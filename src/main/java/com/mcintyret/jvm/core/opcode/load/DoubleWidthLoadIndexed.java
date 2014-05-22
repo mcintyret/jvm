@@ -6,7 +6,7 @@ abstract class DoubleWidthLoadIndexed extends DoubleWidthLoad {
 
     @Override
     protected final int getIndex(ByteIterator bytes) {
-        return bytes.next();
+        return bytes.nextByte();
     }
 
 }

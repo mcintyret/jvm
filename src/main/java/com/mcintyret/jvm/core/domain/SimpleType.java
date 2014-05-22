@@ -9,7 +9,7 @@ public enum SimpleType implements Type {
     BYTE("B", 8),
     SHORT("S", 9),
     CHAR("C", 5),
-    INTEGER("I", 10),
+    INT("I", 10),
     LONG("J", 11),
     FLOAT("F", 6),
     DOUBLE("D", 7),

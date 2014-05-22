@@ -15,23 +15,28 @@ public class ByteBufferIterator implements ByteIterator {
     }
 
     @Override
-    public byte next() {
+    public byte nextByte() {
         return buffer.get();
     }
 
     @Override
-    public int nextShort() {
+    public int nextByteUnsigned() {
+        return 0xFF & nextByte();
+    }
+
+    @Override
+    public short nextShort() {
         return buffer.getShort();
+    }
+
+    @Override
+    public int nextShortUnsigned() {
+        return 0xFFFF & nextShort();
     }
 
     @Override
     public int nextInt() {
         return buffer.getInt();
-    }
-
-    @Override
-    public boolean hasNext() {
-        return buffer.hasRemaining();
     }
 
     @Override

@@ -82,7 +82,7 @@ public enum ConstantPoolConstant {
     METHOD_HANDLE(15) {
         @Override
         public Object parse(ByteIterator bi) {
-            return new CpMethodHandle(bi.next(), bi.nextShort());
+            return new CpMethodHandle(bi.nextByte(), bi.nextShort());
         }
     },
     METHOD_TYPE(16) {

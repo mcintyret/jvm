@@ -6,6 +6,6 @@ abstract class SingleWidthStoreIndexed extends SingleWidthStore {
 
     @Override
     protected final int getIndex(ByteIterator bytes) {
-        return bytes.next();
+        return bytes.nextByte();
     }
 }

@@ -12,6 +12,8 @@ Native method implementations
 
 Remove Reflections dependency
 
+Proper Heap options
+
 is RegisterNatives a special case for native methods?
 
 JMX?

@@ -2,9 +2,10 @@ package com.mcintyret.jvm.core.clazz;
 
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.MagicClasses;
-import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.domain.SimpleType;
 import com.mcintyret.jvm.core.oop.OopClassClass;
-
+import com.mcintyret.jvm.core.oop.OopPrimitiveClass;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,19 +15,28 @@ import java.util.Map;
  */
 public class ClassCache {
 
-    private static final Map<String, OopClass> MAP = new HashMap<>();
+    private static final Map<String, OopClassClass> REFERENCE = new HashMap<>();
 
-    public static OopClass getOopClass(ClassObject co) {
-        OopClass oopClass = MAP.get(co.getType().getClassName());
+    private static final Map<SimpleType, OopPrimitiveClass> PRIMITIVE = new EnumMap<>(SimpleType.class);
+
+    public static OopClassClass getOopClass(ClassObject co) {
+        OopClassClass oopClass = REFERENCE.get(co.getType().getClassName());
         if (oopClass == null) {
-            // shit
-
             ClassObject clazzObj = MagicClasses.getMagicClass(MagicClasses.JAVA_LANG_CLASS);
-            OopClassClass instance = clazzObj.newObject((clazz, fields) -> new OopClassClass(clazz, null, fields, co));
-            Heap.allocate(instance);
-            oopClass = instance;
+            oopClass = clazzObj.newObject((clazz, fields) -> new OopClassClass(clazz, null, fields, co));
+            Heap.allocate(oopClass);
         }
         return oopClass;
+    }
+
+    public static OopPrimitiveClass getOopPrimitive(SimpleType simpleType) {
+        OopPrimitiveClass primitiveClass = PRIMITIVE.get(simpleType);
+        if (primitiveClass == null) {
+            ClassObject clazzObj = MagicClasses.getMagicClass(MagicClasses.JAVA_LANG_CLASS);
+            primitiveClass = clazzObj.newObject((clazz, fields) -> new OopPrimitiveClass(clazz, null, fields, simpleType));
+            Heap.allocate(primitiveClass);
+        }
+        return primitiveClass;
     }
 
 }

@@ -8,7 +8,7 @@ public abstract class ElementValue {
     public static final Parser<ElementValue> PARSER = new Parser<ElementValue>() {
         @Override
         public ElementValue parse(ByteIterator bi) {
-            char c = (char) bi.next();
+            char c = (char) bi.nextByte();
             switch (c) {
                 case 'B':
                 case 'C':
