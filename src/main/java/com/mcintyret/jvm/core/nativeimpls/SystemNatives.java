@@ -5,7 +5,6 @@ import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.oop.OopArray;
-import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.load.ClassLoader;
 
 /**
@@ -48,24 +47,6 @@ public enum SystemNatives implements NativeImplementation {
     REGISTER_NATIVES("registerNatives", "()V") {
         @Override
         public NativeReturn execute(int[] args) {
-            // Good place to set StdOut
-            ClassObject fileDescriptor = CLASS_LOADER.getClassObject("java/io/FileDescriptor");
-            OopClass outFd = Heap.getOopClass(fileDescriptor.getStaticFieldValues()[1]);
-
-            ClassObject fileOutputStream = CLASS_LOADER.getClassObject("java/io/FileOutputStream");
-            OopClass fos = fileOutputStream.newObject();
-            Heap.allocate(fos);
-
-            OopClass lockObj = CLASS_LOADER.getClassObject("java/lang/Object").newObject();
-            Heap.allocate(lockObj);
-
-            fos.getFields()[0] = outFd.getAddress();
-            fos.getFields()[4] = lockObj.getAddress();
-
-
-
-
-
 
             // Already done
             return NativeReturn.forVoid();
@@ -81,6 +62,14 @@ public enum SystemNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(int[] args) {
             return ObjectNatives.HASHCODE.execute(args);
+        }
+    },
+    SET_OUT_0("setIn0", "(Ljava/io/PrintStream;)V") {
+        @Override
+        public NativeReturn execute(int[] args) {
+            ClassObject system = ClassLoader.DEFAULT_CLASSLOADER.getClassObject("java/lang/System");
+            system.getStaticFieldValues()[1] = args[0];
+            return NativeReturn.forVoid();
         }
     };
 

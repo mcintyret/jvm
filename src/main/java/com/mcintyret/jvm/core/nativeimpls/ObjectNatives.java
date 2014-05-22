@@ -3,9 +3,8 @@ package com.mcintyret.jvm.core.nativeimpls;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.MagicClasses;
 import com.mcintyret.jvm.core.domain.MethodSignature;
-import org.reflections.Reflections;
-
 import java.util.Set;
+import org.reflections.Reflections;
 
 /**
  * User: tommcintyre
@@ -19,12 +18,8 @@ public enum ObjectNatives implements NativeImplementation {
             Set<Class<? extends NativeImplementation>> classes = reflections.getSubTypesOf(NativeImplementation.class);
 
             for (Class<? extends NativeImplementation> clazz : classes) {
-                if (clazz.isEnum()) {
-                    for (NativeImplementation val : clazz.getEnumConstants()) {
-                        if (val != this) {
-                            NativeImplemntationRegistry.registerNative(val);
-                        }
-                    }
+                if (clazz.isEnum() && clazz != ObjectNatives.class) {
+                    registerNatives(clazz);
                 }
             }
             return NativeReturn.forVoid();
@@ -60,5 +55,15 @@ public enum ObjectNatives implements NativeImplementation {
     @Override
     public MethodSignature getMethodSignature() {
         return methodSignature;
+    }
+
+    public static void registerNatives() {
+        registerNatives(ObjectNatives.class);
+    }
+
+    static void registerNatives(Class<? extends NativeImplementation> clazz) {
+        for (NativeImplementation val : clazz.getEnumConstants()) {
+            NativeImplemntationRegistry.registerNative(val);
+        }
     }
 }

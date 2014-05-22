@@ -1,19 +1,26 @@
 package com.mcintyret.jvm.load;
 
+import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.MagicClasses;
 import com.mcintyret.jvm.core.Utils;
+import com.mcintyret.jvm.core.clazz.AbstractClassObject;
+import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.InterfaceMethod;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.NativeMethod;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
+import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.domain.ReferenceType;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.domain.Types;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplemntationRegistry;
+import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
+import com.mcintyret.jvm.core.nativeimpls.SystemNatives;
+import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.parse.ClassFile;
 import com.mcintyret.jvm.parse.ClassFileReader;
 import com.mcintyret.jvm.parse.MemberInfo;
@@ -60,11 +67,48 @@ public class ClassLoader {
             classFiles.put(getClassName(file.getThisClass(), file.getConstantPool()), file);
         }
 
+        ObjectNatives.registerNatives();
         MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_OBJECT));
         MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLONEABLE));
         MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_IO_SERIALIZABLE));
         MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLASS));
         MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_STRING));
+
+        afterInitialLoad();
+    }
+
+    private void afterInitialLoad() {
+        if (this == DEFAULT_CLASSLOADER) {
+            // Do this somewhere else!
+            setSystemOut();
+        }
+    }
+
+    private void setSystemOut() {
+        ClassObject fileDescriptor = getClassObject("java/io/FileDescriptor");
+        OopClass outFd = Heap.getOopClass(fileDescriptor.getStaticFieldValues()[1]);
+
+        ClassObject fileOutputStream = getClassObject("java/io/FileOutputStream");
+        OopClass fos = fileOutputStream.newObject();
+        Heap.allocate(fos);
+
+        OopClass lockObj = getClassObject("java/lang/Object").newObject();
+        Heap.allocate(lockObj);
+
+        fos.getFields()[0] = outFd.getAddress();
+        fos.getFields()[4] = lockObj.getAddress();
+
+        ClassObject bufferedOutputStream = getClassObject("java/io/BufferedOutputStream");
+        OopClass bos = bufferedOutputStream.newObject();
+        Method bosConstructor = bufferedOutputStream.findMethod("<init>", "(Ljava/io/OutputStream)V", false);
+        Utils.executeMethod(bosConstructor, new int[]{Heap.allocate(bos), fos.getAddress()});
+
+        ClassObject printStream = getClassObject("java/io/PrintStream");
+        OopClass ps = printStream.newObject();
+        Method psConstructor = printStream.findMethod("<init>", "(ZLjava/io/OutputStream)V", false);
+        Utils.executeMethod(psConstructor, new int[]{Heap.allocate(ps), bos.getAddress()});
+
+        SystemNatives.SET_OUT_0.execute(new int[]{ps.getAddress()});
     }
 
     public ClassObject getClassObject(String className) {
@@ -83,6 +127,7 @@ public class ClassLoader {
             co = makeClassObject(className, file, parent);
             classes.put(className, co);
             executeStaticInitMethod(co);
+            System.out.println("Done Loading: " + className);
         }
         return co;
     }
@@ -116,8 +161,8 @@ public class ClassLoader {
         List<Method> orderedMethods = new ArrayList<>();
 
         if (parentMethods != null) {
-            for (Method parentmethod : parentMethods) {
-                if (parentmethod.hasModifier(Modifier.PRIVATE)) {
+            for (Method parentMethod : parentMethods) {
+                if (parentMethod.hasModifier(Modifier.PRIVATE)) {
                     // we known nothing after this point can be overridden
                     break;
                 }
@@ -125,7 +170,7 @@ public class ClassLoader {
                 boolean overridden = false;
                 while (li.hasNext()) {
                     MethodInfoAndSig mis = li.next();
-                    if (mis.sig.equals(parentmethod.getSignature())) {
+                    if (mis.sig.equals(parentMethod.getSignature())) {
                         // Override!!
                         orderedMethods.add(translateMethod(mis, false));
                         li.remove();
@@ -135,7 +180,7 @@ public class ClassLoader {
                 }
                 if (!overridden) {
                     // copy down the parent's Method
-                    orderedMethods.add(parentmethod);
+                    orderedMethods.add(parentMethod);
                 }
             }
         }
@@ -293,9 +338,11 @@ public class ClassLoader {
         }
     };
 
-    public ClassObject translate(CpClass cpClass, Object[] constantPool) {
+    public AbstractClassObject translate(CpClass cpClass, Object[] constantPool) {
         String className = (String) constantPool[cpClass.getNameIndex()];
-        return getClassObject(className);
+        return className.startsWith("[") ?
+            ArrayClassObject.forType((ArrayType) Types.parseType(className)) :
+            getClassObject(className);
     }
 
     public Field translate(CpFieldReference cfr, Object[] constantPool) {

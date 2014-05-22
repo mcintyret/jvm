@@ -10,7 +10,7 @@ class InstanceOf extends TypeOp {
     }
 
     @Override
-    protected void handleType(boolean instanceOf, WordStack stack) {
+    protected void handleType(boolean instanceOf, WordStack stack, int address) {
         stack.push(instanceOf ? 1 : 0);
     }
 

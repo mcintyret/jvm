@@ -9,7 +9,7 @@ class New extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        ClassObject clazz = ctx.getConstantPool().getClassObject(ctx.getByteIterator().nextShort());
+        ClassObject clazz = (ClassObject) ctx.getConstantPool().getClassObject(ctx.getByteIterator().nextShort());
 
         ctx.getStack().push(Heap.allocate(clazz.newObject()));
     }

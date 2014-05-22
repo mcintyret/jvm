@@ -5,10 +5,11 @@ import com.mcintyret.jvm.core.WordStack;
 class CheckCast extends TypeOp {
 
     @Override
-    protected void handleType(boolean instanceOf, WordStack stack) {
+    protected void handleType(boolean instanceOf, WordStack stack, int address) {
         if (!instanceOf) {
             throw new ClassCastException();
         }
+        stack.push(address);
     }
 
     @Override

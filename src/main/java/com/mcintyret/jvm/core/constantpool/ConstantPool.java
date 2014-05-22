@@ -1,10 +1,11 @@
 package com.mcintyret.jvm.core.constantpool;
 
-import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.ClassCache;
 import com.mcintyret.jvm.core.clazz.ClassObject;
+import com.mcintyret.jvm.core.clazz.Field;
+import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.cp.CpClass;
@@ -23,16 +24,16 @@ public class ConstantPool {
         this.loader = loader;
     }
 
-    public ClassObject getClassObject(int i) {
-        if (constantPool[i] instanceof ClassObject) {
-            return (ClassObject) constantPool[i];
+    public AbstractClassObject getClassObject(int i) {
+        if (constantPool[i] instanceof AbstractClassObject) {
+            return (AbstractClassObject) constantPool[i];
         }
 
         return translactClassObject(i);
     }
 
-    private ClassObject translactClassObject(int i) {
-        ClassObject obj = loader.translate((CpClass) constantPool[i], constantPool);
+    private AbstractClassObject translactClassObject(int i) {
+        AbstractClassObject obj = loader.translate((CpClass) constantPool[i], constantPool);
         constantPool[i] = obj;
         return obj;
     }
@@ -63,12 +64,12 @@ public class ConstantPool {
             String string = (String) constantPool[index];
             constantPool[i] = Heap.intern(string);
         } else {
-            ClassObject co = null;
+            AbstractClassObject co = null;
             // Asking for a class literal - this takes a bit of fiddling
             if (constantPool[i] instanceof CpClass) {
                 co = translactClassObject(i);
-            } else if (constantPool[i] instanceof ClassObject) {
-                co = (ClassObject) constantPool[i];
+            } else if (constantPool[i] instanceof AbstractClassObject) {
+                co = (AbstractClassObject) constantPool[i];
             }
             if (co != null) {
                 OopClass oop = ClassCache.getOopClass((ClassObject) constantPool[i]);

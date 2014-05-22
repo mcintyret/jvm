@@ -21,7 +21,7 @@ public abstract class AbstractClassObject {
     }
 
     // TODO: can this be made more efficient?
-    public boolean isInstanceOf(ClassObject type) {
+    public boolean isInstanceOf(AbstractClassObject type) {
         if (type == this) {
             return true;
         }

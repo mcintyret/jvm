@@ -8,18 +8,12 @@ import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.domain.ReferenceType;
-import com.mcintyret.jvm.core.nativeimpls.NativeImplemntationRegistry;
-import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
 import com.mcintyret.jvm.core.oop.OopArray;
 import java.io.IOException;
 
 public class Runner {
 
     private static final MethodSignature MAIN_METHOD_SIGNATURE = MethodSignature.parse("main", "([Ljava/lang/String;)V");
-
-    static {
-        NativeImplemntationRegistry.registerNative(ObjectNatives.REGISTER_NATIVES);
-    }
 
     public void run(ClassPath classPath, String mainClassName, String... args) throws IOException {
         ClassLoader loader = ClassLoader.DEFAULT_CLASSLOADER;
