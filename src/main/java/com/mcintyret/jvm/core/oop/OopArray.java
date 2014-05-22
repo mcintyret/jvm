@@ -1,6 +1,5 @@
 package com.mcintyret.jvm.core.oop;
 
-import com.mcintyret.jvm.core.MarkRef;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 
 public class OopArray extends Oop {
@@ -9,8 +8,8 @@ public class OopArray extends Oop {
 
     private final int width;
 
-    public OopArray(ArrayClassObject classObject, MarkRef markRef, int[] fields) {
-        super(markRef, fields);
+    public OopArray(ArrayClassObject classObject, int[] fields) {
+        super(fields);
         this.arrayClassObject = classObject;
         this.width = classObject.getType().getComponentType().getSimpleType().getWidth();
     }

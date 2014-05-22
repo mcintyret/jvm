@@ -23,7 +23,7 @@ public class ClassCache {
         OopClassClass oopClass = REFERENCE.get(co.getType().getClassName());
         if (oopClass == null) {
             ClassObject clazzObj = MagicClasses.getMagicClass(MagicClasses.JAVA_LANG_CLASS);
-            oopClass = clazzObj.newObject((clazz, fields) -> new OopClassClass(clazz, null, fields, co));
+            oopClass = clazzObj.newObject((clazz, fields) -> new OopClassClass(clazz, fields, co));
             Heap.allocate(oopClass);
         }
         return oopClass;
@@ -33,7 +33,7 @@ public class ClassCache {
         OopPrimitiveClass primitiveClass = PRIMITIVE.get(simpleType);
         if (primitiveClass == null) {
             ClassObject clazzObj = MagicClasses.getMagicClass(MagicClasses.JAVA_LANG_CLASS);
-            primitiveClass = clazzObj.newObject((clazz, fields) -> new OopPrimitiveClass(clazz, null, fields, simpleType));
+            primitiveClass = clazzObj.newObject((clazz, fields) -> new OopPrimitiveClass(clazz, fields, simpleType));
             Heap.allocate(primitiveClass);
         }
         return primitiveClass;

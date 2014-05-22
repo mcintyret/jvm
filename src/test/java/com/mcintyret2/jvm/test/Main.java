@@ -18,7 +18,7 @@ public class Main {
 
         String reversed = reverse(str);
 
-        print(reversed);
+        System.out.println(reversed);
     }
 
     private static void simpleIntArrays() {

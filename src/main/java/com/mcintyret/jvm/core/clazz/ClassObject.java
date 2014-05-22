@@ -95,7 +95,7 @@ public class ClassObject extends AbstractClassObject {
 
         @Override
         public OopClass newObject(ClassObject clazz, int[] fields) {
-            return new OopClass(clazz, null, fields);
+            return new OopClass(clazz, fields);
         }
     }
 

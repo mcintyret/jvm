@@ -11,8 +11,8 @@ public class OopClassClass extends OopClass {
 
     private final ClassObject thisClass;
 
-    public OopClassClass(ClassObject classObject, MarkRef markRef, int[] fields, ClassObject thisClass) {
-        super(classObject, markRef, fields);
+    public OopClassClass(ClassObject classObject, int[] fields, ClassObject thisClass) {
+        super(classObject, fields);
         this.thisClass = thisClass;
     }
 

@@ -73,7 +73,7 @@ public class Heap {
                     chars[i] = string.charAt(i);
                 }
                 ArrayClassObject co = ArrayClassObject.forType(ArrayType.create(SimpleType.CHAR, 1));
-                OopArray charArrayOop = new OopArray(co, null, chars);
+                OopArray charArrayOop = new OopArray(co, chars);
                 int charArrayAddress = Heap.allocate(charArrayOop);
 
                 stringOop.getFields()[0] = charArrayAddress;

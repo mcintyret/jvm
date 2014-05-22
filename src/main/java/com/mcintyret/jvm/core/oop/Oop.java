@@ -5,14 +5,13 @@ import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 
 public abstract class Oop {
 
-    private final MarkRef markRef;
+    private final MarkRef markRef = new MarkRef();
 
     private final int[] fields;
 
     private int address;
 
-    public Oop(MarkRef markRef, int[] fields) {
-        this.markRef = markRef;
+    public Oop(int[] fields) {
         this.fields = fields;
     }
 
