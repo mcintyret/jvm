@@ -120,7 +120,7 @@ public class ClassLoader {
         }
 
         // Methods - sorting out the VTable
-        ReferenceType type = ReferenceType.forClass(className);
+        NonArrayType type = NonArrayType.forClass(className);
 
         List<Method> staticMethods = new ArrayList<>();
         List<MethodInfoAndSig> instanceMethods = new LinkedList<>();
@@ -429,13 +429,13 @@ public class ClassLoader {
 
     private static class FieldKey {
 
-        protected final ReferenceType clazz;
+        protected final NonArrayType clazz;
 
         protected final String name;
 
         private final Type type;
 
-        private FieldKey(ReferenceType clazz, String name, Type type) {
+        private FieldKey(NonArrayType clazz, String name, Type type) {
             this.clazz = clazz;
             this.name = name;
             this.type = type;

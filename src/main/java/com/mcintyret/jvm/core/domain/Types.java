@@ -26,7 +26,7 @@ public class Types {
                 }
             } else {
                 if (c == ';') {
-                    return toType(ReferenceType.forClass(new String(classBuffer, 0, classIndex)), arrayDimensions);
+                    return toType(NonArrayType.forClass(new String(classBuffer, 0, classIndex)), arrayDimensions);
                 } else {
                     classBuffer[classIndex++] = c;
                 }

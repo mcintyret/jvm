@@ -5,6 +5,7 @@ import com.mcintyret.jvm.parse.Modifier;
 import com.mcintyret.jvm.parse.attribute.AttributeType;
 import com.mcintyret.jvm.parse.attribute.Attributes;
 import com.mcintyret.jvm.parse.attribute.Code;
+
 import java.util.Set;
 
 public class Method extends Member {
@@ -27,6 +28,14 @@ public class Method extends Member {
     @Override
     public String toString() {
         return "Method: " + signature;
+    }
+
+    public int[] newArgArray() {
+        Code code = getCode();
+        int maxLocals = code == null ? 0 : code.getMaxLocals();
+
+        int args = getSignature().getLength();
+        return new int[Math.max(args + (isStatic() ? 0 : 1), maxLocals)];
     }
 
 }

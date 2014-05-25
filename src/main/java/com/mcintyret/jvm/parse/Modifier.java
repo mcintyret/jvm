@@ -42,4 +42,12 @@ public enum Modifier {
         }
         return mods;
     }
+
+    public static int translate(Set<Modifier> modifiers) {
+        int res = 0;
+        for (Modifier modifier : modifiers) {
+            res |= modifier.val;
+        }
+        return res;
+    }
 }

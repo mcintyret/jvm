@@ -5,7 +5,11 @@ import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OpCodes;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 public class ExecutionStackElement implements OperationContext {
+
+    public final static AtomicInteger TOTAL_OPCODES_EXECUTED = new AtomicInteger();
 
     private final ByteIterator byteIterator;
 
@@ -29,6 +33,7 @@ public class ExecutionStackElement implements OperationContext {
         OpCode opCode = OpCodes.getOpcode(byteIterator.nextByte());
         System.out.println(String.format("%4d: %s", pos, opCode));
         opCode.execute(this);
+        TOTAL_OPCODES_EXECUTED.incrementAndGet();
     }
 
     @Override

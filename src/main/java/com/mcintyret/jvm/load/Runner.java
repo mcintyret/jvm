@@ -7,7 +7,7 @@ import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.domain.MethodSignature;
-import com.mcintyret.jvm.core.domain.ReferenceType;
+import com.mcintyret.jvm.core.domain.NonArrayType;
 import com.mcintyret.jvm.core.oop.OopArray;
 import java.io.IOException;
 
@@ -24,7 +24,7 @@ public class Runner {
 
         Method mainMethod = findMainMethod(mainClass);
 
-        ArrayClassObject aco = ArrayClassObject.forType(ArrayType.create(ReferenceType.forClass("java/lang/String"), 1));
+        ArrayClassObject aco = ArrayClassObject.forType(ArrayType.create(NonArrayType.forClass("java/lang/String"), 1));
         OopArray array = aco.newArray(args.length);
         for (int i = 0; i < args.length; i++) {
             array.getFields()[i] = Heap.intern(args[i]);

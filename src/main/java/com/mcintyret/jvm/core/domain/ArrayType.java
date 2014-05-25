@@ -1,9 +1,12 @@
 package com.mcintyret.jvm.core.domain;
 
+import com.mcintyret.jvm.core.clazz.ArrayClassObject;
+import com.mcintyret.jvm.core.clazz.ClassObject;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public final class ArrayType implements Type {
+public final class ArrayType extends ReferenceType {
 
     private final Type componentType;
 
@@ -25,16 +28,6 @@ public final class ArrayType implements Type {
         // Type should not be an ArrayType
         this.componentType = componentType;
         this.dimensions = dimensions;
-    }
-
-    @Override
-    public SimpleType getSimpleType() {
-        return SimpleType.REF;
-    }
-
-    @Override
-    public boolean isPrimitive() {
-        return false;
     }
 
     @Override
@@ -67,5 +60,10 @@ public final class ArrayType implements Type {
 
     public Type getComponentType() {
         return componentType;
+    }
+
+    @Override
+    public ArrayClassObject getClassObject() {
+        return ArrayClassObject.forType(this);
     }
 }

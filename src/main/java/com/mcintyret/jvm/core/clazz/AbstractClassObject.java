@@ -1,12 +1,13 @@
 package com.mcintyret.jvm.core.clazz;
 
+import com.mcintyret.jvm.core.domain.ReferenceType;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.parse.Modifier;
 import java.util.Set;
 
 public abstract class AbstractClassObject {
 
-    public abstract Type getType();
+    public abstract ReferenceType getType();
 
     protected final ClassObject superClass;
 

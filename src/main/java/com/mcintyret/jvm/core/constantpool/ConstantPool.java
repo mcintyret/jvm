@@ -71,7 +71,7 @@ public class ConstantPool {
                 co = (AbstractClassObject) constantPool[i];
             }
             if (co != null) {
-                OopClass oop = ClassCache.getOopClass((AbstractClassObject) constantPool[i]);
+                OopClass oop = ClassCache.getOopClass(((AbstractClassObject) constantPool[i]).getType());
                 return oop.getAddress();
             }
 

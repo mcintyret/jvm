@@ -8,7 +8,6 @@ import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.parse.Modifier;
-import com.mcintyret.jvm.parse.attribute.Code;
 
 /**
  * User: tommcintyre
@@ -40,11 +39,9 @@ abstract class Invoke extends OpCode {
 
         int shift = isStatic ? 0 : 1;
 
-        Code code = method.getCode();
-        int maxLocals = code == null ? 0 : code.getMaxLocals();
-
+        int[] values = method.newArgArray();
         int args = method.getSignature().getLength();
-        int[] values = new int[Math.max(args + shift, maxLocals)];
+
         for (int i = args - (1 - shift); i >= shift; i--) {
             values[i] = ctx.getStack().pop();
         }

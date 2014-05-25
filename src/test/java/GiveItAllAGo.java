@@ -24,6 +24,10 @@ public class GiveItAllAGo {
             }
         });
 
-        new Runner().run(classPath, mainClass);
+        try {
+            new Runner().run(classPath, mainClass);
+        } finally {
+            System.out.println("Total operations: " + ExecutionStackElement.TOTAL_OPCODES_EXECUTED.get());
+        }
     }
 }
