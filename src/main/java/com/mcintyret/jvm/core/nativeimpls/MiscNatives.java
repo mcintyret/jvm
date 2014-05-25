@@ -1,7 +1,11 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.Utils;
+import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.oop.OopClass;
+
 import java.util.Arrays;
 
 public enum MiscNatives implements NativeImplementation {
@@ -16,15 +20,18 @@ public enum MiscNatives implements NativeImplementation {
             return "sun/misc/VM";
         }
     },
-    JAVA_UTIL_DICTIONARY_HASHCODE("hashCode", "()I") {
+    SECURITY_ACCESSCONTROLLER_DOPRIVILEGED("doPrivileged", "(Ljava/security/PrivilegedAction;)Ljava/lang/Object;") {
         @Override
         public NativeReturn execute(int[] args) {
-            return NativeReturn.forInt(Arrays.hashCode(Heap.getOop(args[0]).getFields()));
+            // Meh, I'm sure it's fine...
+            OopClass privilegedAction = Heap.getOopClass(args[0]);
+            Method run = privilegedAction.getClassObject().findMethod("run", "()Ljava/lang/Object;", false);
+            return Utils.executeMethod(run, new int[run.getCode().getMaxLocals()]);
         }
 
         @Override
         public String getClassName() {
-            return "java/util/Dictionary";
+            return "java/security/AccessController";
         }
     };
 

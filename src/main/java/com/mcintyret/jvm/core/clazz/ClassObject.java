@@ -104,6 +104,10 @@ public class ClassObject extends AbstractClassObject {
         return type;
     }
 
+    public String getClassName() {
+        return type.getClassName();
+    }
+
     public Method[] getStaticMethods() {
         return staticMethods;
     }
@@ -112,9 +116,14 @@ public class ClassObject extends AbstractClassObject {
         return classLoader;
     }
 
+
+
     private void finalizeMembers(Member[] members) {
         for (Member member : members)  {
-            member.setClassObject(this);
+            if (member.getClassObject() == null) {
+                // So we can reuse the same object for overridden methods
+                member.setClassObject(this);
+            }
         }
     }
 
@@ -122,6 +131,11 @@ public class ClassObject extends AbstractClassObject {
 
         O newObject(ClassObject clazz, int[] fields);
 
+    }
+
+    @Override
+    public String toString() {
+        return "Class[" + getClassName() + "]";
     }
 
     private enum DefaultNewObjectCreator implements NewObjectCreator<OopClass> {

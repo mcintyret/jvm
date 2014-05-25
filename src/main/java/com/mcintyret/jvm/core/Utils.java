@@ -5,6 +5,7 @@ import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.domain.Type;
+import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 
@@ -41,13 +42,15 @@ public class Utils {
         return new String(chars);
     }
 
-    public static void executeMethod(Method method, int[] args) {
+    public static NativeReturn executeMethod(Method method, int[] args) {
         ExecutionStack stack = new ExecutionStack();
 
         stack.push(new ExecutionStackElement(new ByteCode(method.getCode().getCode()), args,
-            method.getClassObject().getConstantPool(), stack));
+                method.getClassObject().getConstantPool(), stack));
 
         stack.execute();
+
+        return stack.getFinalReturn();
     }
 
 }

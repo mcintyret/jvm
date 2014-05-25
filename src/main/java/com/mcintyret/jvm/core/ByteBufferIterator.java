@@ -50,4 +50,9 @@ public class ByteBufferIterator implements ByteIterator {
         buffer.get(bytes);
         return bytes;
     }
+
+    @Override
+    public int getPos() {
+        return buffer.position();
+    }
 }

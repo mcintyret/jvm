@@ -8,14 +8,14 @@ public abstract class AbstractClassObject {
 
     public abstract Type getType();
 
-    protected final ClassObject parent;
+    protected final ClassObject superClass;
 
     private final ClassObject[] interfaces;
 
     private final Set<Modifier> modifiers;
 
-    protected AbstractClassObject(ClassObject parent, ClassObject[] interfaces, Set<Modifier> modifiers) {
-        this.parent = parent;
+    protected AbstractClassObject(ClassObject superClass, ClassObject[] interfaces, Set<Modifier> modifiers) {
+        this.superClass = superClass;
         this.interfaces = interfaces;
         this.modifiers = modifiers;
     }
@@ -38,12 +38,12 @@ public abstract class AbstractClassObject {
                 }
             }
         } else {
-            ClassObject co = parent;
+            ClassObject co = superClass;
             while (co != null) {
                 if (co.isInstanceOf(type)) {
                     return true;
                 }
-                co = co.parent;
+                co = co.superClass;
             }
         }
         return false;
@@ -53,4 +53,11 @@ public abstract class AbstractClassObject {
         return modifiers.contains(modifier);
     }
 
+    public ClassObject getSuperClass() {
+        return superClass;
+    }
+
+    public ClassObject[] getInterfaces() {
+        return interfaces;
+    }
 }

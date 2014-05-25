@@ -9,6 +9,25 @@ public enum UnsafeNatives implements NativeImplementation {
             // do nothing for now
             return NativeReturn.forVoid();
         }
+    },
+    ARRAY_BASE_OFFSET("arrayBaseOffset", "(Ljava/lang/Class;)I") {
+        @Override
+        public NativeReturn execute(int[] args) {
+            return NativeReturn.forInt(args[0]);
+        }
+    },
+    ARRAY_INDEX_SCALE("arrayIndexScale", "(Ljava/lang/Class;)I") {
+        @Override
+        public NativeReturn execute(int[] args) {
+            // TODO: do this properly
+            return NativeReturn.forInt(4);
+        }
+    },
+    ADDRESS_SIZE("addressSize", "()I") {
+        @Override
+        public NativeReturn execute(int[] args) {
+            return NativeReturn.forInt(4);
+        }
     };
 
 

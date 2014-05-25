@@ -16,4 +16,6 @@ public interface ByteIterator {
 
     byte[] nextBytes(int n);
 
+    int getPos();
+
 }

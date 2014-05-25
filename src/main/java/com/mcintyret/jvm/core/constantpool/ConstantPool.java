@@ -3,7 +3,6 @@ package com.mcintyret.jvm.core.constantpool;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.ClassCache;
-import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.oop.OopClass;
@@ -29,10 +28,10 @@ public class ConstantPool {
             return (AbstractClassObject) constantPool[i];
         }
 
-        return translactClassObject(i);
+        return translateClassObject(i);
     }
 
-    private AbstractClassObject translactClassObject(int i) {
+    private AbstractClassObject translateClassObject(int i) {
         AbstractClassObject obj = loader.translate((CpClass) constantPool[i], constantPool);
         constantPool[i] = obj;
         return obj;
@@ -67,12 +66,12 @@ public class ConstantPool {
             AbstractClassObject co = null;
             // Asking for a class literal - this takes a bit of fiddling
             if (constantPool[i] instanceof CpClass) {
-                co = translactClassObject(i);
+                co = translateClassObject(i);
             } else if (constantPool[i] instanceof AbstractClassObject) {
                 co = (AbstractClassObject) constantPool[i];
             }
             if (co != null) {
-                OopClass oop = ClassCache.getOopClass((ClassObject) constantPool[i]);
+                OopClass oop = ClassCache.getOopClass((AbstractClassObject) constantPool[i]);
                 return oop.getAddress();
             }
 

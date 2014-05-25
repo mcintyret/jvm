@@ -1,5 +1,7 @@
 package com.mcintyret.jvm.core;
 
+import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
+
 import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
@@ -7,6 +9,8 @@ import java.util.Deque;
 public class ExecutionStack {
 
     private final Deque<ExecutionStackElement> stack = new ArrayDeque<>();
+
+    private NativeReturn finalReturn;
 
     public void execute() {
         ExecutionStackElement current;
@@ -32,4 +36,13 @@ public class ExecutionStack {
     public ExecutionStackElement peek() {
         return stack.peek();
     }
+
+    public NativeReturn getFinalReturn() {
+        return finalReturn;
+    }
+
+    public void setFinalReturn(NativeReturn finalReturn) {
+        this.finalReturn = finalReturn;
+    }
 }
+

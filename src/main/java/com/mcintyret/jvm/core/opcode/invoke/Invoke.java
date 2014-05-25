@@ -44,7 +44,7 @@ abstract class Invoke extends OpCode {
         int maxLocals = code == null ? 0 : code.getMaxLocals();
 
         int args = method.getSignature().getLength();
-        int[] values = new int[Math.max(args, maxLocals + shift)];
+        int[] values = new int[Math.max(args + shift, maxLocals)];
         for (int i = args - (1 - shift); i >= shift; i--) {
             values[i] = ctx.getStack().pop();
         }
