@@ -2,6 +2,7 @@ package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.WordStack;
+import com.mcintyret.jvm.core.oop.Oop;
 
 /**
  * User: tommcintyre
@@ -16,6 +17,15 @@ public interface NativeReturn {
     public static NativeReturn forInt(int i) {
         return stack -> {
             stack.push(i);
+        };
+    }
+
+    public static NativeReturn forReference(Oop oop) {
+        return stack -> {
+            if (oop.getAddress() == Oop.UNALLOCATED_ADDRESS) {
+                Heap.allocate(oop);
+            }
+            stack.push(oop.getAddress());
         };
     }
 

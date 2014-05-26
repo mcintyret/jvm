@@ -47,7 +47,7 @@ public enum ClassNatives implements NativeImplementation {
             OopClass stringObj = Heap.getOopClass(args[0]);
             String arg = Utils.toString(stringObj);
             SimpleType st = SimpleType.valueOf(arg.toUpperCase());
-            return NativeReturn.forInt(ClassCache.getOopPrimitive(st).getAddress());
+            return NativeReturn.forReference(ClassCache.getOopPrimitive(st));
         }
     },
     GET_DECLARED_FIELDS_0("getDeclaredFields0", "(Z)[Ljava/lang/reflect/Field;") {
@@ -85,7 +85,7 @@ public enum ClassNatives implements NativeImplementation {
                 Utils.executeMethod(ctor, ctorArgs);
             }
 
-            return NativeReturn.forInt(Heap.allocate(array));
+            return NativeReturn.forReference(array);
         }
 
         private void addFields(Field[] fields, boolean publicOnly, List<Field> list) {
@@ -94,6 +94,14 @@ public enum ClassNatives implements NativeImplementation {
                     list.add(field);
                 }
             }
+        }
+    },
+    GET_NAME_0("getName0", "()Ljava/lang/String;") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            OopClassClass occ = (OopClassClass) Heap.getOop(args[0]);
+
+            return NativeReturn.forInt(Heap.intern(occ.getThisClass().getType().toString()));
         }
     };
 

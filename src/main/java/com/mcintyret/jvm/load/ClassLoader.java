@@ -205,8 +205,8 @@ public class ClassLoader {
 
         registerInterfaceImplementations(co);
 
-        cacheFields(co.getInstanceFields());
-        cacheFields(co.getStaticFields());
+        cacheFields(co.getInstanceFields(), className);
+        cacheFields(co.getStaticFields(), className);
 
         cacheMethods(co.getInstanceMethods(), className);
         cacheMethods(co.getStaticMethods(), className);
@@ -281,9 +281,9 @@ public class ClassLoader {
         }
     }
 
-    private void cacheFields(Field[] fields) {
+    private void cacheFields(Field[] fields, String className) {
         for (Field field : fields) {
-            FieldKey key = new FieldKey(field.getClassObject().getType(), field.getName(), field.getType());
+            FieldKey key = new FieldKey(className, field.getName(), field.getType());
             this.fields.put(key, field);
         }
     }
@@ -308,7 +308,7 @@ public class ClassLoader {
 
     private static Field[] translateFields(List<Field> fields, List<MemberInfo> fomis, Object[] constantPool) {
         int offset = 0;
-        if (!fields.isEmpty()) {
+        if (!fields.isEmpty() && !fomis.isEmpty()) {
             Field lastField = fields.get(fields.size() - 1);
             offset = lastField.getOffset() + lastField.getType().getSimpleType().getWidth();
         }
@@ -349,8 +349,8 @@ public class ClassLoader {
         String name = (String) constantPool[nat.getNameIndex()];
         Type type = Types.parseType((String) constantPool[nat.getDescriptorIndex()]);
 
-        FieldKey fd = new FieldKey(co.getType(), name, type);
-        return assertNotNull(fields.get(fd), "No FieldReference for " + fd);
+        FieldKey key = new FieldKey(co.getClassName(), name, type);
+        return assertNotNull(fields.get(key), "No FieldReference for " + key);
     }
 
     public Method translate(CpMethodReference cmr, Object[] constantPool) {
@@ -362,7 +362,7 @@ public class ClassLoader {
 
         MethodSignature methodSignature = MethodSignature.parse(name, descriptor);
 
-        MethodKey md = new MethodKey(co.getType().getClassName(), methodSignature);
+        MethodKey md = new MethodKey(co.getClassName(), methodSignature);
         return assertNotNull(methods.get(md), "No MethodReference for " + md);
     }
 
@@ -440,14 +440,14 @@ public class ClassLoader {
 
     private static class FieldKey {
 
-        protected final NonArrayType clazz;
+        private final String className;
 
-        protected final String name;
+        private final String name;
 
         private final Type type;
 
-        private FieldKey(NonArrayType clazz, String name, Type type) {
-            this.clazz = clazz;
+        private FieldKey(String className, String name, Type type) {
+            this.className = className;
             this.name = name;
             this.type = type;
         }
@@ -457,27 +457,27 @@ public class ClassLoader {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            FieldKey that = (FieldKey) o;
+            FieldKey fieldKey = (FieldKey) o;
 
-            if (!clazz.equals(that.clazz)) return false;
-            if (!name.equals(that.name)) return false;
-            if (!type.equals(that.type)) return false;
+            if (!className.equals(fieldKey.className)) return false;
+            if (!name.equals(fieldKey.name)) return false;
+            if (!type.equals(fieldKey.type)) return false;
 
             return true;
         }
 
         @Override
         public int hashCode() {
-            int result = clazz.hashCode();
-            result = 31 * result + type.hashCode();
+            int result = className.hashCode();
             result = 31 * result + name.hashCode();
+            result = 31 * result + type.hashCode();
             return result;
         }
 
         @Override
         public String toString() {
             return "FieldKey{" +
-                    "clazz=" + clazz +
+                    "class=" + className +
                     ", type=" + type +
                     ", name='" + name + '\'' +
                     '}';
