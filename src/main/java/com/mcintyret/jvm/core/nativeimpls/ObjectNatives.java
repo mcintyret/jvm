@@ -2,7 +2,11 @@ package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.MagicClasses;
+import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.oop.Oop;
+import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 import org.reflections.Reflections;
 
@@ -38,6 +42,24 @@ public enum ObjectNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
             return NativeReturn.forInt(Heap.getOop(args[0]).getAddress());
+        }
+    },
+    CLONE("clone", "()Ljava/lang/Object;") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            Oop oop = Heap.getOop(args[0]);
+
+            Oop clone;
+            if (oop instanceof OopArray) {
+                OopArray array = (OopArray) oop;
+                clone = array.getClassObject().newArray(array.getLength());
+            } else {
+                clone = ((OopClass) oop).getClassObject().newObject();
+            }
+
+            System.arraycopy(oop.getFields(), 0, clone.getFields(), 0, oop.getFields().length);
+
+            return NativeReturn.forInt(Heap.allocate(clone));
         }
     };
 

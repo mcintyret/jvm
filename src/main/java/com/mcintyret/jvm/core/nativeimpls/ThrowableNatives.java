@@ -1,5 +1,6 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
+import com.google.common.collect.Iterables;
 import com.mcintyret.jvm.core.ExecutionStack;
 import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
@@ -35,17 +36,7 @@ public enum ThrowableNatives implements NativeImplementation {
             int i = 0;
             Method ctor = stackTraceElemCo.findMethod("<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V", false);
             for (ExecutionStackElement ese : stack) {
-                int[] ctorArgs = ctor.newArgArray();
-                OopClass ste = stackTraceElemCo.newObject();
-
-                Method m = ese.getMethod();
-                ctorArgs[0] = Heap.allocate(ste);
-                ctorArgs[1] = Heap.intern(m.getClassObject().getClassName());
-                ctorArgs[2] = Heap.intern(m.getSignature().getName());
-                ctorArgs[3] = Heap.NULL_POINTER;
-                ctorArgs[4] = -1; // TODO: line number
-
-                Utils.executeMethod(ctor, ctorArgs);
+                OopClass ste = makeStackTraceElement(stackTraceElemCo, ctor, ese);
 
                 stes.getFields()[i++] = ste.getAddress();
             }
@@ -53,7 +44,40 @@ public enum ThrowableNatives implements NativeImplementation {
             // Return this
             return NativeReturn.forInt(args[0]);
         }
+    },
+    GET_STACK_TRACE_DEPTH("getStackTraceDepth", "()I") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            return NativeReturn.forInt(ctx.getExecutionStack().getStack().size());
+        }
+    },
+    GET_STACK_TRACE_ELEMENT("getStackTraceElement", "(I)Ljava/lang/StackTraceElement;") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            ClassObject stackTraceElemCo = ClassLoader.DEFAULT_CLASSLOADER.getClassObject("java/lang/StackTraceElement");
+            Method ctor = stackTraceElemCo.findMethod("<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V", false);
+            ExecutionStackElement elem = Iterables.get(ctx.getExecutionStack().getStack(), args[1]);
+
+            OopClass ste = makeStackTraceElement(stackTraceElemCo, ctor, elem);
+
+            return NativeReturn.forInt(ste.getAddress());
+        }
     };
+
+    private static OopClass makeStackTraceElement(ClassObject stackTraceElemCo, Method ctor, ExecutionStackElement ese) {
+        int[] ctorArgs = ctor.newArgArray();
+        OopClass ste = stackTraceElemCo.newObject();
+
+        Method m = ese.getMethod();
+        ctorArgs[0] = Heap.allocate(ste);
+        ctorArgs[1] = Heap.intern(m.getClassObject().getClassName());
+        ctorArgs[2] = Heap.intern(m.getSignature().getName());
+        ctorArgs[3] = Heap.NULL_POINTER;
+        ctorArgs[4] = -1; // TODO: line number
+
+        Utils.executeMethod(ctor, ctorArgs);
+        return ste;
+    }
 
     private final MethodSignature methodSignature;
 

@@ -372,6 +372,12 @@ public class ClassLoader {
             return (ClassObject) constantPool[classIndex];
         }
         String clazz = getClassName(classIndex, constantPool);
+
+        if (clazz.startsWith("[")) {
+            // Array classes will only ever have Object methods called on them, so this *should* work. Feels hacky though.
+            return classes.get("java/lang/Object");
+        }
+
         ClassObject co = getClassObject(clazz);
         constantPool[classIndex] = co;
         return co;
