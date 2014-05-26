@@ -8,7 +8,7 @@ abstract class SingleWidthStore extends OpCode {
 
     @Override
     public final void execute(OperationContext ctx) {
-        ctx.getVariables()[getIndex(ctx.getByteIterator())] = ctx.getStack().pop();
+        ctx.getLocalVars()[getIndex(ctx.getByteIterator())] = ctx.getStack().pop();
     }
 
     protected abstract int getIndex(ByteIterator bytes);

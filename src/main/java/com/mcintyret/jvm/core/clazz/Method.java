@@ -27,7 +27,7 @@ public class Method extends Member {
 
     @Override
     public String toString() {
-        return "Method: " + signature;
+        return getClassObject().getClassName() + "." + signature;
     }
 
     public int[] newArgArray() {

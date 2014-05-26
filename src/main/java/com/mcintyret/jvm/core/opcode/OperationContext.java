@@ -9,7 +9,7 @@ public interface OperationContext {
 
     ByteIterator getByteIterator();
 
-    int[] getVariables();
+    int[] getLocalVars();
 
     ConstantPool getConstantPool();
 

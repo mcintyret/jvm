@@ -57,7 +57,7 @@ public class ClassLoader {
     private void afterInitialLoad() {
         if (this == DEFAULT_CLASSLOADER) {
             // Do this somewhere else!
-            setSystemOut();
+//            setSystemOut();
         }
     }
 
@@ -85,7 +85,7 @@ public class ClassLoader {
         Method psConstructor = printStream.findMethod("<init>", "(ZLjava/io/OutputStream)V", false);
         Utils.executeMethod(psConstructor, new int[]{Heap.allocate(ps), bos.getAddress()});
 
-        SystemNatives.SET_OUT_0.execute(new int[]{ps.getAddress()});
+        SystemNatives.SET_OUT_0.execute(new int[]{ps.getAddress()}, null);
     }
 
     public ClassObject getClassObject(String className) {
@@ -329,9 +329,9 @@ public class ClassLoader {
 
     private static final Comparator<MethodInfoAndSig> PRIVATE_LAST_COMPARATOR = (a, b) -> {
         if (a.mi.hasModifier(Modifier.PRIVATE)) {
-            return b.mi.hasModifier(Modifier.PRIVATE) ? 0 : -1;
+            return b.mi.hasModifier(Modifier.PRIVATE) ? 0 : 1;
         } else {
-            return !b.mi.hasModifier(Modifier.PRIVATE) ? 0 : 1;
+            return !b.mi.hasModifier(Modifier.PRIVATE) ? 0 : -1;
         }
     };
 
@@ -423,6 +423,11 @@ public class ClassLoader {
             int result = className.hashCode();
             result = 31 * result + signature.hashCode();
             return result;
+        }
+
+        @Override
+        public String toString() {
+            return className + "." + signature;
         }
 
     }

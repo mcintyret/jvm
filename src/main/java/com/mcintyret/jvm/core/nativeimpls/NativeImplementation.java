@@ -1,6 +1,7 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.opcode.OperationContext;
 
 /**
  * User: tommcintyre
@@ -9,7 +10,7 @@ import com.mcintyret.jvm.core.domain.MethodSignature;
 
 public interface NativeImplementation {
 
-    NativeReturn execute(int[] args);
+    NativeReturn execute(int[] args, OperationContext ctx);
 
     String getClassName();
 

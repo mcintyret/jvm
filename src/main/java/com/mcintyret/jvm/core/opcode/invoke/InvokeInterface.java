@@ -38,10 +38,10 @@ class InvokeInterface extends OpCode {
         }
 
         if (method.hasModifier(Modifier.NATIVE)) {
-            ((NativeMethod) implementation).getNativeImplementation().execute(values).applyToStack(ctx.getStack());
+            ((NativeMethod) implementation).getNativeImplementation().execute(values, ctx).applyToStack(ctx.getStack());
         } else {
             ctx.getExecutionStack().push(
-                new ExecutionStackElement(new ByteCode(implementation.getCode().getCode()), values, implementation.getClassObject().getConstantPool(), ctx.getExecutionStack()));
+                new ExecutionStackElement(implementation, values, implementation.getClassObject().getConstantPool(), ctx.getExecutionStack()));
         }
 
         ctx.getByteIterator().nextShort(); // InvokeInterface has 2 extra args which can be ignored

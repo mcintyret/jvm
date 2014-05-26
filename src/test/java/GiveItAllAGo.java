@@ -3,6 +3,7 @@ import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationAdapter;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplemntationRegistry;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
+import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.load.*;
 
 import java.io.IOException;
@@ -18,7 +19,7 @@ public class GiveItAllAGo {
 
         NativeImplemntationRegistry.registerNative(new NativeImplementationAdapter(mainClass, MethodSignature.parse("print", "(Ljava/lang/String;)V")) {
             @Override
-            public NativeReturn execute(int[] args) {
+            public NativeReturn execute(int[] args, OperationContext ctx) {
                 System.out.println("NATIVE METHOD!!!: " + Utils.toString(Heap.getOop(args[0])));
                 return NativeReturn.forVoid();
             }
@@ -28,6 +29,7 @@ public class GiveItAllAGo {
             new Runner().run(classPath, mainClass);
         } finally {
             System.out.println("Total operations: " + ExecutionStackElement.TOTAL_OPCODES_EXECUTED.get());
+            System.out.println("Current method: " + ExecutionStackElement.current.getMethod());
         }
     }
 }

@@ -1,5 +1,7 @@
 package com.mcintyret2.jvm.test;
 
+import java.util.Arrays;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -18,7 +20,18 @@ public class Main {
 
         String reversed = reverse(str);
 
-        System.out.println(reversed);
+
+        try {
+            doFoo();
+        } catch (FooBarException e) {
+            print("Caught the exception!");
+            print(Arrays.toString(e.getStackTrace()));
+        }
+//        System.out.println(reversed);
+    }
+
+    private static void doFoo() throws FooBarException {
+        throw new FooBarException();
     }
 
     private static void simpleIntArrays() {
@@ -39,4 +52,8 @@ public class Main {
     }
 
     private static native void print(String in);
+
+    public static class FooBarException extends Exception {
+
+    }
 }

@@ -44,5 +44,10 @@ public class ExecutionStack {
     public void setFinalReturn(NativeReturn finalReturn) {
         this.finalReturn = finalReturn;
     }
+
+    // TODO: don't like having to expose this
+    public Deque<ExecutionStackElement> getStack() {
+        return stack;
+    }
 }
 

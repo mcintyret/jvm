@@ -8,7 +8,7 @@ abstract class SingleWidthLoad extends OpCode {
 
     @Override
     public final void execute(OperationContext ctx) {
-        ctx.getStack().push(ctx.getVariables()[getIndex(ctx.getByteIterator())]);
+        ctx.getStack().push(ctx.getLocalVars()[getIndex(ctx.getByteIterator())]);
     }
 
     protected abstract int getIndex(ByteIterator bytes);

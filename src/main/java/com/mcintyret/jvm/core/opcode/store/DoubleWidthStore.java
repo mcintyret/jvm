@@ -9,8 +9,8 @@ abstract class DoubleWidthStore extends OpCode {
     @Override
     public final void execute(OperationContext ctx) {
         int index = getIndex(ctx.getByteIterator());
-        ctx.getVariables()[index+1] = ctx.getStack().pop();
-        ctx.getVariables()[index] = ctx.getStack().pop();
+        ctx.getLocalVars()[index+1] = ctx.getStack().pop();
+        ctx.getLocalVars()[index] = ctx.getStack().pop();
     }
 
     protected abstract int getIndex(ByteIterator bytes);

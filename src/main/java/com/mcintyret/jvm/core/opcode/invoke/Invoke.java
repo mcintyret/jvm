@@ -27,10 +27,10 @@ abstract class Invoke extends OpCode {
             if (nativeImplementation == null) {
                 throw new IllegalStateException("No Native implementation for " + method.getClassObject().getType() + "." + method.getSignature());
             }
-            nativeImplementation.execute(values).applyToStack(ctx.getStack());
+            nativeImplementation.execute(values, ctx).applyToStack(ctx.getStack());
         } else {
             ctx.getExecutionStack().push(
-                new ExecutionStackElement(new ByteCode(method.getCode().getCode()), values, method.getClassObject().getConstantPool(), ctx.getExecutionStack()));
+                new ExecutionStackElement(method, values, method.getClassObject().getConstantPool(), ctx.getExecutionStack()));
         }
     }
 

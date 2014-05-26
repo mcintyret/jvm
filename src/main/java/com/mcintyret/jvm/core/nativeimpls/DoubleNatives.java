@@ -2,11 +2,12 @@ package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.opcode.OperationContext;
 
 public enum DoubleNatives implements NativeImplementation {
     DOUBLE_TO_RAW_LONG_BITS("doubleToRawLongBits", "(D)J") {
         @Override
-        public NativeReturn execute(int[] args) {
+        public NativeReturn execute(int[] args, OperationContext ctx) {
             // Already in that state
             return NativeReturn.forLong(Utils.toLong(args[0], args[1]));
         }

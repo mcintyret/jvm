@@ -5,13 +5,12 @@ import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.oop.OopClass;
-
-import java.util.Arrays;
+import com.mcintyret.jvm.core.opcode.OperationContext;
 
 public enum MiscNatives implements NativeImplementation {
     SUN_MISC_VM_INITIALIZE("initialize", "()V") {
         @Override
-        public NativeReturn execute(int[] args) {
+        public NativeReturn execute(int[] args, OperationContext ctx) {
             return NativeReturn.forVoid();
         }
 
@@ -22,7 +21,7 @@ public enum MiscNatives implements NativeImplementation {
     },
     SECURITY_ACCESSCONTROLLER_DOPRIVILEGED("doPrivileged", "(Ljava/security/PrivilegedAction;)Ljava/lang/Object;") {
         @Override
-        public NativeReturn execute(int[] args) {
+        public NativeReturn execute(int[] args, OperationContext ctx) {
             // Meh, I'm sure it's fine...
             OopClass privilegedAction = Heap.getOopClass(args[0]);
             Method run = privilegedAction.getClassObject().findMethod("run", "()Ljava/lang/Object;", false);

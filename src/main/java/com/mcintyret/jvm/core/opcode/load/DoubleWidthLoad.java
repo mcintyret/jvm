@@ -9,8 +9,8 @@ abstract class DoubleWidthLoad extends OpCode {
     @Override
     public final void execute(OperationContext ctx) {
         int index = getIndex(ctx.getByteIterator());
-        ctx.getStack().push(ctx.getVariables()[index]);
-        ctx.getStack().push(ctx.getVariables()[index + 1]);
+        ctx.getStack().push(ctx.getLocalVars()[index]);
+        ctx.getStack().push(ctx.getLocalVars()[index + 1]);
     }
 
     protected abstract int getIndex(ByteIterator bytes);

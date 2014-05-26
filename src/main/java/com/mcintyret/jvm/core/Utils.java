@@ -45,7 +45,7 @@ public class Utils {
     public static NativeReturn executeMethod(Method method, int[] args) {
         ExecutionStack stack = new ExecutionStack();
 
-        stack.push(new ExecutionStackElement(new ByteCode(method.getCode().getCode()), args,
+        stack.push(new ExecutionStackElement(method, args,
                 method.getClassObject().getConstantPool(), stack));
 
         stack.execute();

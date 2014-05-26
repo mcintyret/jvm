@@ -1,5 +1,6 @@
 package com.mcintyret.jvm.core;
 
+import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OpCodes;
@@ -11,9 +12,13 @@ public class ExecutionStackElement implements OperationContext {
 
     public final static AtomicInteger TOTAL_OPCODES_EXECUTED = new AtomicInteger();
 
+    public static ExecutionStackElement current;
+
+    private final Method method;
+
     private final ByteIterator byteIterator;
 
-    private final int[] variables;
+    private final int[] localVars;
 
     private final ConstantPool constantPool;
 
@@ -21,14 +26,16 @@ public class ExecutionStackElement implements OperationContext {
 
     private final WordStack stack = new WordStack();
 
-    public ExecutionStackElement(ByteCode byteCode, int[] variables, ConstantPool constantPool, ExecutionStack executionStack) {
-        this.byteIterator = byteCode.byteIterator();
-        this.variables = variables;
+    public ExecutionStackElement(Method method, int[] localVars, ConstantPool constantPool, ExecutionStack executionStack) {
+        this.method = method;
+        this.byteIterator = method.getCode() == null ? null : new ByteBufferIterator(method.getCode().getCode());
+        this.localVars = localVars;
         this.constantPool = constantPool;
         this.executionStack = executionStack;
     }
 
     public void executeNextInstruction() {
+        current = this;
         int pos = byteIterator.getPos();
         OpCode opCode = OpCodes.getOpcode(byteIterator.nextByte());
         System.out.println(String.format("%4d: %s", pos, opCode));
@@ -42,8 +49,8 @@ public class ExecutionStackElement implements OperationContext {
     }
 
     @Override
-    public int[] getVariables() {
-        return variables;
+    public int[] getLocalVars() {
+        return localVars;
     }
 
     @Override
@@ -59,5 +66,9 @@ public class ExecutionStackElement implements OperationContext {
     @Override
     public ExecutionStack getExecutionStack() {
         return executionStack;
+    }
+
+    public Method getMethod() {
+        return method;
     }
 }

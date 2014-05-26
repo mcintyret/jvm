@@ -2,13 +2,17 @@ package com.mcintyret.jvm.load;
 
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.Utils;
+import com.mcintyret.jvm.core.WordStack;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.domain.NonArrayType;
+import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.core.oop.OopClass;
+
 import java.io.IOException;
 
 public class Runner {
@@ -31,7 +35,22 @@ public class Runner {
         }
         int[] actualArgs = new int[]{Heap.allocate(array)};
 
-        Utils.executeMethod(mainMethod, actualArgs);
+        NativeReturn ret = Utils.executeMethod(mainMethod, actualArgs);
+
+        if (ret != null) {
+            WordStack stack = new WordStack();
+            ret.applyToStack(stack);
+            try {
+                int i = stack.pop();
+                OopClass obj = Heap.getOopClass(i);
+                if (obj.getClassObject().isInstanceOf(ClassLoader.DEFAULT_CLASSLOADER.getClassObject("java/lang/Throwable"))) {
+                    System.out.println("Died with Exception of type: " + obj.getClassObject().getClassName());
+                }
+
+            } catch (Throwable foo) {
+                // ignore
+            }
+        }
 
         System.out.println("DONE!!!");
     }
