@@ -28,7 +28,7 @@ public enum ThrowableNatives implements NativeImplementation {
         public NativeReturn execute(int[] args, OperationContext ctx) {
             Deque<ExecutionStackElement> stack = ctx.getExecutionStack().getStack();
 
-            ClassObject stackTraceElemCo = ClassLoader.DEFAULT_CLASSLOADER.getClassObject("java/lang/StackTraceElement");
+            ClassObject stackTraceElemCo = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/StackTraceElement");
             OopArray stes = ArrayClassObject.forType(ArrayType.create(stackTraceElemCo.getType(), 1)).newArray(stack.size());
 
             Heap.getOop(args[0]).getFields()[3] = Heap.allocate(stes);
@@ -54,7 +54,7 @@ public enum ThrowableNatives implements NativeImplementation {
     GET_STACK_TRACE_ELEMENT("getStackTraceElement", "(I)Ljava/lang/StackTraceElement;") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
-            ClassObject stackTraceElemCo = ClassLoader.DEFAULT_CLASSLOADER.getClassObject("java/lang/StackTraceElement");
+            ClassObject stackTraceElemCo = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/StackTraceElement");
             Method ctor = stackTraceElemCo.findMethod("<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V", false);
             ExecutionStackElement elem = Iterables.get(ctx.getExecutionStack().getStack(), args[1]);
 

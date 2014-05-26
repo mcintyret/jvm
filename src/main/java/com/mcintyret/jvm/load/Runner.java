@@ -20,7 +20,7 @@ public class Runner {
     private static final MethodSignature MAIN_METHOD_SIGNATURE = MethodSignature.parse("main", "([Ljava/lang/String;)V");
 
     public void run(ClassPath classPath, String mainClassName, String... args) throws IOException {
-        ClassLoader loader = ClassLoader.DEFAULT_CLASSLOADER;
+        ClassLoader loader = ClassLoader.getDefaultClassLoader();
 
         loader.load(classPath);
 
@@ -43,7 +43,7 @@ public class Runner {
             try {
                 int i = stack.pop();
                 OopClass obj = Heap.getOopClass(i);
-                if (obj.getClassObject().isInstanceOf(ClassLoader.DEFAULT_CLASSLOADER.getClassObject("java/lang/Throwable"))) {
+                if (obj.getClassObject().isInstanceOf(loader.getClassObject("java/lang/Throwable"))) {
                     System.out.println("Died with Exception of type: " + obj.getClassObject().getClassName());
                 }
 

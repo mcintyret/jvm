@@ -69,13 +69,11 @@ public enum SystemNatives implements NativeImplementation {
     SET_OUT_0("setIn0", "(Ljava/io/PrintStream;)V") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
-            ClassObject system = ClassLoader.DEFAULT_CLASSLOADER.getClassObject("java/lang/System");
+            ClassObject system = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/System");
             system.getStaticFieldValues()[1] = args[0];
             return NativeReturn.forVoid();
         }
     };
-
-    private static final ClassLoader CLASS_LOADER = ClassLoader.DEFAULT_CLASSLOADER;
 
     private final MethodSignature methodSignature;
 

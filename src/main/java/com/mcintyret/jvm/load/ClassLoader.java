@@ -25,7 +25,7 @@ import static java.util.Arrays.asList;
 
 public class ClassLoader {
 
-    public static final ClassLoader DEFAULT_CLASSLOADER = new ClassLoader();
+    private static final ClassLoader DEFAULT_CLASSLOADER = new ClassLoader();
 
     private final Map<String, ClassFile> classFiles = new HashMap<>();
 
@@ -34,6 +34,10 @@ public class ClassLoader {
     private final Map<MethodKey, Method> methods = new HashMap<>();
 
     private final Map<String, ClassObject> classes = new HashMap<>();
+
+    protected ClassLoader() {
+
+    }
 
     public void load(ClassPath classPath) throws IOException {
         ClassFileReader reader = new ClassFileReader();
@@ -484,5 +488,8 @@ public class ClassLoader {
         }
     }
 
+    public static ClassLoader getDefaultClassLoader() {
+        return DEFAULT_CLASSLOADER;
+    }
 
 }
