@@ -38,7 +38,10 @@ public class ExecutionStackElement implements OperationContext {
         current = this;
         int pos = byteIterator.getPos();
         OpCode opCode = OpCodes.getOpcode(byteIterator.nextByte());
-        System.out.println(String.format("%4d: %s", pos, opCode));
+        if (method.getSignature().getName().equals("filterFields")) {
+//            if (true) {
+            System.out.println(String.format("%4d: %s", pos, opCode));
+        }
         opCode.execute(this);
         TOTAL_OPCODES_EXECUTED.incrementAndGet();
     }

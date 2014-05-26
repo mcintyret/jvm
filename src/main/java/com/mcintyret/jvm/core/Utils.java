@@ -2,6 +2,7 @@ package com.mcintyret.jvm.core;
 
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
+import com.mcintyret.jvm.core.thread.Thread;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.domain.Type;
@@ -42,8 +43,8 @@ public class Utils {
         return new String(chars);
     }
 
-    public static NativeReturn executeMethod(Method method, int[] args) {
-        ExecutionStack stack = new ExecutionStack();
+    public static NativeReturn executeMethod(Method method, int[] args, Thread thread) {
+        ExecutionStack stack = new ExecutionStack(thread);
 
         stack.push(new ExecutionStackElement(method, args,
                 method.getClassObject().getConstantPool(), stack));

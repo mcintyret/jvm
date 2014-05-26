@@ -82,7 +82,7 @@ public enum ClassNatives implements NativeImplementation {
                 ctorArgs[6] = Heap.NULL_POINTER;
                 ctorArgs[7] = Heap.NULL_POINTER;
 
-                Utils.executeMethod(ctor, ctorArgs);
+                Utils.executeMethod(ctor, ctorArgs, ctx.getExecutionStack().getThread());
             }
 
             return NativeReturn.forReference(array);

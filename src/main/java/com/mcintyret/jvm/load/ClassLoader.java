@@ -1,7 +1,6 @@
 package com.mcintyret.jvm.load;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.MagicClasses;
 import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.clazz.*;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
@@ -11,6 +10,7 @@ import com.mcintyret.jvm.core.nativeimpls.NativeImplemntationRegistry;
 import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
 import com.mcintyret.jvm.core.nativeimpls.SystemNatives;
 import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.thread.Threads;
 import com.mcintyret.jvm.parse.ClassFile;
 import com.mcintyret.jvm.parse.ClassFileReader;
 import com.mcintyret.jvm.parse.MemberInfo;
@@ -49,23 +49,25 @@ public class ClassLoader {
         }
 
         ObjectNatives.registerNatives();
-        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_OBJECT));
-        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLONEABLE));
-        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_IO_SERIALIZABLE));
-        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLASS));
-        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_STRING));
-
-        afterInitialLoad();
+//        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_OBJECT));
+//        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLONEABLE));
+//        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_IO_SERIALIZABLE));
+//        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLASS));
+//        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_STRING));
+//
+//        afterInitialLoad();
     }
 
     private void afterInitialLoad() {
         if (this == DEFAULT_CLASSLOADER) {
             // Do this somewhere else!
-//            setSystemOut();
+            setSystemOut();
         }
     }
 
     private void setSystemOut() {
+        com.mcintyret.jvm.core.thread.Thread thread = Threads.get("main");
+
         ClassObject fileDescriptor = getClassObject("java/io/FileDescriptor");
         OopClass outFd = Heap.getOopClass(fileDescriptor.getStaticFieldValues()[1]);
 
@@ -82,12 +84,12 @@ public class ClassLoader {
         ClassObject bufferedOutputStream = getClassObject("java/io/BufferedOutputStream");
         OopClass bos = bufferedOutputStream.newObject();
         Method bosConstructor = bufferedOutputStream.findMethod("<init>", "(Ljava/io/OutputStream)V", false);
-        Utils.executeMethod(bosConstructor, new int[]{Heap.allocate(bos), fos.getAddress()});
+        Utils.executeMethod(bosConstructor, new int[]{Heap.allocate(bos), fos.getAddress()}, thread);
 
         ClassObject printStream = getClassObject("java/io/PrintStream");
         OopClass ps = printStream.newObject();
         Method psConstructor = printStream.findMethod("<init>", "(ZLjava/io/OutputStream)V", false);
-        Utils.executeMethod(psConstructor, new int[]{Heap.allocate(ps), bos.getAddress()});
+        Utils.executeMethod(psConstructor, new int[]{Heap.allocate(ps), bos.getAddress()}, thread);
 
         SystemNatives.SET_OUT_0.execute(new int[]{ps.getAddress()}, null);
     }
@@ -255,7 +257,7 @@ public class ClassLoader {
     private void executeStaticInitMethod(ClassObject co) {
         Method staticInit = co.findMethod("<clinit>", "()V", true);
         if (staticInit != null) {
-            Utils.executeMethod(staticInit, new int[staticInit.getCode().getMaxLocals()]);
+            Utils.executeMethod(staticInit, new int[staticInit.getCode().getMaxLocals()], Threads.get("main"));
         }
     }
 

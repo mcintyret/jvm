@@ -15,7 +15,7 @@ abstract class TypeOp extends OpCode {
         int address = stack.pop();
         AbstractClassObject type = ctx.getConstantPool().getClassObject(ctx.getByteIterator().nextShort());
         if (address == Heap.NULL_POINTER) {
-            handleNull(stack);
+            handleNull(stack, address);
         } else {
             Oop oop = Heap.getOop(address);
             handleType(oop.getClassObject().isInstanceOf(type), stack, address);
@@ -24,5 +24,5 @@ abstract class TypeOp extends OpCode {
 
     protected abstract void handleType(boolean instanceOf, WordStack stack, int address);
 
-    protected abstract void handleNull(WordStack stack);
+    protected abstract void handleNull(WordStack stack, int address);
 }

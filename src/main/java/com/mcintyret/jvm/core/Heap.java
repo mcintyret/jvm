@@ -7,8 +7,12 @@ import com.mcintyret.jvm.core.domain.SimpleType;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.load.*;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.mcintyret.jvm.load.ClassLoader.*;
 
 public class Heap {
 
@@ -65,7 +69,7 @@ public class Heap {
             // This is pretty fragile because if Sting ever changes this will need to change too
 
             if (STRING_CLASS == null) {
-                STRING_CLASS = MagicClasses.getMagicClass("java/lang/String");
+                STRING_CLASS = getDefaultClassLoader().getClassObject("java/lang/String");
             }
 
             Oop stringOop = lookupMap.get(string);

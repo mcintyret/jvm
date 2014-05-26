@@ -43,8 +43,6 @@ public interface NativeReturn {
         return FOR_VOID;
     }
 
-
-
     void applyToStack(WordStack stack);
 
 }

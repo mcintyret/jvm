@@ -1,16 +1,22 @@
 package com.mcintyret.jvm.core;
 
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
+import com.mcintyret.jvm.core.thread.Thread;
 
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
 
 public class ExecutionStack {
 
     private final Deque<ExecutionStackElement> stack = new ArrayDeque<>();
 
+    private final Thread thread;
+
     private NativeReturn finalReturn;
+
+    public ExecutionStack(Thread thread) {
+        this.thread = thread;
+    }
 
     public void execute() {
         ExecutionStackElement current;
@@ -48,6 +54,10 @@ public class ExecutionStack {
     // TODO: don't like having to expose this
     public Deque<ExecutionStackElement> getStack() {
         return stack;
+    }
+
+    public Thread getThread() {
+        return thread;
     }
 }
 

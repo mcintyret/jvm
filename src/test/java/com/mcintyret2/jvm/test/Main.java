@@ -20,6 +20,7 @@ public class Main {
 
         String reversed = reverse(str);
 
+        System.out.println(reversed);
 
         try {
             doFoo();
@@ -28,7 +29,6 @@ public class Main {
             print(Arrays.toString(e.getStackTrace()));
             throw new RuntimeException();
         }
-//        System.out.println(reversed);
     }
 
     private static void doFoo() throws FooBarException {

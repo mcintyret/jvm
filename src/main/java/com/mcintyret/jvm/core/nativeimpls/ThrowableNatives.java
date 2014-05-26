@@ -1,7 +1,7 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.google.common.collect.Iterables;
-import com.mcintyret.jvm.core.ExecutionStack;
+import com.mcintyret.jvm.core.thread.Thread;
 import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.Utils;
@@ -36,7 +36,7 @@ public enum ThrowableNatives implements NativeImplementation {
             int i = 0;
             Method ctor = stackTraceElemCo.findMethod("<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V", false);
             for (ExecutionStackElement ese : stack) {
-                OopClass ste = makeStackTraceElement(stackTraceElemCo, ctor, ese);
+                OopClass ste = makeStackTraceElement(stackTraceElemCo, ctor, ese, ctx.getExecutionStack().getThread());
 
                 stes.getFields()[i++] = ste.getAddress();
             }
@@ -58,13 +58,13 @@ public enum ThrowableNatives implements NativeImplementation {
             Method ctor = stackTraceElemCo.findMethod("<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V", false);
             ExecutionStackElement elem = Iterables.get(ctx.getExecutionStack().getStack(), args[1]);
 
-            OopClass ste = makeStackTraceElement(stackTraceElemCo, ctor, elem);
+            OopClass ste = makeStackTraceElement(stackTraceElemCo, ctor, elem, ctx.getExecutionStack().getThread());
 
             return NativeReturn.forInt(ste.getAddress());
         }
     };
 
-    private static OopClass makeStackTraceElement(ClassObject stackTraceElemCo, Method ctor, ExecutionStackElement ese) {
+    private static OopClass makeStackTraceElement(ClassObject stackTraceElemCo, Method ctor, ExecutionStackElement ese, Thread thread) {
         int[] ctorArgs = ctor.newArgArray();
         OopClass ste = stackTraceElemCo.newObject();
 
@@ -75,7 +75,7 @@ public enum ThrowableNatives implements NativeImplementation {
         ctorArgs[3] = Heap.NULL_POINTER;
         ctorArgs[4] = -1; // TODO: line number
 
-        Utils.executeMethod(ctor, ctorArgs);
+        Utils.executeMethod(ctor, ctorArgs, thread);
         return ste;
     }
 
