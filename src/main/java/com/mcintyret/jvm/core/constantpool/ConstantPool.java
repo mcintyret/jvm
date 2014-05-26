@@ -2,7 +2,6 @@ package com.mcintyret.jvm.core.constantpool;
 
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
-import com.mcintyret.jvm.core.clazz.ClassCache;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.oop.OopClass;
@@ -71,8 +70,7 @@ public class ConstantPool {
                 co = (AbstractClassObject) constantPool[i];
             }
             if (co != null) {
-                OopClass oop = ClassCache.getOopClass(((AbstractClassObject) constantPool[i]).getType());
-                return oop.getAddress();
+                return co.getType().getClassOop().getAddress();
             }
 
         }

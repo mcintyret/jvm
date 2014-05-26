@@ -48,6 +48,11 @@ public class Heap {
         return heapAllocationPointer++;
     }
 
+    public static <O extends Oop> O allocateAndGet(O oop) {
+        allocate(oop);
+        return oop;
+    }
+
     public static int intern(String string) {
         return STRING_POOL.intern(string);
     }

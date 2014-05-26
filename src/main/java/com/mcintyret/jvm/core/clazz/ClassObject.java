@@ -69,7 +69,7 @@ public class ClassObject extends AbstractClassObject {
         return newObject(DefaultNewObjectCreator.INSTANCE);
     }
 
-    <O extends OopClass> O newObject(NewObjectCreator<O> objectCreator) {
+    public <O extends OopClass> O newObject(NewObjectCreator<O> objectCreator) {
         return objectCreator.newObject(this, newInstanceFieldsValuesArray(instanceFields));
     }
 
@@ -149,7 +149,7 @@ public class ClassObject extends AbstractClassObject {
         }
     }
 
-    interface NewObjectCreator<O extends OopClass> {
+    public interface NewObjectCreator<O extends OopClass> {
 
         O newObject(ClassObject clazz, int[] fields);
 

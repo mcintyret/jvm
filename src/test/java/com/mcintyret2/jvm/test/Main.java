@@ -26,6 +26,7 @@ public class Main {
         } catch (FooBarException e) {
             print("Caught the exception!");
             print(Arrays.toString(e.getStackTrace()));
+            throw new RuntimeException();
         }
 //        System.out.println(reversed);
     }

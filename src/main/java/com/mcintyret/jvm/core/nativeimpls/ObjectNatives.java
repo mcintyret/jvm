@@ -2,8 +2,6 @@ package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.MagicClasses;
-import com.mcintyret.jvm.core.clazz.ArrayClassObject;
-import com.mcintyret.jvm.core.clazz.ClassCache;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
@@ -66,7 +64,7 @@ public enum ObjectNatives implements NativeImplementation {
     GET_CLASS("getClass", "()Ljava/lang/Class;") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
-            return NativeReturn.forReference(ClassCache.forType(Heap.getOop(args[0]).getClassObject().getType()));
+            return NativeReturn.forReference(Heap.getOop(args[0]).getClassObject().getType().getClassOop());
         }
     };
 

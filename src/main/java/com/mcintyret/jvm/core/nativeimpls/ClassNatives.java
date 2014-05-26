@@ -47,7 +47,7 @@ public enum ClassNatives implements NativeImplementation {
             OopClass stringObj = Heap.getOopClass(args[0]);
             String arg = Utils.toString(stringObj);
             SimpleType st = SimpleType.valueOf(arg.toUpperCase());
-            return NativeReturn.forReference(ClassCache.getOopPrimitive(st));
+            return NativeReturn.forReference(st.getClassOop());
         }
     },
     GET_DECLARED_FIELDS_0("getDeclaredFields0", "(Z)[Ljava/lang/reflect/Field;") {
@@ -76,7 +76,7 @@ public enum ClassNatives implements NativeImplementation {
                 ctorArgs[0] = fieldObj.getAddress();
                 ctorArgs[1] = thisClass.getAddress();
                 ctorArgs[2] = Heap.intern(field.getName());
-                ctorArgs[3] = ClassCache.forType(field.getType()).getAddress();
+                ctorArgs[3] = field.getType().getClassOop().getAddress();
                 ctorArgs[4] = Modifier.translate(field.getModifiers());
                 ctorArgs[5] = i; // slot, this is my best guess as to what this means...
                 ctorArgs[6] = Heap.NULL_POINTER;
