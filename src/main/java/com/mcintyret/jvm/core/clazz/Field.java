@@ -31,4 +31,5 @@ public class Field extends Member {
     public String getName() {
         return name;
     }
+
 }

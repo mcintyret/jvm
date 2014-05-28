@@ -14,6 +14,8 @@ public interface ByteIterator {
 
     void seek(int offset);
 
+    void setPos(int pos);
+
     byte[] nextBytes(int n);
 
     int getPos();

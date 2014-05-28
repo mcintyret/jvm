@@ -15,7 +15,7 @@ class InstanceOf extends TypeOp {
     }
 
     @Override
-    protected void handleNull(WordStack stack) {
+    protected void handleNull(WordStack stack, int address) {
         stack.push(0);
     }
 }

@@ -21,8 +21,15 @@ public class InterfaceMethod extends Method {
         }
     }
 
-    public Method getMethodForImplementation(String className) {
-        return methodMap.get(className);
+    public Method getMethodForImplementation(ClassObject classObject) {
+        ClassObject obj = classObject;
+        Method impl;
+        do {
+            impl = methodMap.get(obj.getClassName());
+            obj = obj.getSuperClass();
+        } while (impl == null);
+
+        return impl;
     }
 
 }

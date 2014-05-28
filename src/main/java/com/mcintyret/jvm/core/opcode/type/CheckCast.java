@@ -13,8 +13,8 @@ class CheckCast extends TypeOp {
     }
 
     @Override
-    protected void handleNull(WordStack stack) {
-        // Do nothing
+    protected void handleNull(WordStack stack, int address) {
+        stack.push(address);
     }
 
     @Override

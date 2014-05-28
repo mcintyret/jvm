@@ -14,6 +14,10 @@ public class WordStack {
         stack = new int[size];
     }
 
+    public void clear() {
+        head = 0;
+    }
+
     public WordStack() {
         this(DEFAULT_SIZE);
     }

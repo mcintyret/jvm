@@ -3,6 +3,7 @@ package com.mcintyret.jvm.core.opcode.invoke;
 import com.mcintyret.jvm.core.ByteCode;
 import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.InterfaceMethod;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.NativeMethod;
@@ -27,7 +28,7 @@ class InvokeInterface extends OpCode {
 
         OopClass oop = Heap.getOopClass(values[0]);
 
-        Method implementation = method.getMethodForImplementation(oop.getClassObject().getType().getClassName());
+        Method implementation = method.getMethodForImplementation(oop.getClassObject());
 
         int maxLocalVars = implementation.getCode().getMaxLocals();
         if (maxLocalVars > values.length) {
@@ -37,10 +38,10 @@ class InvokeInterface extends OpCode {
         }
 
         if (method.hasModifier(Modifier.NATIVE)) {
-            ((NativeMethod) implementation).getNativeImplementation().execute(values).applyToStack(ctx.getStack());
+            ((NativeMethod) implementation).getNativeImplementation().execute(values, ctx).applyToStack(ctx.getStack());
         } else {
             ctx.getExecutionStack().push(
-                new ExecutionStackElement(new ByteCode(implementation.getCode().getCode()), values, oop.getClassObject().getConstantPool(), ctx.getExecutionStack()));
+                new ExecutionStackElement(implementation, values, implementation.getClassObject().getConstantPool(), ctx.getExecutionStack()));
         }
 
         ctx.getByteIterator().nextShort(); // InvokeInterface has 2 extra args which can be ignored

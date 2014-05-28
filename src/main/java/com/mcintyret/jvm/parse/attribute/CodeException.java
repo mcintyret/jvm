@@ -18,4 +18,20 @@ public class CodeException {
         this.handlerPc = handlerPc;
         this.catchType = catchType;
     }
+
+    public int getStartPc() {
+        return startPc;
+    }
+
+    public int getEndPc() {
+        return endPc;
+    }
+
+    public int getHandlerPc() {
+        return handlerPc;
+    }
+
+    public int getCatchType() {
+        return catchType;
+    }
 }

@@ -2,7 +2,7 @@ package com.mcintyret.jvm.core.clazz;
 
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.domain.MethodSignature;
-import com.mcintyret.jvm.core.domain.ReferenceType;
+import com.mcintyret.jvm.core.domain.NonArrayType;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
@@ -10,7 +10,7 @@ import java.util.Set;
 
 public class ClassObject extends AbstractClassObject {
 
-    private final ReferenceType type;
+    private final NonArrayType type;
 
     private final ConstantPool constantPool;
 
@@ -26,7 +26,7 @@ public class ClassObject extends AbstractClassObject {
 
     private final ClassLoader classLoader;
 
-    public ClassObject(ReferenceType type, Set<Modifier> modifiers, ClassObject parent, ClassObject[] interfaces,
+    public ClassObject(NonArrayType type, Set<Modifier> modifiers, ClassObject parent, ClassObject[] interfaces,
                        ConstantPool constantPool, Method[] instanceMethods, Method[] staticMethods,
                        Field[] instanceFields, Field[] staticFields, ClassLoader classLoader) {
         super(parent, interfaces, modifiers);
@@ -69,7 +69,7 @@ public class ClassObject extends AbstractClassObject {
         return newObject(DefaultNewObjectCreator.INSTANCE);
     }
 
-    <O extends OopClass> O newObject(NewObjectCreator<O> objectCreator) {
+    public <O extends OopClass> O newObject(NewObjectCreator<O> objectCreator) {
         return objectCreator.newObject(this, newInstanceFieldsValuesArray(instanceFields));
     }
 
@@ -80,6 +80,28 @@ public class ClassObject extends AbstractClassObject {
         Field lastField = fields[fields.length - 1];
         int size = lastField.getOffset() + lastField.getType().getSimpleType().getWidth();
         return new int[size];
+    }
+
+    public Method findMethod(String name, boolean isStatic) {
+        return findMethod(name, isStatic ? staticMethods : instanceMethods);
+    }
+
+    private Method findMethod(String name, Method[] methods) {
+        Method found = null;
+        for (Method method : methods) {
+            if (method.getSignature().getName().equals(name)) {
+                if (found == null) {
+                    found = method;
+                } else {
+                    throw new IllegalArgumentException("Multiple methods with name " + name);
+                }
+            }
+        }
+
+        if (found == null) {
+            throw new IllegalArgumentException("No methods with name " + name);
+        }
+        return found;
     }
 
     public Method findMethod(String name, String descriptor, boolean isStatic) {
@@ -100,8 +122,12 @@ public class ClassObject extends AbstractClassObject {
     }
 
     @Override
-    public ReferenceType getType() {
+    public NonArrayType getType() {
         return type;
+    }
+
+    public String getClassName() {
+        return type.getClassName();
     }
 
     public Method[] getStaticMethods() {
@@ -112,16 +138,26 @@ public class ClassObject extends AbstractClassObject {
         return classLoader;
     }
 
+
+
     private void finalizeMembers(Member[] members) {
         for (Member member : members)  {
-            member.setClassObject(this);
+            if (member.getClassObject() == null) {
+                // So we can reuse the same object for overridden methods
+                member.setClassObject(this);
+            }
         }
     }
 
-    interface NewObjectCreator<O extends OopClass> {
+    public interface NewObjectCreator<O extends OopClass> {
 
         O newObject(ClassObject clazz, int[] fields);
 
+    }
+
+    @Override
+    public String toString() {
+        return "Class[" + getClassName() + "]";
     }
 
     private enum DefaultNewObjectCreator implements NewObjectCreator<OopClass> {

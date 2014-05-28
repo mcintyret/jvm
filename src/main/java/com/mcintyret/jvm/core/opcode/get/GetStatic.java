@@ -9,7 +9,7 @@ class GetStatic extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        Field field = ctx.getConstantPool().getField(ctx.getByteIterator().nextShort());
+        Field field = ctx.getConstantPool().getField(ctx.getByteIterator().nextShortUnsigned());
 
         Utils.getField(ctx.getStack(), field.getClassObject().getStaticFieldValues(), field);
     }

@@ -1,6 +1,7 @@
 package com.mcintyret.jvm.core.oop;
 
 import com.mcintyret.jvm.core.MarkRef;
+import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 
 /**
@@ -9,14 +10,14 @@ import com.mcintyret.jvm.core.clazz.ClassObject;
  */
 public class OopClassClass extends OopClass {
 
-    private final ClassObject thisClass;
+    private final AbstractClassObject thisClass;
 
-    public OopClassClass(ClassObject classObject, int[] fields, ClassObject thisClass) {
+    public OopClassClass(ClassObject classObject, int[] fields, AbstractClassObject thisClass) {
         super(classObject, fields);
         this.thisClass = thisClass;
     }
 
-    public ClassObject getThisClass() {
+    public AbstractClassObject getThisClass() {
         return thisClass;
     }
 

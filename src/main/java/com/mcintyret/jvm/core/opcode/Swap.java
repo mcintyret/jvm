@@ -1,0 +1,25 @@
+package com.mcintyret.jvm.core.opcode;
+
+import com.mcintyret.jvm.core.WordStack;
+
+/**
+ * User: tommcintyre
+ * Date: 5/26/14
+ */
+class Swap extends OpCode {
+
+    @Override
+    public void execute(OperationContext ctx) {
+        WordStack stack = ctx.getStack();
+        int one = stack.pop();
+        int two = stack.pop();
+
+        stack.push(one);
+        stack.push(two);
+    }
+
+    @Override
+    public byte getByte() {
+        return 0x5F;
+    }
+}

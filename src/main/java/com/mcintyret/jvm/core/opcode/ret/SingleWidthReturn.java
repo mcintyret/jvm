@@ -1,15 +1,17 @@
 package com.mcintyret.jvm.core.opcode.ret;
 
-import com.mcintyret.jvm.core.ExecutionStack;
-import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.WordStack;
+import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 
-abstract class SingleWidthReturn extends OpCode {
+abstract class SingleWidthReturn extends BaseReturn {
 
     @Override
-    public final void execute(OperationContext ctx) {
-        ExecutionStack executionStack = ctx.getExecutionStack();
-        executionStack.pop();
-        executionStack.peek().getStack().push(ctx.getStack().pop());
+    protected final NativeReturn finalReturn(WordStack stack) {
+        return NativeReturn.forInt(stack.pop());
+    }
+
+    @Override
+    protected final void pushReturnVal(WordStack lower, WordStack upper) {
+        lower.push(upper.pop());
     }
 }

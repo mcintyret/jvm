@@ -2,6 +2,7 @@ package com.mcintyret.jvm.core.clazz;
 
 import com.mcintyret.jvm.parse.Modifier;
 import com.mcintyret.jvm.parse.attribute.Attributes;
+
 import java.util.Set;
 
 public abstract class Member {
@@ -26,6 +27,10 @@ public abstract class Member {
 
     public boolean hasModifier(Modifier modifier) {
         return modifiers.contains(modifier);
+    }
+
+    public Set<Modifier> getModifiers() {
+        return modifiers;
     }
 
     public Attributes getAttributes() {

@@ -1,33 +1,37 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.domain.NonArrayType;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 
-public enum DoubleNatives implements NativeImplementation {
-    DOUBLE_TO_RAW_LONG_BITS("doubleToRawLongBits", "(D)J") {
+/**
+ * User: tommcintyre
+ * Date: 5/25/14
+ */
+public enum ReflectionNatives implements NativeImplementation {
+    GET_CALLER_CLASS("getCallerClass", "()Ljava/lang/Class;") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
-            // Already in that state
-            return NativeReturn.forLong(Utils.toLong(args[0], args[1]));
+            // Literally no documentation in the world about what this no-arg form is.
+            return NativeReturn.forReference(NonArrayType.forClass("java/lang/Object").getClassOop());
         }
     };
 
+
     private final MethodSignature methodSignature;
 
-    private DoubleNatives(String name, String descriptor) {
+    private ReflectionNatives(String name, String descriptor) {
         methodSignature = MethodSignature.parse(name, descriptor);
     }
 
 
     @Override
     public String getClassName() {
-        return "java/lang/Double";
+        return "sun/reflect/Reflection";
     }
 
     @Override
     public MethodSignature getMethodSignature() {
         return methodSignature;
     }
-
 }

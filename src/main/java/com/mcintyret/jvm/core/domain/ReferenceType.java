@@ -1,30 +1,14 @@
 package com.mcintyret.jvm.core.domain;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.clazz.AbstractClassObject;
+import com.mcintyret.jvm.core.oop.OopClassClass;
 
-public final class ReferenceType implements Type {
-
-    private static final Map<String, ReferenceType> CACHE = new HashMap<>();
-
-    public static ReferenceType forClass(String className) {
-        ReferenceType ret = CACHE.get(className);
-        if (ret == null) {
-            ret = new ReferenceType(className);
-            CACHE.put(className, ret);
-        }
-        return ret;
-    }
-
-    private final String className;
-
-    private ReferenceType(String className) {
-        this.className = className;
-    }
-
-    public String getClassName() {
-        return className;
-    }
+/**
+ * User: tommcintyre
+ * Date: 5/25/14
+ */
+public abstract class ReferenceType implements Type {
 
     @Override
     public SimpleType getSimpleType() {
@@ -36,23 +20,14 @@ public final class ReferenceType implements Type {
         return false;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public abstract AbstractClassObject getClassObject();
 
-        ReferenceType that = (ReferenceType) o;
-
-        return className.equals(that.className);
-    }
+    private OopClassClass oopClassClass;
 
     @Override
-    public int hashCode() {
-        return className.hashCode();
+    public OopClassClass getClassOop() {
+        return oopClassClass == null ? (oopClassClass = Heap.allocateAndGet(CLASS_CLASS.newObject((clazz, fields) ->
+                new OopClassClass(clazz, fields, getClassObject())))) : oopClassClass;
     }
 
-    @Override
-    public String toString() {
-        return "L" + className + ";";
-    }
 }

@@ -5,6 +5,7 @@ import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.load.ClassLoader;
 
 /**
@@ -14,7 +15,7 @@ import com.mcintyret.jvm.load.ClassLoader;
 public enum SystemNatives implements NativeImplementation {
     ARRAY_COPY("arraycopy", "(Ljava/lang/Object;ILjava/lang/Object;II)V") {
         @Override
-        public NativeReturn execute(int[] args) {
+        public NativeReturn execute(int[] args, OperationContext ctx) {
             OopArray src = Heap.getOopArray(args[0]);
             OopArray dest = Heap.getOopArray(args[2]);
 
@@ -40,13 +41,13 @@ public enum SystemNatives implements NativeImplementation {
     },
     CURRENT_TIME_MILLIS("currentTimeMillis", "()J") {
         @Override
-        public NativeReturn execute(int[] args) {
+        public NativeReturn execute(int[] args, OperationContext ctx) {
             return NativeReturn.forLong(System.currentTimeMillis());
         }
     },
     REGISTER_NATIVES("registerNatives", "()V") {
         @Override
-        public NativeReturn execute(int[] args) {
+        public NativeReturn execute(int[] args, OperationContext ctx) {
 
             // Already done
             return NativeReturn.forVoid();
@@ -54,26 +55,25 @@ public enum SystemNatives implements NativeImplementation {
     },
     NANO_TIME("nanoTime", "()J") {
         @Override
-        public NativeReturn execute(int[] args) {
+        public NativeReturn execute(int[] args, OperationContext ctx) {
             return NativeReturn.forLong(System.nanoTime());
         }
     },
     IDENTITY_HASH_CODE("identityHashCode", "(Ljava/lang/Object;)I") {
         @Override
-        public NativeReturn execute(int[] args) {
-            return ObjectNatives.HASHCODE.execute(args);
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            // TODO: this is NOT how this works!
+            return ObjectNatives.HASHCODE.execute(args, ctx);
         }
     },
     SET_OUT_0("setIn0", "(Ljava/io/PrintStream;)V") {
         @Override
-        public NativeReturn execute(int[] args) {
-            ClassObject system = ClassLoader.DEFAULT_CLASSLOADER.getClassObject("java/lang/System");
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            ClassObject system = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/System");
             system.getStaticFieldValues()[1] = args[0];
             return NativeReturn.forVoid();
         }
     };
-
-    private static final ClassLoader CLASS_LOADER = ClassLoader.DEFAULT_CLASSLOADER;
 
     private final MethodSignature methodSignature;
 

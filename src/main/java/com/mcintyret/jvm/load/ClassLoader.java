@@ -1,54 +1,31 @@
 package com.mcintyret.jvm.load;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.MagicClasses;
 import com.mcintyret.jvm.core.Utils;
-import com.mcintyret.jvm.core.clazz.AbstractClassObject;
-import com.mcintyret.jvm.core.clazz.ArrayClassObject;
-import com.mcintyret.jvm.core.clazz.ClassObject;
-import com.mcintyret.jvm.core.clazz.Field;
-import com.mcintyret.jvm.core.clazz.InterfaceMethod;
-import com.mcintyret.jvm.core.clazz.Method;
-import com.mcintyret.jvm.core.clazz.NativeMethod;
+import com.mcintyret.jvm.core.clazz.*;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
-import com.mcintyret.jvm.core.domain.ArrayType;
-import com.mcintyret.jvm.core.domain.MethodSignature;
-import com.mcintyret.jvm.core.domain.ReferenceType;
-import com.mcintyret.jvm.core.domain.Type;
-import com.mcintyret.jvm.core.domain.Types;
+import com.mcintyret.jvm.core.domain.*;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
-import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
+import com.mcintyret.jvm.core.nativeimpls.NativeImplemntationRegistry;
 import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
 import com.mcintyret.jvm.core.nativeimpls.SystemNatives;
 import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.thread.Threads;
 import com.mcintyret.jvm.parse.ClassFile;
 import com.mcintyret.jvm.parse.ClassFileReader;
 import com.mcintyret.jvm.parse.MemberInfo;
 import com.mcintyret.jvm.parse.Modifier;
-import com.mcintyret.jvm.parse.cp.CpClass;
-import com.mcintyret.jvm.parse.cp.CpDouble;
-import com.mcintyret.jvm.parse.cp.CpFieldReference;
-import com.mcintyret.jvm.parse.cp.CpFloat;
-import com.mcintyret.jvm.parse.cp.CpInt;
-import com.mcintyret.jvm.parse.cp.CpLong;
-import com.mcintyret.jvm.parse.cp.CpMethodReference;
-import com.mcintyret.jvm.parse.cp.CpReference;
-import com.mcintyret.jvm.parse.cp.NameAndType;
+import com.mcintyret.jvm.parse.cp.*;
+
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
+import java.util.*;
 
 import static com.mcintyret.jvm.core.Assert.assertNotNull;
 import static java.util.Arrays.asList;
 
 public class ClassLoader {
 
-    public static final ClassLoader DEFAULT_CLASSLOADER = new ClassLoader();
+    private static final ClassLoader DEFAULT_CLASSLOADER = new ClassLoader();
 
     private final Map<String, ClassFile> classFiles = new HashMap<>();
 
@@ -57,6 +34,10 @@ public class ClassLoader {
     private final Map<MethodKey, Method> methods = new HashMap<>();
 
     private final Map<String, ClassObject> classes = new HashMap<>();
+
+    protected ClassLoader() {
+
+    }
 
     public void load(ClassPath classPath) throws IOException {
         ClassFileReader reader = new ClassFileReader();
@@ -68,13 +49,13 @@ public class ClassLoader {
         }
 
         ObjectNatives.registerNatives();
-        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_OBJECT));
-        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLONEABLE));
-        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_IO_SERIALIZABLE));
-        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLASS));
-        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_STRING));
-
-        afterInitialLoad();
+//        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_OBJECT));
+//        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLONEABLE));
+//        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_IO_SERIALIZABLE));
+//        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLASS));
+//        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_STRING));
+//
+//        afterInitialLoad();
     }
 
     private void afterInitialLoad() {
@@ -85,6 +66,8 @@ public class ClassLoader {
     }
 
     private void setSystemOut() {
+        com.mcintyret.jvm.core.thread.Thread thread = Threads.get("main");
+
         ClassObject fileDescriptor = getClassObject("java/io/FileDescriptor");
         OopClass outFd = Heap.getOopClass(fileDescriptor.getStaticFieldValues()[1]);
 
@@ -101,14 +84,14 @@ public class ClassLoader {
         ClassObject bufferedOutputStream = getClassObject("java/io/BufferedOutputStream");
         OopClass bos = bufferedOutputStream.newObject();
         Method bosConstructor = bufferedOutputStream.findMethod("<init>", "(Ljava/io/OutputStream)V", false);
-        Utils.executeMethod(bosConstructor, new int[]{Heap.allocate(bos), fos.getAddress()});
+        Utils.executeMethod(bosConstructor, new int[]{Heap.allocate(bos), fos.getAddress()}, thread);
 
         ClassObject printStream = getClassObject("java/io/PrintStream");
         OopClass ps = printStream.newObject();
         Method psConstructor = printStream.findMethod("<init>", "(ZLjava/io/OutputStream)V", false);
-        Utils.executeMethod(psConstructor, new int[]{Heap.allocate(ps), bos.getAddress()});
+        Utils.executeMethod(psConstructor, new int[]{Heap.allocate(ps), bos.getAddress()}, thread);
 
-        SystemNatives.SET_OUT_0.execute(new int[]{ps.getAddress()});
+        SystemNatives.SET_OUT_0.execute(new int[]{ps.getAddress()}, null);
     }
 
     public ClassObject getClassObject(String className) {
@@ -143,7 +126,7 @@ public class ClassLoader {
         }
 
         // Methods - sorting out the VTable
-        ReferenceType type = ReferenceType.forClass(className);
+        NonArrayType type = NonArrayType.forClass(className);
 
         List<Method> staticMethods = new ArrayList<>();
         List<MethodInfoAndSig> instanceMethods = new LinkedList<>();
@@ -179,7 +162,7 @@ public class ClassLoader {
                     }
                 }
                 if (!overridden) {
-                    // copy down the parent's Method
+                    // copy down the superClass's Method
                     orderedMethods.add(parentMethod);
                 }
             }
@@ -189,26 +172,12 @@ public class ClassLoader {
             orderedMethods.add(translateMethod(instanceMethod, isInterface));
         }
 
-        for (ClassObject iface : ifaces) {
-            for (Method ifaceMethod : iface.getInstanceMethods()) {
-                for (Method implementation : orderedMethods) {
-                    if (ifaceMethod.getSignature().equals(implementation.getSignature())) {
-                        // Interface implementation!
-                        InterfaceMethod imr = (InterfaceMethod) ifaceMethod;
-                        imr.registerMethodForImplementation(className, implementation);
-                        break;
-                    }
-                }
-            }
-        }
-
         Field[] translatedStaticFields;
         Field[] translatedInstanceFields;
 
         if (isInterface) {
             translatedStaticFields = translatedInstanceFields = new Field[0];
         } else {
-
 
             // Fields
             List<MemberInfo> staticFields = new ArrayList<>();
@@ -224,39 +193,71 @@ public class ClassLoader {
             translatedStaticFields = translateFields(new ArrayList<>(staticFields.size()), staticFields, file.getConstantPool());
 
             translatedInstanceFields = translateFields(parent == null ? new ArrayList<>() :
-                new ArrayList<>(asList(parent.getInstanceFields())), instanceFields, file.getConstantPool());
+                    new ArrayList<>(asList(parent.getInstanceFields())), instanceFields, file.getConstantPool());
         }
 
 
         ClassObject co = new ClassObject(
-            type,
-            file.getModifiers(),
-            parent,
-            ifaces,
-            new ConstantPool(file.getConstantPool(), this),
-            orderedMethods.toArray(new Method[orderedMethods.size()]),
-            staticMethods.toArray(new Method[staticMethods.size()]),
-            translatedInstanceFields,
-            translatedStaticFields,
-            this);
+                type,
+                file.getModifiers(),
+                parent,
+                ifaces,
+                new ConstantPool(file.getConstantPool(), this),
+                orderedMethods.toArray(new Method[orderedMethods.size()]),
+                staticMethods.toArray(new Method[staticMethods.size()]),
+                translatedInstanceFields,
+                translatedStaticFields,
+                this);
 
-        cacheFields(co.getInstanceFields());
-        cacheFields(co.getStaticFields());
+        registerInterfaceImplementations(co);
 
-        cacheMethods(co.getInstanceMethods());
-        cacheMethods(co.getStaticMethods());
+        cacheFields(co.getInstanceFields(), className);
+        cacheFields(co.getStaticFields(), className);
+
+        cacheMethods(co.getInstanceMethods(), className);
+        cacheMethods(co.getStaticMethods(), className);
 
         translateSimpleConstantPool(file.getConstantPool());
 
         return co;
     }
 
+    private void registerInterfaceImplementations(ClassObject co) {
+        // TODO: make more efficient
+        ClassObject obj = co;
+        String className = co.getClassName();
+        Set<ClassObject> allInterfaces = new HashSet<>();
+
+        do {
+            addInterfaces(obj, allInterfaces);
+            obj = obj.getSuperClass();
+        } while (obj != null);
+
+        for (ClassObject iface : allInterfaces) {
+            for (Method ifaceMethod : iface.getInstanceMethods()) {
+                for (Method implementation : co.getInstanceMethods()) {
+                    if (!implementation.hasModifier(Modifier.ABSTRACT) && implementation.hasModifier(Modifier.PUBLIC) && ifaceMethod.getSignature().equals(implementation.getSignature())) {
+                        // Interface implementation!
+                        InterfaceMethod imr = (InterfaceMethod) ifaceMethod;
+                        imr.registerMethodForImplementation(className, implementation);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private void addInterfaces(ClassObject classObject, Set<ClassObject> interfaces) {
+        for (ClassObject iface : classObject.getInterfaces()) {
+            interfaces.add(iface);
+            addInterfaces(iface, interfaces);
+        }
+    }
+
     private void executeStaticInitMethod(ClassObject co) {
         Method staticInit = co.findMethod("<clinit>", "()V", true);
         if (staticInit != null) {
-            System.out.println("Executing static init method on " + co.getType());
-            Utils.executeMethod(staticInit, new int[staticInit.getCode().getMaxLocals()]);
-            System.out.println("Finished static init method on " + co.getType());
+            Utils.executeMethod(staticInit, new int[staticInit.getCode().getMaxLocals()], Threads.get("main"));
         }
     }
 
@@ -267,7 +268,7 @@ public class ClassLoader {
             return new InterfaceMethod(info.getModifiers(), info.getAttributes(), mis.sig);
         } else {
             if (info.hasModifier(Modifier.NATIVE)) {
-                NativeImplementation nativeImplementation = NativeImplementationRegistry.getNativeExecution(mis.className, mis.sig);
+                NativeImplementation nativeImplementation = NativeImplemntationRegistry.getNativeExecution(mis.className, mis.sig);
                 if (nativeImplementation == null) {
 //                throw new IllegalStateException("No NativeImplementation registered for " + mis.className + "." + mis.sig);
                     System.out.println("NATIVE METHOD MISSING: " + mis.className + "." + mis.sig);
@@ -279,16 +280,16 @@ public class ClassLoader {
         }
     }
 
-    private void cacheMethods(Method[] methods) {
+    private void cacheMethods(Method[] methods, String className) {
         for (Method method : methods) {
-            MethodKey key = new MethodKey(method.getClassObject().getType(), method.getSignature());
+            MethodKey key = new MethodKey(className, method.getSignature());
             this.methods.put(key, method);
         }
     }
 
-    private void cacheFields(Field[] fields) {
+    private void cacheFields(Field[] fields, String className) {
         for (Field field : fields) {
-            FieldKey key = new FieldKey(field.getClassObject().getType(), field.getName(), field.getType());
+            FieldKey key = new FieldKey(className, field.getName(), field.getType());
             this.fields.put(key, field);
         }
     }
@@ -313,7 +314,7 @@ public class ClassLoader {
 
     private static Field[] translateFields(List<Field> fields, List<MemberInfo> fomis, Object[] constantPool) {
         int offset = 0;
-        if (!fields.isEmpty()) {
+        if (!fields.isEmpty() && !fomis.isEmpty()) {
             Field lastField = fields.get(fields.size() - 1);
             offset = lastField.getOffset() + lastField.getType().getSimpleType().getWidth();
         }
@@ -334,17 +335,17 @@ public class ClassLoader {
 
     private static final Comparator<MethodInfoAndSig> PRIVATE_LAST_COMPARATOR = (a, b) -> {
         if (a.mi.hasModifier(Modifier.PRIVATE)) {
-            return b.mi.hasModifier(Modifier.PRIVATE) ? 0 : -1;
+            return b.mi.hasModifier(Modifier.PRIVATE) ? 0 : 1;
         } else {
-            return !b.mi.hasModifier(Modifier.PRIVATE) ? 0 : 1;
+            return !b.mi.hasModifier(Modifier.PRIVATE) ? 0 : -1;
         }
     };
 
     public AbstractClassObject translate(CpClass cpClass, Object[] constantPool) {
         String className = (String) constantPool[cpClass.getNameIndex()];
         return className.startsWith("[") ?
-            ArrayClassObject.forType((ArrayType) Types.parseType(className)) :
-            getClassObject(className);
+                ArrayClassObject.forType((ArrayType) Types.parseType(className)) :
+                getClassObject(className);
     }
 
     public Field translate(CpFieldReference cfr, Object[] constantPool) {
@@ -354,8 +355,8 @@ public class ClassLoader {
         String name = (String) constantPool[nat.getNameIndex()];
         Type type = Types.parseType((String) constantPool[nat.getDescriptorIndex()]);
 
-        FieldKey fd = new FieldKey(co.getType(), name, type);
-        return assertNotNull(fields.get(fd), "No FieldReference for " + fd);
+        FieldKey key = new FieldKey(co.getClassName(), name, type);
+        return assertNotNull(fields.get(key), "No FieldReference for " + key);
     }
 
     public Method translate(CpMethodReference cmr, Object[] constantPool) {
@@ -367,7 +368,7 @@ public class ClassLoader {
 
         MethodSignature methodSignature = MethodSignature.parse(name, descriptor);
 
-        MethodKey md = new MethodKey(co.getType(), methodSignature);
+        MethodKey md = new MethodKey(co.getClassName(), methodSignature);
         return assertNotNull(methods.get(md), "No MethodReference for " + md);
     }
 
@@ -377,6 +378,12 @@ public class ClassLoader {
             return (ClassObject) constantPool[classIndex];
         }
         String clazz = getClassName(classIndex, constantPool);
+
+        if (clazz.startsWith("[")) {
+            // Array classes will only ever have Object methods called on them, so this *should* work. Feels hacky though.
+            return classes.get("java/lang/Object");
+        }
+
         ClassObject co = getClassObject(clazz);
         constantPool[classIndex] = co;
         return co;
@@ -401,12 +408,12 @@ public class ClassLoader {
 
     private static class MethodKey {
 
-        protected final ReferenceType clazz;
+        protected final String className;
 
         private final MethodSignature signature;
 
-        protected MethodKey(ReferenceType clazz, MethodSignature signature) {
-            this.clazz = clazz;
+        protected MethodKey(String className, MethodSignature signature) {
+            this.className = className;
             this.signature = signature;
         }
 
@@ -415,38 +422,38 @@ public class ClassLoader {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            MethodKey that = (MethodKey) o;
+            MethodKey methodKey = (MethodKey) o;
 
-            return clazz.equals(that.clazz) && signature.equals(that.signature);
+            if (!className.equals(methodKey.className)) return false;
+            if (!signature.equals(methodKey.signature)) return false;
 
+            return true;
         }
 
         @Override
         public int hashCode() {
-            int result = clazz.hashCode();
+            int result = className.hashCode();
             result = 31 * result + signature.hashCode();
             return result;
         }
 
         @Override
         public String toString() {
-            return "MethodKey{" +
-                "clazz=" + clazz +
-                ", signature=" + signature +
-                '}';
+            return className + "." + signature;
         }
+
     }
 
     private static class FieldKey {
 
-        protected final ReferenceType clazz;
+        private final String className;
 
-        protected final String name;
+        private final String name;
 
         private final Type type;
 
-        private FieldKey(ReferenceType clazz, String name, Type type) {
-            this.clazz = clazz;
+        private FieldKey(String className, String name, Type type) {
+            this.className = className;
             this.name = name;
             this.type = type;
         }
@@ -456,32 +463,35 @@ public class ClassLoader {
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            FieldKey that = (FieldKey) o;
+            FieldKey fieldKey = (FieldKey) o;
 
-            if (!clazz.equals(that.clazz)) return false;
-            if (!name.equals(that.name)) return false;
-            if (!type.equals(that.type)) return false;
+            if (!className.equals(fieldKey.className)) return false;
+            if (!name.equals(fieldKey.name)) return false;
+            if (!type.equals(fieldKey.type)) return false;
 
             return true;
         }
 
         @Override
         public int hashCode() {
-            int result = clazz.hashCode();
-            result = 31 * result + type.hashCode();
+            int result = className.hashCode();
             result = 31 * result + name.hashCode();
+            result = 31 * result + type.hashCode();
             return result;
         }
 
         @Override
         public String toString() {
             return "FieldKey{" +
-                "clazz=" + clazz +
-                ", type=" + type +
-                ", name='" + name + '\'' +
-                '}';
+                    "class=" + className +
+                    ", type=" + type +
+                    ", name='" + name + '\'' +
+                    '}';
         }
     }
 
+    public static ClassLoader getDefaultClassLoader() {
+        return DEFAULT_CLASSLOADER;
+    }
 
 }

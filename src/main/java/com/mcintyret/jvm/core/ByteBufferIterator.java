@@ -45,6 +45,11 @@ public class ByteBufferIterator implements ByteIterator {
     }
 
     @Override
+    public void setPos(int pos) {
+        buffer.position(pos);
+    }
+
+    @Override
     public byte[] nextBytes(int n) {
         byte[] bytes = new byte[n];
         buffer.get(bytes);

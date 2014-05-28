@@ -30,4 +30,8 @@ public class Code extends Attribute {
     public int getMaxLocals() {
         return maxLocals;
     }
+
+    public List<CodeException> getCodeExceptions() {
+        return codeExceptions;
+    }
 }
