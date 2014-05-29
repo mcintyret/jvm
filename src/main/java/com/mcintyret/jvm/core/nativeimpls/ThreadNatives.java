@@ -49,8 +49,21 @@ public enum ThreadNatives implements NativeImplementation {
             nativeThread.interrupt();
             return NativeReturn.forVoid();
         }
+    },
+    SET_PRIORITY_0("setPriority0", "(I)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            Threads.get(getThreadName(Heap.getOop(args[0]))).getThread().setPriority(args[1]);
+            return NativeReturn.forVoid();
+        }
+    },
+    IS_ALIVE("isAlive", "()Z") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            boolean isAlive = Threads.get(getThreadName(Heap.getOop(args[0]))).getThread().isAlive();
+            return NativeReturn.forBool(isAlive);
+        }
     };
-
 
     private final MethodSignature methodSignature;
 

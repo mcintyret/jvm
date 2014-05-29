@@ -53,6 +53,10 @@ public class Thread {
         thread.interrupt();
     }
 
+    public java.lang.Thread getThread() {
+        return thread;
+    }
+
     private class ActualThread extends java.lang.Thread {
 
         private final ExecutionStack executionStack = new ExecutionStack(Thread.this);

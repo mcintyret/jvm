@@ -82,10 +82,9 @@ public class ClassLoader {
 //        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLASS));
 //        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_STRING));
 //
-//        afterInitialLoad();
     }
 
-    private void afterInitialLoad() {
+    public void afterInitialLoad() {
         if (this == DEFAULT_CLASSLOADER) {
             // Do this somewhere else!
             setSystemOut();
@@ -102,11 +101,8 @@ public class ClassLoader {
         OopClass fos = fileOutputStream.newObject();
         Heap.allocate(fos);
 
-        OopClass lockObj = getClassObject("java/lang/Object").newObject();
-        Heap.allocate(lockObj);
-
         fos.getFields()[0] = outFd.getAddress();
-        fos.getFields()[4] = lockObj.getAddress();
+        fos.getFields()[4] = Heap.allocate(getClassObject("java/lang/Object").newObject());
 
         ClassObject bufferedOutputStream = getClassObject("java/io/BufferedOutputStream");
         OopClass bos = bufferedOutputStream.newObject();
@@ -220,21 +216,21 @@ public class ClassLoader {
             translatedStaticFields = translateFields(new ArrayList<>(staticFields.size()), staticFields, file.getConstantPool());
 
             translatedInstanceFields = translateFields(parent == null ? new ArrayList<>() :
-                    new ArrayList<>(asList(parent.getInstanceFields())), instanceFields, file.getConstantPool());
+                new ArrayList<>(asList(parent.getInstanceFields())), instanceFields, file.getConstantPool());
         }
 
 
         ClassObject co = new ClassObject(
-                type,
-                file.getModifiers(),
-                parent,
-                ifaces,
-                new ConstantPool(file.getConstantPool(), this),
-                orderedMethods.toArray(new Method[orderedMethods.size()]),
-                staticMethods.toArray(new Method[staticMethods.size()]),
-                translatedInstanceFields,
-                translatedStaticFields,
-                this);
+            type,
+            file.getModifiers(),
+            parent,
+            ifaces,
+            new ConstantPool(file.getConstantPool(), this),
+            orderedMethods.toArray(new Method[orderedMethods.size()]),
+            staticMethods.toArray(new Method[staticMethods.size()]),
+            translatedInstanceFields,
+            translatedStaticFields,
+            this);
 
         registerInterfaceImplementations(co);
 
@@ -371,8 +367,8 @@ public class ClassLoader {
     public AbstractClassObject translate(CpClass cpClass, Object[] constantPool) {
         String className = (String) constantPool[cpClass.getNameIndex()];
         return className.startsWith("[") ?
-                ArrayClassObject.forType((ArrayType) Types.parseType(className)) :
-                getClassObject(className);
+            ArrayClassObject.forType((ArrayType) Types.parseType(className)) :
+            getClassObject(className);
     }
 
     public Field translate(CpFieldReference cfr, Object[] constantPool) {
@@ -510,10 +506,10 @@ public class ClassLoader {
         @Override
         public String toString() {
             return "FieldKey{" +
-                    "class=" + className +
-                    ", type=" + type +
-                    ", name='" + name + '\'' +
-                    '}';
+                "class=" + className +
+                ", type=" + type +
+                ", name='" + name + '\'' +
+                '}';
         }
     }
 

@@ -14,6 +14,10 @@ public interface NativeReturn {
 
     static final NativeReturn FOR_NULL = forInt(Heap.NULL_POINTER);
 
+    static final NativeReturn FOR_TRUE = forInt(1);
+
+    static final NativeReturn FOR_FALSE = forInt(0);
+
     public static NativeReturn forInt(int i) {
         return stack -> {
             stack.push(i);
@@ -33,6 +37,10 @@ public interface NativeReturn {
         return stack -> {
             stack.push(l);
         };
+    }
+
+    public static NativeReturn forBool(boolean b) {
+        return b ? FOR_TRUE : FOR_FALSE;
     }
 
     public static NativeReturn forNull() {

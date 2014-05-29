@@ -30,6 +30,8 @@ public class Runner {
         // This happens early!
         Thread main = createMainThread();
 
+        loader.afterInitialLoad(); // Sets System.out. Can I do this anywhere else??
+
         ClassObject mainClass = loader.getClassObject(mainClassName);
 
         Method mainMethod = findMainMethod(mainClass);
