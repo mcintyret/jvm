@@ -1,12 +1,18 @@
-import com.mcintyret.jvm.core.*;
+import java.io.IOException;
+
+import com.mcintyret.jvm.core.ExecutionStackElement;
+import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationAdapter;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.opcode.OperationContext;
-import com.mcintyret.jvm.load.*;
-
-import java.io.IOException;
+import com.mcintyret.jvm.load.AggregatingClassPath;
+import com.mcintyret.jvm.load.ClassPath;
+import com.mcintyret.jvm.load.DirectoryClassPath;
+import com.mcintyret.jvm.load.Runner;
+import com.mcintyret.jvm.load.ZipClassPath;
 
 public class GiveItAllAGo {
 
@@ -20,7 +26,7 @@ public class GiveItAllAGo {
         NativeImplementationRegistry.registerNative(new NativeImplementationAdapter(mainClass, MethodSignature.parse("print", "(Ljava/lang/String;)V")) {
             @Override
             public NativeReturn execute(int[] args, OperationContext ctx) {
-                System.out.println("NATIVE METHOD!!!: " + Utils.toString(Heap.getOop(args[0])));
+                System.out.println("NATIVE METHOD!!!: " + Utils.toString(Heap.getOopClass(args[0])));
                 return NativeReturn.forVoid();
             }
         });

@@ -2,13 +2,13 @@ package com.mcintyret.jvm.core;
 
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
-import com.mcintyret.jvm.core.thread.Thread;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
-import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.thread.Thread;
 
 public class Utils {
 
@@ -33,12 +33,14 @@ public class Utils {
         return (long) l << 32 | r & 0xFFFFFFFFL;
     }
 
-    public static String toString(Oop stringOop) {
-        OopArray charArray = (OopArray) Heap.getOop(stringOop.getFields()[0]);
+    public static String toString(OopClass stringOop) {
+        return toString((OopArray) Heap.getOop(stringOop.getFields()[0]));
+    }
 
-        char[] chars = new char[charArray.getLength()];
+    public static String toString(OopArray charArrayOop) {
+        char[] chars = new char[charArrayOop.getLength()];
         for (int i = 0; i < chars.length; i++) {
-            chars[i] = (char) charArray.getFields()[i];
+            chars[i] = (char) charArrayOop.getFields()[i];
         }
         return new String(chars);
     }

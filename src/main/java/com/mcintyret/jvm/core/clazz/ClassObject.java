@@ -1,12 +1,13 @@
 package com.mcintyret.jvm.core.clazz;
 
+import java.util.Set;
+
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.domain.NonArrayType;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
-import java.util.Set;
 
 public class ClassObject extends AbstractClassObject {
 
@@ -112,6 +113,17 @@ public class ClassObject extends AbstractClassObject {
         return isStatic ? findMethod(methodSignature, staticMethods) : findMethod(methodSignature, instanceMethods);
     }
 
+    public Field findField(String name, boolean isStatic) {
+        Field[] fields = isStatic ? staticFields : instanceFields;
+        for (Field field : fields) {
+            if (name.equals(field.getName())) {
+                return field;
+            }
+        }
+
+        throw new IllegalArgumentException("No " + (isStatic ? "static " : "") + "field named " + name);
+    }
+
     private static Method findMethod(MethodSignature methodSignature, Method[] methods) {
         for (Method method : methods) {
             if (methodSignature.equals(method.getSignature())) {
@@ -137,8 +149,6 @@ public class ClassObject extends AbstractClassObject {
     public ClassLoader getClassLoader() {
         return classLoader;
     }
-
-
 
     private void finalizeMembers(Member[] members) {
         for (Member member : members)  {

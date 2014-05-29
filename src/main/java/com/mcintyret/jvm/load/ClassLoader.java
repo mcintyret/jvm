@@ -1,12 +1,37 @@
 package com.mcintyret.jvm.load;
 
+import static com.mcintyret.jvm.core.Assert.assertNotNull;
+import static java.util.Arrays.asList;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+
 import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.MagicClasses;
 import com.mcintyret.jvm.core.Utils;
-import com.mcintyret.jvm.core.clazz.*;
+import com.mcintyret.jvm.core.clazz.AbstractClassObject;
+import com.mcintyret.jvm.core.clazz.ArrayClassObject;
+import com.mcintyret.jvm.core.clazz.ClassObject;
+import com.mcintyret.jvm.core.clazz.Field;
+import com.mcintyret.jvm.core.clazz.InterfaceMethod;
+import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.clazz.NativeMethod;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
-import com.mcintyret.jvm.core.domain.*;
+import com.mcintyret.jvm.core.domain.ArrayType;
+import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.domain.NonArrayType;
+import com.mcintyret.jvm.core.domain.Type;
+import com.mcintyret.jvm.core.domain.Types;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
-import com.mcintyret.jvm.core.nativeimpls.NativeImplemntationRegistry;
+import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
 import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
 import com.mcintyret.jvm.core.nativeimpls.SystemNatives;
 import com.mcintyret.jvm.core.oop.OopClass;
@@ -15,13 +40,15 @@ import com.mcintyret.jvm.parse.ClassFile;
 import com.mcintyret.jvm.parse.ClassFileReader;
 import com.mcintyret.jvm.parse.MemberInfo;
 import com.mcintyret.jvm.parse.Modifier;
-import com.mcintyret.jvm.parse.cp.*;
-
-import java.io.IOException;
-import java.util.*;
-
-import static com.mcintyret.jvm.core.Assert.assertNotNull;
-import static java.util.Arrays.asList;
+import com.mcintyret.jvm.parse.cp.CpClass;
+import com.mcintyret.jvm.parse.cp.CpDouble;
+import com.mcintyret.jvm.parse.cp.CpFieldReference;
+import com.mcintyret.jvm.parse.cp.CpFloat;
+import com.mcintyret.jvm.parse.cp.CpInt;
+import com.mcintyret.jvm.parse.cp.CpLong;
+import com.mcintyret.jvm.parse.cp.CpMethodReference;
+import com.mcintyret.jvm.parse.cp.CpReference;
+import com.mcintyret.jvm.parse.cp.NameAndType;
 
 public class ClassLoader {
 
@@ -49,7 +76,7 @@ public class ClassLoader {
         }
 
         ObjectNatives.registerNatives();
-//        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_OBJECT));
+        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_OBJECT));
 //        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLONEABLE));
 //        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_IO_SERIALIZABLE));
 //        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_CLASS));
@@ -268,7 +295,7 @@ public class ClassLoader {
             return new InterfaceMethod(info.getModifiers(), info.getAttributes(), mis.sig);
         } else {
             if (info.hasModifier(Modifier.NATIVE)) {
-                NativeImplementation nativeImplementation = NativeImplemntationRegistry.getNativeExecution(mis.className, mis.sig);
+                NativeImplementation nativeImplementation = NativeImplementationRegistry.getNativeExecution(mis.className, mis.sig);
                 if (nativeImplementation == null) {
 //                throw new IllegalStateException("No NativeImplementation registered for " + mis.className + "." + mis.sig);
                     System.out.println("NATIVE METHOD MISSING: " + mis.className + "." + mis.sig);

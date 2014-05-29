@@ -16,7 +16,15 @@ public class Threads {
     }
 
     public static void register(Thread thread) {
-        THREADS.put(thread.getName(), thread);
+        if (THREADS.put(thread.getName(), thread) != null) {
+            throw new AssertionError("Multiple live threads named " + thread.getName());
+        }
+    }
+
+    public static void deregister(Thread thread) {
+        if (THREADS.remove(thread.getName()) != thread) {
+            throw new AssertionError("Thread named '" + thread.getName() + "' not registered");
+        }
     }
 
 }

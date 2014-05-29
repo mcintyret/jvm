@@ -1,9 +1,11 @@
 package com.mcintyret.jvm.core.thread;
 
+import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
+
 import com.mcintyret.jvm.core.ExecutionStack;
 import com.mcintyret.jvm.core.ExecutionStackElement;
+import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
-import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.OopClass;
 
 /**
@@ -12,27 +14,31 @@ import com.mcintyret.jvm.core.oop.OopClass;
  */
 public class Thread {
 
+    private static final ClassObject THREAD_CLASS = getDefaultClassLoader().getClassObject("java/lang/Thread");
+
+    private static final Method THREAD_RUN = THREAD_CLASS.findMethod("run", "()V", false);
+
     private final OopClass thisThread;
 
     private final String name;
 
-    private final ExecutionStack executionStack;
+    private java.lang.Thread thread;
 
-    public Thread(OopClass thisThread, String name, Method entryPoint) {
-        this(thisThread, name, entryPoint, entryPoint.newArgArray());
-    }
-
-    public Thread(OopClass thisThread, String name, Method entryPoint, int[] args) {
+    public Thread(OopClass thisThread, String name) {
         this.thisThread = thisThread;
         this.name = name;
-        this.executionStack = new ExecutionStack(this);
-        executionStack.push(new ExecutionStackElement(entryPoint, args,
-                entryPoint.getClassObject().getConstantPool(), executionStack));
+        this.thread = new ActualThread();
     }
 
-    public NativeReturn run() {
-        executionStack.execute();
-        return executionStack.getFinalReturn();
+    // For system threads
+    public Thread(OopClass thisThread, String name, java.lang.Thread thread) {
+        this.thisThread = thisThread;
+        this.name = name;
+        this.thread = thread;
+    }
+
+    public void start() {
+        thread.start();
     }
 
     public OopClass getThisThread() {
@@ -41,5 +47,26 @@ public class Thread {
 
     public String getName() {
         return name;
+    }
+
+    public void interrupt() {
+        thread.interrupt();
+    }
+
+    private class ActualThread extends java.lang.Thread {
+
+        private final ExecutionStack executionStack = new ExecutionStack(Thread.this);
+
+        @Override
+        public void run() {
+            try {
+                int[] args = THREAD_RUN.newArgArray();
+                args[0] = thisThread.getAddress();
+                executionStack.push(new ExecutionStackElement(THREAD_RUN, args, THREAD_CLASS.getConstantPool(), executionStack));
+                executionStack.execute();
+            } finally {
+                Threads.deregister(Thread.this);
+            }
+        }
     }
 }

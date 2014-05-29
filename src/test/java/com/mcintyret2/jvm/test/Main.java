@@ -20,7 +20,7 @@ public class Main {
 
         String reversed = reverse(str);
 
-        System.out.println(reversed);
+//        System.out.println(reversed);
 
         try {
             doFoo();
