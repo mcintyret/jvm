@@ -1,9 +1,7 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import com.mcintyret.jvm.core.MagicClasses;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.opcode.OperationContext;
-import com.mcintyret.jvm.core.thread.*;
 import com.mcintyret.jvm.core.thread.Thread;
 
 /**
@@ -41,14 +39,5 @@ public enum ThreadNatives implements NativeImplementation {
         return methodSignature;
     }
 
-    public static void registerNatives() {
-        registerNatives(ObjectNatives.class);
-    }
-
-    static void registerNatives(Class<? extends NativeImplementation> clazz) {
-        for (NativeImplementation val : clazz.getEnumConstants()) {
-            NativeImplemntationRegistry.registerNative(val);
-        }
-    }
 }
 

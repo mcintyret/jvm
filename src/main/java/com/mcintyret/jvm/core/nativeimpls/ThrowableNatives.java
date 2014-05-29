@@ -1,7 +1,8 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
+import java.util.Deque;
+
 import com.google.common.collect.Iterables;
-import com.mcintyret.jvm.core.thread.Thread;
 import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.Utils;
@@ -13,10 +14,8 @@ import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.opcode.OperationContext;
-import com.mcintyret.jvm.load.*;
+import com.mcintyret.jvm.core.thread.Thread;
 import com.mcintyret.jvm.load.ClassLoader;
-
-import java.util.Deque;
 
 /**
  * User: tommcintyre
@@ -96,14 +95,5 @@ public enum ThrowableNatives implements NativeImplementation {
         return methodSignature;
     }
 
-    public static void registerNatives() {
-        registerNatives(ObjectNatives.class);
-    }
-
-    static void registerNatives(Class<? extends NativeImplementation> clazz) {
-        for (NativeImplementation val : clazz.getEnumConstants()) {
-            NativeImplemntationRegistry.registerNative(val);
-        }
-    }
 }
 

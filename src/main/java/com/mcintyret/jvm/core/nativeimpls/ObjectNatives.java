@@ -1,15 +1,19 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
+
+import org.reflections.Reflections;
+
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.MagicClasses;
+import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.opcode.OperationContext;
-import org.reflections.Reflections;
-
-import java.util.Set;
 
 /**
  * User: tommcintyre
@@ -30,10 +34,34 @@ public enum ObjectNatives implements NativeImplementation {
             return NativeReturn.forVoid();
         }
     },
+    WAIT("wait", "(J)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            long timeout = Utils.toLong(args[1], args[2]);
+            Condition condition = Heap.getOop(args[0]).getMarkRef().getMonitorCondition();
+            try {
+                if (timeout == 0) {
+                    condition.await();
+                } else {
+                    condition.await(timeout, TimeUnit.MILLISECONDS);
+                }
+            } catch (InterruptedException e) {
+                Thread.interrupted();
+            }
+            return NativeReturn.forVoid();
+        }
+    },
     NOTIFY("notify", "()V") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
-            // TODO: implement wait/notify!
+            Heap.getOop(args[0]).getMarkRef().getMonitorCondition().signal();
+            return NativeReturn.forVoid();
+        }
+    },
+    NOTIFY_ALL("notifyAll", "()V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            Heap.getOop(args[0]).getMarkRef().getMonitorCondition().signalAll();
             return NativeReturn.forVoid();
         }
     },
@@ -43,6 +71,7 @@ public enum ObjectNatives implements NativeImplementation {
             return NativeReturn.forInt(args[0]);
         }
     },
+
     CLONE("clone", "()Ljava/lang/Object;") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
@@ -61,6 +90,7 @@ public enum ObjectNatives implements NativeImplementation {
             return NativeReturn.forReference(clone);
         }
     },
+
     GET_CLASS("getClass", "()Ljava/lang/Class;") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
