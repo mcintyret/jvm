@@ -29,6 +29,12 @@ public enum UnsafeNatives implements NativeImplementation {
         public NativeReturn execute(int[] args, OperationContext ctx) {
             return NativeReturn.forInt(4);
         }
+    },
+    COMPARE_AND_SWAP_INT("compareAndSwapInt", "(Ljava/lang/Object;JII)Z") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            return null;  //To change body of implemented methods use File | Settings | File Templates.
+        }
     };
 
 

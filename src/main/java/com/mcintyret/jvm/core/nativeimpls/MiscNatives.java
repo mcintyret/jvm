@@ -27,6 +27,18 @@ public enum MiscNatives implements NativeImplementation {
         public String getClassName() {
             return "java/lang/String";
         }
+    },
+    FILE_DESCRIPTOR_SET_IDS("initIDs", "()V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            // WTF do i do here??
+            return NativeReturn.forVoid();
+        }
+
+        @Override
+        public String getClassName() {
+            return "java/io/FileDescriptor";
+        }
     };
 
     private final MethodSignature methodSignature;

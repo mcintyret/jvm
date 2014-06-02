@@ -1,12 +1,12 @@
 package com.mcintyret.jvm.core;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OpCodes;
 import com.mcintyret.jvm.core.opcode.OperationContext;
-
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class ExecutionStackElement implements OperationContext {
 
@@ -38,8 +38,8 @@ public class ExecutionStackElement implements OperationContext {
         current = this;
         int pos = byteIterator.getPos();
         OpCode opCode = OpCodes.getOpcode(byteIterator.nextByte());
-        if (method.getSignature().getName().equals("filterFields")) {
-//            if (true) {
+//        if (method.getSignature().getName().equals("filterFields")) {
+            if (true) {
             System.out.println(String.format("%4d: %s", pos, opCode));
         }
         opCode.execute(this);

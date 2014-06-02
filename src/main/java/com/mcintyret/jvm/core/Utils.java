@@ -1,7 +1,6 @@
 package com.mcintyret.jvm.core;
 
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
-import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.domain.Type;
@@ -15,18 +14,6 @@ public class Utils {
     public static OopArray newArray(Type type, int size) {
         ArrayClassObject aco = ArrayClassObject.forType(ArrayType.create(type, 1));
         return new OopArray(aco, new int[size * type.getSimpleType().getWidth()]);
-    }
-
-    public static void getField(WordStack stack, int[] fields, Field field) {
-        int offset = field.getOffset();
-        if (field.getType().getSimpleType().isDoubleWidth()) {
-            int one = fields[offset++];
-            int two = fields[offset];
-            stack.push(one);
-            stack.push(two);
-        } else {
-            stack.push(fields[offset]);
-        }
     }
 
     public static long toLong(int l, int r) {

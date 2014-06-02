@@ -2,7 +2,9 @@ package com.mcintyret.jvm.core;
 
 import java.util.NoSuchElementException;
 
-public class WordStack {
+import com.mcintyret.jvm.core.clazz.ValueReceiver;
+
+public class WordStack implements ValueReceiver {
 
     private static final int DEFAULT_SIZE = 10;
 
@@ -82,4 +84,13 @@ public class WordStack {
         stack = newStack;
     }
 
+    @Override
+    public void receiveInt(int i) {
+        push(i);
+    }
+
+    @Override
+    public void receiveLong(long l) {
+        push(l);
+    }
 }
