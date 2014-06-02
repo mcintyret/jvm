@@ -112,24 +112,23 @@ public class Runner {
         // are there more fields we care about?
         Field name = threadClass.findField("name", false);
         // Thread.name is a char array!
-        mainThread.getFields()[name.getOffset()] = Heap.getOop(mainString.getFields()[0]).getAddress();
+        name.set(mainThread, Heap.getOop(mainString.getFields()[0]));
 
         Field group = threadClass.findField("group", false);
-        mainThread.getFields()[group.getOffset()] = mainThreadGroup.getAddress();
+        group.set(mainThread, mainThreadGroup);
 
         // This is a long!
         Field tid = threadClass.findField("tid", false);
-        mainThread.getFields()[tid.getOffset()] = 0;
-        mainThread.getFields()[tid.getOffset() + 1] = 1;
+        tid.set(mainThread, 0, 1);
 
         Field tidGen = threadClass.findField("threadSeqNumber", true);
-        threadClass.getStaticFieldValues()[tidGen.getOffset()] = 1;
+        tidGen.set(null, 1L);
 
         Field priority = threadClass.findField("priority", false);
-        mainThread.getFields()[priority.getOffset()] = 5;
+        priority.set(mainThread, 5);
 
         Field threadStatus = threadClass.findField("threadStatus", false);
-        mainThread.getFields()[threadStatus.getOffset()] = 1; // I think this is RUNNABLE
+        threadStatus.set(mainThread, 1); // I think this is RUNNABLE
 
         Thread main = new Thread(mainThread, java.lang.Thread.currentThread());
         Threads.register(main);
