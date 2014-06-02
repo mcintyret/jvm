@@ -3,6 +3,7 @@ package com.mcintyret.jvm.core.opcode;
 import com.mcintyret.jvm.core.ByteIterator;
 import com.mcintyret.jvm.core.ExecutionStack;
 import com.mcintyret.jvm.core.WordStack;
+import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 
 public interface OperationContext {
@@ -16,4 +17,7 @@ public interface OperationContext {
     WordStack getStack();
 
     ExecutionStack getExecutionStack();
+
+    Method getMethod();
+
 }

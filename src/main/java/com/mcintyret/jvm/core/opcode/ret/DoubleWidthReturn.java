@@ -1,12 +1,9 @@
 package com.mcintyret.jvm.core.opcode.ret;
 
-import com.mcintyret.jvm.core.ExecutionStack;
 import com.mcintyret.jvm.core.WordStack;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
-import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.opcode.OperationContext;
 
-abstract class DoubleWidthReturn extends BaseReturn {
+abstract class DoubleWidthReturn extends BaseValueReturn {
 
     @Override
     protected final NativeReturn finalReturn(WordStack stack) {

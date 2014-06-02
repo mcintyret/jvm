@@ -110,13 +110,17 @@ public class ClassLoader {
 
         ClassObject bufferedOutputStream = getClassObject("java/io/BufferedOutputStream");
         OopClass bos = bufferedOutputStream.newObject();
-        Method bosConstructor = bufferedOutputStream.findMethod("<init>", "(Ljava/io/OutputStream)V", false);
+        Method bosConstructor = bufferedOutputStream.findMethod("<init>", "(Ljava/io/OutputStream;)V", false);
         Utils.executeMethod(bosConstructor, new int[]{Heap.allocate(bos), fos.getAddress()}, thread);
 
         ClassObject printStream = getClassObject("java/io/PrintStream");
         OopClass ps = printStream.newObject();
-        Method psConstructor = printStream.findMethod("<init>", "(ZLjava/io/OutputStream)V", false);
-        Utils.executeMethod(psConstructor, new int[]{Heap.allocate(ps), bos.getAddress()}, thread);
+        Method psConstructor = printStream.findMethod("<init>", "(ZLjava/io/OutputStream;)V", false);
+        int[] args = psConstructor.newArgArray();
+        args[0] = Heap.allocate(ps);
+        args[1] = bos.getAddress();
+
+        Utils.executeMethod(psConstructor, args, thread);
 
         SystemNatives.SET_OUT_0.execute(new int[]{ps.getAddress()}, null);
     }

@@ -1,9 +1,5 @@
 package com.mcintyret.jvm.core.opcode.ret;
 
-import com.mcintyret.jvm.core.ExecutionStack;
-import com.mcintyret.jvm.core.ExecutionStackElement;
-import com.mcintyret.jvm.core.WordStack;
-import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 
@@ -15,19 +11,13 @@ abstract class BaseReturn extends OpCode {
 
     @Override
     public final void execute(OperationContext ctx) {
-        ExecutionStack executionStack = ctx.getExecutionStack();
-        executionStack.pop();
+        ctx.getExecutionStack().pop();
 
-        ExecutionStackElement next = executionStack.peek();
-        if (next == null) {
-            executionStack.setFinalReturn(finalReturn(ctx.getStack()));
-        } else {
-            pushReturnVal(next.getStack(), ctx.getStack());
-        }
+        returnValue(ctx);
+
+        System.out.println("Returning from " + ctx.getMethod());
     }
 
-    protected abstract NativeReturn finalReturn(WordStack stack);
-
-    protected abstract void pushReturnVal(WordStack lower, WordStack upper);
+    protected abstract void returnValue(OperationContext ctx);
 
 }

@@ -3,7 +3,7 @@ package com.mcintyret.jvm.core.opcode.ret;
 import com.mcintyret.jvm.core.WordStack;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 
-abstract class SingleWidthReturn extends BaseReturn {
+abstract class SingleWidthReturn extends BaseValueReturn {
 
     @Override
     protected final NativeReturn finalReturn(WordStack stack) {
