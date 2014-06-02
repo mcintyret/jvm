@@ -29,8 +29,7 @@ public enum ThreadNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
             OopClass thread = Heap.getOopClass(args[0]);
-            Thread nativeThread = new Thread(thread);
-            Threads.register(nativeThread);
+            Thread nativeThread = Threads.get(thread);
             nativeThread.start();
             return NativeReturn.forVoid();
         }
@@ -47,14 +46,14 @@ public enum ThreadNatives implements NativeImplementation {
     SET_PRIORITY_0("setPriority0", "(I)V") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
-            Threads.get(Heap.getOop(args[0])).getThread().setPriority(args[1]);
+            Threads.get(Heap.getOopClass(args[0])).getThread().setPriority(args[1]);
             return NativeReturn.forVoid();
         }
     },
     IS_ALIVE("isAlive", "()Z") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
-            boolean isAlive = Threads.get(Heap.getOop(args[0])).getThread().isAlive();
+            boolean isAlive = Threads.get(Heap.getOopClass(args[0])).getThread().isAlive();
             return NativeReturn.forBool(isAlive);
         }
     };

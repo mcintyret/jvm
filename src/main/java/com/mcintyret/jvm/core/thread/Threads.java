@@ -1,9 +1,9 @@
 package com.mcintyret.jvm.core.thread;
 
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
-import com.mcintyret.jvm.core.oop.Oop;
+import com.mcintyret.jvm.core.oop.OopClass;
 
 /**
  * User: tommcintyre
@@ -11,25 +11,21 @@ import com.mcintyret.jvm.core.oop.Oop;
  */
 public class Threads {
 
-    private static final Map<Long, Thread> THREADS = new HashMap<>();
+    private static final Map<OopClass, Thread> THREADS = new IdentityHashMap<>();
 
-    public static Thread get(long id) {
-        return THREADS.get(id);
-    }
-
-    public static Thread get(Oop oopThread) {
-        return get(Thread.getThreadId(oopThread));
+    public static Thread get(OopClass oopThread) {
+        return THREADS.get(oopThread);
     }
 
     public static void register(Thread thread) {
-        if (THREADS.put(thread.getId(), thread) != null) {
-            throw new AssertionError("Multiple live threads with id " + thread.getId());
+        if (THREADS.put(thread.getThisThread(), thread) != null) {
+//            throw new AssertionError("Multiple live threads with id " + thread.getId());
         }
     }
 
     public static void deregister(Thread thread) {
-        if (THREADS.remove(thread.getId()) != thread) {
-            throw new AssertionError("Thread with id '" + thread.getId() + "' not registered");
+        if (THREADS.remove(thread.getThisThread()) != thread) {
+//            throw new AssertionError("Thread with id '" + thread.getId() + "' not registered");
         }
     }
 

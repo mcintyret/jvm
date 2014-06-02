@@ -1,9 +1,9 @@
 package com.mcintyret.jvm.core.clazz;
 
+import java.util.Set;
+
 import com.mcintyret.jvm.parse.Modifier;
 import com.mcintyret.jvm.parse.attribute.Attributes;
-
-import java.util.Set;
 
 public abstract class Member {
 
@@ -41,7 +41,7 @@ public abstract class Member {
         return isStatic;
     }
 
-    void setClassObject(ClassObject classObject) {
+    public void setClassObject(ClassObject classObject) {
         this.classObject = classObject;
     }
 }

@@ -22,13 +22,15 @@ public class Runner {
 
     private static final MethodSignature MAIN_METHOD_SIGNATURE = MethodSignature.parse("main", "([Ljava/lang/String;)V");
 
+    public static Thread MAIN_THREAD;
+
     public void run(ClassPath classPath, String mainClassName, String... args) throws IOException {
         ClassLoader loader = ClassLoader.getDefaultClassLoader();
 
         loader.load(classPath);
 
         // This happens early!
-        Thread main = createMainThread();
+        MAIN_THREAD = createMainThread();
 
         loader.afterInitialLoad(); // Sets System.out. Can I do this anywhere else??
 
@@ -43,7 +45,7 @@ public class Runner {
         }
         int[] actualArgs = new int[]{Heap.allocate(array)};
 
-        NativeReturn ret = Utils.executeMethod(mainMethod, actualArgs, main);
+        NativeReturn ret = Utils.executeMethod(mainMethod, actualArgs, MAIN_THREAD);
 
         if (ret != null) {
             WordStack stack = new WordStack();

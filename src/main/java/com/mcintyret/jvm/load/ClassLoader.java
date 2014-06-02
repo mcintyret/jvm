@@ -6,6 +6,7 @@ import static java.util.Arrays.asList;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -32,9 +33,12 @@ import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.domain.Types;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
+import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
 import com.mcintyret.jvm.core.nativeimpls.SystemNatives;
 import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.thread.Thread;
 import com.mcintyret.jvm.core.thread.Threads;
 import com.mcintyret.jvm.parse.ClassFile;
 import com.mcintyret.jvm.parse.ClassFileReader;
@@ -92,7 +96,7 @@ public class ClassLoader {
     }
 
     private void setSystemOut() {
-        com.mcintyret.jvm.core.thread.Thread thread = Threads.get(1);
+        com.mcintyret.jvm.core.thread.Thread thread = Runner.MAIN_THREAD;
 
         ClassObject fileDescriptor = getClassObject("java/io/FileDescriptor");
         OopClass outFd = Heap.getOopClass(fileDescriptor.getStaticFieldValues()[1]);
@@ -148,6 +152,7 @@ public class ClassLoader {
             ifaces[i] = getClassObject(getClassName(file.getInterfaces()[i], file.getConstantPool()));
         }
 
+
         // Methods - sorting out the VTable
         NonArrayType type = NonArrayType.forClass(className);
 
@@ -195,6 +200,7 @@ public class ClassLoader {
             orderedMethods.add(translateMethod(instanceMethod, isInterface));
         }
 
+        // Fields
         Field[] translatedStaticFields;
         Field[] translatedInstanceFields;
 
@@ -232,6 +238,10 @@ public class ClassLoader {
             translatedStaticFields,
             this);
 
+        if (className.equals("java/lang/Thread")) {
+            doFancyThreadInitMethodStuff(co);
+        }
+
         registerInterfaceImplementations(co);
 
         cacheFields(co.getInstanceFields(), className);
@@ -243,6 +253,45 @@ public class ClassLoader {
         translateSimpleConstantPool(file.getConstantPool());
 
         return co;
+    }
+
+    private void doFancyThreadInitMethodStuff(ClassObject co) {
+        Method[] methods = co.getInstanceMethods();
+        for (int i = 0; i < methods.length; i++) {
+            Method method = methods[i];
+            MethodSignature ms = method.getSignature();
+            if (ms.getName().equals("init") && ms.getArgTypes().size() == 5) {
+                method.getModifiers().add(Modifier.NATIVE);
+                NativeImplementation ni = new NativeImplementation() {
+                    @Override
+                    public NativeReturn execute(int[] args, OperationContext ctx) {
+                        OopClass thread = Heap.getOopClass(args[0]);
+                        Threads.register(new Thread(thread));
+
+                        // Do the actual method stuff
+                        Utils.executeMethod(method, args, ctx.getExecutionStack().getThread());
+
+                        return NativeReturn.forVoid();
+                    }
+
+                    @Override
+                    public String getClassName() {
+                        return "java/lang/Thread";
+                    }
+
+                    @Override
+                    public MethodSignature getMethodSignature() {
+                        return ms;
+                    }
+                };
+
+                Set<Modifier> modifiers = EnumSet.copyOf(method.getModifiers());
+                modifiers.add(Modifier.NATIVE);
+                methods[i] = new NativeMethod(modifiers, method.getAttributes(), ms, ni);
+                methods[i].setClassObject(method.getClassObject());
+                return;
+            }
+        }
     }
 
     private void registerInterfaceImplementations(ClassObject co) {
@@ -280,7 +329,7 @@ public class ClassLoader {
     private void executeStaticInitMethod(ClassObject co) {
         Method staticInit = co.findMethod("<clinit>", "()V", true);
         if (staticInit != null) {
-            Utils.executeMethod(staticInit, new int[staticInit.getCode().getMaxLocals()], Threads.get(1));
+            Utils.executeMethod(staticInit, new int[staticInit.getCode().getMaxLocals()], Runner.MAIN_THREAD);
         }
     }
 

@@ -1,5 +1,7 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
+import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 
@@ -13,6 +15,17 @@ public enum MiscNatives implements NativeImplementation {
         @Override
         public String getClassName() {
             return "sun/misc/VM";
+        }
+    },
+    STRING_INTERN("intern", "()Ljava/lang/String;") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            return NativeReturn.forInt(Heap.intern(Utils.toString(Heap.getOopClass(args[0]))));
+        }
+
+        @Override
+        public String getClassName() {
+            return "java/lang/String";
         }
     };
 

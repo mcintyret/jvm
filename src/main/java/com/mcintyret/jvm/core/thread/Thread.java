@@ -28,24 +28,16 @@ public class Thread {
 
     private final OopClass thisThread;
 
-    private final String name;
-
-    private final long id;
-
     private java.lang.Thread thread;
 
     public Thread(OopClass thisThread) {
         this.thisThread = thisThread;
-        this.name = getThreadName(thisThread);
-        this.id = getThreadId(thisThread);
         this.thread = new ActualThread();
     }
 
     // For system threads
     public Thread(OopClass thisThread, java.lang.Thread thread) {
         this.thisThread = thisThread;
-        this.name = getThreadName(thisThread);
-        this.id = getThreadId(thisThread);
         this.thread = thread;
     }
 
@@ -55,14 +47,6 @@ public class Thread {
 
     public OopClass getThisThread() {
         return thisThread;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public long getId() {
-        return id;
     }
 
     public void interrupt() {
