@@ -1,25 +1,15 @@
-Synchronization
-
 GC
 
-Threading
-
-Exception handling
-
 Bytecode verification
-
-Native method implementations
 
 Remove Reflections dependency
 
 Proper Heap options
-
-Inner classes
-
-calling super
 
 is RegisterNatives a special case for native methods?
 
 JMX?
 
 Reflection?
+
+Volatile (use UNSAFE)
