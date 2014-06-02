@@ -4,8 +4,12 @@ import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 
 import com.mcintyret.jvm.core.ExecutionStack;
 import com.mcintyret.jvm.core.ExecutionStackElement;
+import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.clazz.ClassObject;
+import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopClass;
 
 /**
@@ -16,24 +20,32 @@ public class Thread {
 
     private static final ClassObject THREAD_CLASS = getDefaultClassLoader().getClassObject("java/lang/Thread");
 
+    private static final Field NAME_FIELD = THREAD_CLASS.findField("name", false);
+
+    private static final Field ID_FIELD = THREAD_CLASS.findField("tid", false);
+
     private static final Method THREAD_RUN = THREAD_CLASS.findMethod("run", "()V", false);
 
     private final OopClass thisThread;
 
     private final String name;
 
+    private final long id;
+
     private java.lang.Thread thread;
 
-    public Thread(OopClass thisThread, String name) {
+    public Thread(OopClass thisThread) {
         this.thisThread = thisThread;
-        this.name = name;
+        this.name = getThreadName(thisThread);
+        this.id = getThreadId(thisThread);
         this.thread = new ActualThread();
     }
 
     // For system threads
-    public Thread(OopClass thisThread, String name, java.lang.Thread thread) {
+    public Thread(OopClass thisThread, java.lang.Thread thread) {
         this.thisThread = thisThread;
-        this.name = name;
+        this.name = getThreadName(thisThread);
+        this.id = getThreadId(thisThread);
         this.thread = thread;
     }
 
@@ -49,12 +61,26 @@ public class Thread {
         return name;
     }
 
+    public long getId() {
+        return id;
+    }
+
     public void interrupt() {
         thread.interrupt();
     }
 
     public java.lang.Thread getThread() {
         return thread;
+    }
+
+    private static String getThreadName(Oop thread) {
+        return Utils.toString(Heap.getOopArray(thread.getFields()[NAME_FIELD.getOffset()]));
+    }
+
+    static long getThreadId(Oop thread) {
+        int offset = ID_FIELD.getOffset();
+        int[] fields = thread.getFields();
+        return Utils.toLong(fields[offset], fields[offset + 1]);
     }
 
     private class ActualThread extends java.lang.Thread {

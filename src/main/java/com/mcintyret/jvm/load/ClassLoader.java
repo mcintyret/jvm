@@ -92,7 +92,7 @@ public class ClassLoader {
     }
 
     private void setSystemOut() {
-        com.mcintyret.jvm.core.thread.Thread thread = Threads.get("main");
+        com.mcintyret.jvm.core.thread.Thread thread = Threads.get(1);
 
         ClassObject fileDescriptor = getClassObject("java/io/FileDescriptor");
         OopClass outFd = Heap.getOopClass(fileDescriptor.getStaticFieldValues()[1]);
@@ -280,7 +280,7 @@ public class ClassLoader {
     private void executeStaticInitMethod(ClassObject co) {
         Method staticInit = co.findMethod("<clinit>", "()V", true);
         if (staticInit != null) {
-            Utils.executeMethod(staticInit, new int[staticInit.getCode().getMaxLocals()], Threads.get("main"));
+            Utils.executeMethod(staticInit, new int[staticInit.getCode().getMaxLocals()], Threads.get(1));
         }
     }
 

@@ -115,8 +115,10 @@ public class Runner {
         Field group = threadClass.findField("group", false);
         mainThread.getFields()[group.getOffset()] = mainThreadGroup.getAddress();
 
+        // This is a long!
         Field tid = threadClass.findField("tid", false);
-        mainThread.getFields()[tid.getOffset()] = 1;
+        mainThread.getFields()[tid.getOffset()] = 0;
+        mainThread.getFields()[tid.getOffset() + 1] = 1;
 
         Field tidGen = threadClass.findField("threadSeqNumber", true);
         threadClass.getStaticFieldValues()[tidGen.getOffset()] = 1;
@@ -127,7 +129,7 @@ public class Runner {
         Field threadStatus = threadClass.findField("threadStatus", false);
         mainThread.getFields()[threadStatus.getOffset()] = 1; // I think this is RUNNABLE
 
-        Thread main = new Thread(mainThread, "main", java.lang.Thread.currentThread());
+        Thread main = new Thread(mainThread, java.lang.Thread.currentThread());
         Threads.register(main);
         return main;
     }
