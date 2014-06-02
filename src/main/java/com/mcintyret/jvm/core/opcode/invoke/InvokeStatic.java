@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.core.opcode.invoke;
 
-class InvokeStatic extends Invoke {
+class InvokeStatic extends InvokeSimple {
 
     @Override
     public byte getByte() {

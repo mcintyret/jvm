@@ -15,10 +15,13 @@ public abstract class Member {
 
     private boolean isStatic;
 
-    protected Member(Set<Modifier> modifiers, Attributes attributes) {
+    private final int offset;
+
+    protected Member(Set<Modifier> modifiers, Attributes attributes, int offset) {
         this.modifiers = modifiers;
         this.attributes = attributes;
         this.isStatic = hasModifier(Modifier.STATIC);
+        this.offset = offset;
     }
 
     public ClassObject getClassObject() {
@@ -43,5 +46,9 @@ public abstract class Member {
 
     public void setClassObject(ClassObject classObject) {
         this.classObject = classObject;
+    }
+
+    public int getOffset() {
+        return offset;
     }
 }

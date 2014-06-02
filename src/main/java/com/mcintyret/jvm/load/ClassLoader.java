@@ -163,9 +163,10 @@ public class ClassLoader {
         List<Method> staticMethods = new ArrayList<>();
         List<MethodInfoAndSig> instanceMethods = new LinkedList<>();
 
+        int staticOffset = 0; // Probably never needed, but for completeness
         for (MemberInfo method : file.getMethods()) {
             if (method.hasModifier(Modifier.STATIC)) {
-                staticMethods.add(translateMethod(new MethodInfoAndSig(method, file.getConstantPool(), className), false));
+                staticMethods.add(translateMethod(new MethodInfoAndSig(method, file.getConstantPool(), className), false, staticOffset++));
             } else {
                 instanceMethods.add(new MethodInfoAndSig(method, file.getConstantPool(), className));
             }
@@ -187,7 +188,7 @@ public class ClassLoader {
                     MethodInfoAndSig mis = li.next();
                     if (mis.sig.equals(parentMethod.getSignature())) {
                         // Override!!
-                        orderedMethods.add(translateMethod(mis, false));
+                        orderedMethods.add(translateMethod(mis, false, parentMethod.getOffset()));
                         li.remove();
                         overridden = true;
                         break;
@@ -200,8 +201,9 @@ public class ClassLoader {
             }
         }
 
+        int instanceOffset = orderedMethods.size();
         for (MethodInfoAndSig instanceMethod : instanceMethods) {
-            orderedMethods.add(translateMethod(instanceMethod, isInterface));
+            orderedMethods.add(translateMethod(instanceMethod, isInterface, instanceOffset++));
         }
 
         // Fields
@@ -291,7 +293,7 @@ public class ClassLoader {
 
                 Set<Modifier> modifiers = EnumSet.copyOf(method.getModifiers());
                 modifiers.add(Modifier.NATIVE);
-                methods[i] = new NativeMethod(modifiers, method.getAttributes(), ms, ni);
+                methods[i] = new NativeMethod(modifiers, method.getAttributes(), ms, method.getOffset(), ni);
                 methods[i].setClassObject(method.getClassObject());
                 return;
             }
@@ -337,7 +339,7 @@ public class ClassLoader {
         }
     }
 
-    private static Method translateMethod(MethodInfoAndSig mis, boolean isInterface) {
+    private static Method translateMethod(MethodInfoAndSig mis, boolean isInterface, int offset) {
         MemberInfo info = mis.mi;
 
         if (isInterface) {
@@ -349,9 +351,9 @@ public class ClassLoader {
 //                throw new IllegalStateException("No NativeImplementation registered for " + mis.className + "." + mis.sig);
                     System.out.println("NATIVE METHOD MISSING: " + mis.className + "." + mis.sig);
                 }
-                return new NativeMethod(info.getModifiers(), info.getAttributes(), mis.sig, nativeImplementation);
+                return new NativeMethod(info.getModifiers(), info.getAttributes(), mis.sig, offset, nativeImplementation);
             } else {
-                return new Method(info.getModifiers(), info.getAttributes(), mis.sig);
+                return new Method(info.getModifiers(), info.getAttributes(), mis.sig, offset);
             }
         }
     }

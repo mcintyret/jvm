@@ -14,29 +14,23 @@ public class Field extends Member {
 
     private final Type type;
 
-    private final int offset;
-
     public Field(Set<Modifier> modifiers, Attributes attributes, String name, Type type, int offset) {
-        super(modifiers, attributes);
+        super(modifiers, attributes, offset);
         this.name = name;
         this.type = type;
-        this.offset = offset;
     }
 
     public Type getType() {
         return type;
     }
 
-    public int getOffset() {
-        return offset;
-    }
 
     public String getName() {
         return name;
     }
 
     public void set(Oop thisOop, int i) {
-        getValues(thisOop)[offset] = i;
+        getValues(thisOop)[getOffset()] = i;
     }
 
     private int[] getValues(Oop thisOop) {
@@ -49,22 +43,22 @@ public class Field extends Member {
 
     public void set(Oop thisOop, long l) {
         int[] fields = getValues(thisOop);
-        fields[offset] = (int) (l >> 32);
-        fields[offset + 1] = (int) l & 0x0000FFFF;
+        fields[getOffset()] = (int) (l >> 32);
+        fields[getOffset() + 1] = (int) l & 0x0000FFFF;
     }
 
     public void set(Oop thisOop, int l, int r) {
         int[] fields = getValues(thisOop);
-        fields[offset] = l;
-        fields[offset + 1] = r;
+        fields[getOffset()] = l;
+        fields[getOffset() + 1] = r;
     }
 
     public void get(Oop thisOop, ValueReceiver valueReceiver) {
         int[] fields = getValues(thisOop);
         if (type.getSimpleType().isDoubleWidth()) {
-            valueReceiver.receiveLong(Utils.toLong(fields[offset], fields[offset + 1]));
+            valueReceiver.receiveLong(Utils.toLong(fields[getOffset()], fields[getOffset() + 1]));
         } else {
-            valueReceiver.receiveInt(fields[offset]);
+            valueReceiver.receiveInt(fields[getOffset()]);
         }
     }
 

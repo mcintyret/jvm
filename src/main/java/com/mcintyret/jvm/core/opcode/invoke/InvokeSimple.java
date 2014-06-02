@@ -1,6 +1,5 @@
 package com.mcintyret.jvm.core.opcode.invoke;
 
-import com.mcintyret.jvm.core.ByteCode;
 import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.NativeMethod;
@@ -13,11 +12,12 @@ import com.mcintyret.jvm.parse.Modifier;
  * User: tommcintyre
  * Date: 5/20/14
  */
-abstract class Invoke extends OpCode {
+abstract class InvokeSimple extends OpCode {
 
     @Override
     public final void execute(OperationContext ctx) {
-        Method method = ctx.getConstantPool().getMethod(ctx.getByteIterator().nextShort());
+        Method method = ctx.getConstantPool().getMethod(ctx.getByteIterator().nextShortUnsigned());
+
         System.out.println("Invoking " + method.getClassObject().getType().getClassName() + "." + method.getSignature());
 
         int[] values = getValues(ctx, method);
@@ -33,6 +33,7 @@ abstract class Invoke extends OpCode {
                 new ExecutionStackElement(method, values, method.getClassObject().getConstantPool(), ctx.getExecutionStack()));
         }
     }
+
 
     private int[] getValues(OperationContext ctx, Method method) {
         boolean isStatic = method.isStatic();
