@@ -15,8 +15,6 @@ public class ClassObject extends AbstractClassObject {
 
     private final ConstantPool constantPool;
 
-    private final Method[] instanceMethods;
-
     private final Method[] staticMethods;
 
     private final Field[] instanceFields;
@@ -30,10 +28,9 @@ public class ClassObject extends AbstractClassObject {
     public ClassObject(NonArrayType type, Set<Modifier> modifiers, ClassObject parent, ClassObject[] interfaces,
                        ConstantPool constantPool, Method[] instanceMethods, Method[] staticMethods,
                        Field[] instanceFields, Field[] staticFields, ClassLoader classLoader) {
-        super(parent, interfaces, modifiers);
+        super(parent, interfaces, instanceMethods, modifiers);
         this.type = type;
         this.constantPool = constantPool;
-        this.instanceMethods = instanceMethods;
         this.staticMethods = staticMethods;
         this.instanceFields = instanceFields;
         this.staticFields = staticFields;
@@ -44,10 +41,6 @@ public class ClassObject extends AbstractClassObject {
         finalizeMembers(instanceMethods);
         finalizeMembers(staticFields);
         finalizeMembers(staticMethods);
-    }
-
-    public Method[] getInstanceMethods() {
-        return instanceMethods;
     }
 
     public ConstantPool getConstantPool() {
@@ -84,7 +77,7 @@ public class ClassObject extends AbstractClassObject {
     }
 
     public Method findMethod(String name, boolean isStatic) {
-        return findMethod(name, isStatic ? staticMethods : instanceMethods);
+        return findMethod(name, isStatic ? staticMethods : getInstanceMethods());
     }
 
     private Method findMethod(String name, Method[] methods) {
@@ -110,7 +103,7 @@ public class ClassObject extends AbstractClassObject {
     }
 
     public Method findMethod(MethodSignature methodSignature, boolean isStatic) {
-        return isStatic ? findMethod(methodSignature, staticMethods) : findMethod(methodSignature, instanceMethods);
+        return isStatic ? findMethod(methodSignature, staticMethods) : findMethod(methodSignature, getInstanceMethods());
     }
 
     public Field findField(String name, boolean isStatic) {

@@ -2,6 +2,7 @@ package com.mcintyret.jvm.core.opcode.invoke;
 
 import com.mcintyret.jvm.core.clazz.InterfaceMethod;
 import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 
@@ -13,8 +14,8 @@ class InvokeInterface extends InvokeIndirect {
     }
 
     @Override
-    protected Method getImplementationMethod(Method method, OopClass oop) {
-        return ((InterfaceMethod) method).getMethodForImplementation(oop.getClassObject());
+    protected Method getImplementationMethod(Method method, Oop oop) {
+        return ((InterfaceMethod) method).getMethodForImplementation(((OopClass) oop).getClassObject());
     }
 
     @Override

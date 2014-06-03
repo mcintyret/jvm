@@ -4,7 +4,7 @@ import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.NativeMethod;
-import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.parse.Modifier;
 
@@ -19,7 +19,7 @@ abstract class InvokeIndirect extends Invoke {
         }
         values[0] = ctx.getStack().pop();
 
-        OopClass oop = Heap.getOopClass(values[0]);
+        Oop oop = Heap.getOop(values[0]);
 
         Method implementation = getImplementationMethod(method, oop);
 
@@ -44,6 +44,6 @@ abstract class InvokeIndirect extends Invoke {
         // Do nothing by default
     }
 
-    protected abstract Method getImplementationMethod(Method method, OopClass oop);
+    protected abstract Method getImplementationMethod(Method method, Oop oop);
 
 }

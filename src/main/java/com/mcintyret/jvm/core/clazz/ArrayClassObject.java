@@ -1,16 +1,16 @@
 package com.mcintyret.jvm.core.clazz;
 
-import com.mcintyret.jvm.core.MagicClasses;
-import com.mcintyret.jvm.core.domain.ArrayType;
-import com.mcintyret.jvm.core.oop.OopArray;
-import com.mcintyret.jvm.parse.Modifier;
+import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
+import com.mcintyret.jvm.core.MagicClasses;
+import com.mcintyret.jvm.core.domain.ArrayType;
+import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.parse.Modifier;
 
 public class ArrayClassObject extends AbstractClassObject {
 
@@ -37,7 +37,7 @@ public class ArrayClassObject extends AbstractClassObject {
     private final ArrayType arrayType;
 
     private ArrayClassObject(ArrayType arrayType) {
-        super(PARENT, INTERFACES, MODIFIERS);
+        super(PARENT, INTERFACES, PARENT.getInstanceMethods(), MODIFIERS);
         this.arrayType = arrayType;
     }
 
