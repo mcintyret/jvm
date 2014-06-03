@@ -13,3 +13,5 @@ JMX?
 Reflection?
 
 Volatile (use UNSAFE)
+
+Releasing locks on throwing!

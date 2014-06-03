@@ -2,6 +2,7 @@ package com.mcintyret.jvm.core.clazz;
 
 import java.util.Set;
 
+import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.oop.Oop;
@@ -60,6 +61,19 @@ public class Field extends Member {
         } else {
             valueReceiver.receiveInt(fields[getOffset()]);
         }
+    }
+
+    public int getInt(Oop thisOop) {
+        return getValues(thisOop)[getOffset()];
+    }
+
+    public long getLong(Oop thisOop) {
+        int[] values = getValues(thisOop);
+        return Utils.toLong(values[getOffset()], values[getOffset() + 1]);
+    }
+
+    public Oop getOop(Oop thisOop) {
+        return Heap.getOop(getInt(thisOop));
     }
 
 }

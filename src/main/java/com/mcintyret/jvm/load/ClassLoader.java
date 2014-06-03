@@ -127,14 +127,17 @@ public class ClassLoader {
         com.mcintyret.jvm.core.thread.Thread thread = Runner.MAIN_THREAD;
 
         ClassObject fileDescriptor = getClassObject("java/io/FileDescriptor");
-        OopClass outFd = Heap.getOopClass(fileDescriptor.getStaticFieldValues()[1]);
+        OopClass outFd = (OopClass) fileDescriptor.findField("out", true).getOop(null);
 
         ClassObject fileOutputStream = getClassObject("java/io/FileOutputStream");
+        Method ctor = fileOutputStream.findMethod("<init>", "(Ljava/io/FileDescriptor;)V", false);
         OopClass fos = fileOutputStream.newObject();
-        Heap.allocate(fos);
+        int[] args = ctor.newArgArray();
+        args[0] = Heap.allocate(fos);
+        args[1] = outFd.getAddress();
 
-        fos.getFields()[0] = outFd.getAddress();
-        fos.getFields()[4] = Heap.allocate(getClassObject("java/lang/Object").newObject());
+        // FileOutputStream constructor
+        Utils.executeMethod(ctor, args, thread);
 
         ClassObject bufferedOutputStream = getClassObject("java/io/BufferedOutputStream");
         OopClass bos = bufferedOutputStream.newObject();
@@ -144,9 +147,9 @@ public class ClassLoader {
         ClassObject printStream = getClassObject("java/io/PrintStream");
         OopClass ps = printStream.newObject();
         Method psConstructor = printStream.findMethod("<init>", "(ZLjava/io/OutputStream;)V", false);
-        int[] args = psConstructor.newArgArray();
+        args = psConstructor.newArgArray();
         args[0] = Heap.allocate(ps);
-        args[1] = bos.getAddress();
+        args[2] = bos.getAddress();
 
         Utils.executeMethod(psConstructor, args, thread);
 
