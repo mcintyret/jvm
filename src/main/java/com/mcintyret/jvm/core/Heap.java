@@ -1,5 +1,10 @@
 package com.mcintyret.jvm.core;
 
+import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.domain.ArrayType;
@@ -7,18 +12,12 @@ import com.mcintyret.jvm.core.domain.SimpleType;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.load.*;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import static com.mcintyret.jvm.load.ClassLoader.*;
 
 public class Heap {
 
     private static ClassObject STRING_CLASS;
 
-    private static final Oop[] OOP_TABLE = new Oop[1000];
+    private static final Oop[] OOP_TABLE = new Oop[2000];
 
     private static int heapAllocationPointer = 1;
 
@@ -47,6 +46,9 @@ public class Heap {
 
 
     public static int allocate(Oop oop) {
+        if (heapAllocationPointer >= OOP_TABLE.length) {
+            throw new OutOfMemoryError("No more heap space! Should probably do some kind of GC...");
+        }
         OOP_TABLE[heapAllocationPointer] = oop;
         oop.setAddress(heapAllocationPointer);
         return heapAllocationPointer++;
