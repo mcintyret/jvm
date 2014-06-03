@@ -91,8 +91,31 @@ public class ClassLoader {
     public void afterInitialLoad() {
         if (this == DEFAULT_CLASSLOADER) {
             // Do this somewhere else!
+            setSystemProperties();
             setSystemOut();
         }
+    }
+
+    private void setSystemProperties() {
+        // Simply create and set an empty Properties object.
+        // SystemNatives.initProperties takes care of the rest
+
+        com.mcintyret.jvm.core.thread.Thread thread = Runner.MAIN_THREAD;
+        ClassObject properties = getClassObject("java/util/Properties");
+        OopClass props = properties.newObject();
+
+        Method propCtr = properties.findMethod("<init>", "()V", false);
+        int[] args = propCtr.newArgArray();
+        args[0] = Heap.allocate(props);
+
+        Utils.executeMethod(propCtr, args, thread);
+
+        ClassObject system = getClassObject("java/lang/System");
+        Method setProperties = system.findMethod("setProperties", true);
+        args = setProperties.newArgArray();
+        args[0] = props.getAddress();
+
+        Utils.executeMethod(setProperties, args, thread);
     }
 
     private void setSystemOut() {

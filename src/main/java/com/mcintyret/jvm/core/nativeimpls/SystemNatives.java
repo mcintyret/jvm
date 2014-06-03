@@ -1,10 +1,13 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.clazz.ClassObject;
+import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.load.ClassLoader;
 
@@ -72,6 +75,23 @@ public enum SystemNatives implements NativeImplementation {
             ClassObject system = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/System");
             system.getStaticFieldValues()[1] = args[0];
             return NativeReturn.forVoid();
+        }
+    },
+    INIT_PROPERTIES("initProperties", "(Ljava/util/Properties;)Ljava/util/Properties;") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            OopClass props = Heap.getOopClass(args[0]);
+            Method setProperty = props.getClassObject().findMethod("setProperty", false);
+
+            for (String key : System.getProperties().stringPropertyNames())  {
+                int[] spArgs = setProperty.newArgArray();
+                spArgs[0] = props.getAddress();
+                spArgs[1] = Heap.intern(key);
+                spArgs[2] = Heap.intern(System.getProperty(key));
+                Utils.executeMethod(setProperty, spArgs, ctx.getExecutionStack().getThread());
+            }
+
+            return NativeReturn.forReference(props);
         }
     };
 

@@ -23,7 +23,7 @@ abstract class InvokeIndirect extends Invoke {
 
         Method implementation = getImplementationMethod(method, oop);
 
-        if (method.hasModifier(Modifier.NATIVE)) {
+        if (implementation.hasModifier(Modifier.NATIVE)) {
             ((NativeMethod) implementation).getNativeImplementation().execute(values, ctx).applyToStack(ctx.getStack());
         } else {
             int maxLocalVars = implementation.getCode().getMaxLocals();
