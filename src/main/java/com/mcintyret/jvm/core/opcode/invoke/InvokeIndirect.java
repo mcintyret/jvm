@@ -5,16 +5,13 @@ import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.NativeMethod;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.parse.Modifier;
 
-abstract class InvokeIndirect extends OpCode {
+abstract class InvokeIndirect extends Invoke {
 
     @Override
-    public final void execute(OperationContext ctx) {
-        Method method = ctx.getConstantPool().getMethod(ctx.getByteIterator().nextShort());
-
+    protected final void doInvoke(Method method, OperationContext ctx) {
         int[] values = method.newArgArray();
         int args = method.getSignature().getLength();
         for (int i = args; i >= 1; i--) {
@@ -40,7 +37,11 @@ abstract class InvokeIndirect extends OpCode {
                 new ExecutionStackElement(implementation, values, implementation.getClassObject().getConstantPool(), ctx.getExecutionStack()));
         }
 
-        ctx.getByteIterator().nextShort(); // InvokeInterface has 2 extra args which can be ignored
+        afterInvoke(ctx);
+    }
+
+    protected void afterInvoke(OperationContext ctx) {
+        // Do nothing by default
     }
 
     protected abstract Method getImplementationMethod(Method method, OopClass oop);

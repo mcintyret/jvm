@@ -3,6 +3,7 @@ package com.mcintyret.jvm.core.opcode.invoke;
 import com.mcintyret.jvm.core.clazz.InterfaceMethod;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.opcode.OperationContext;
 
 class InvokeInterface extends InvokeIndirect {
 
@@ -14,5 +15,10 @@ class InvokeInterface extends InvokeIndirect {
     @Override
     protected Method getImplementationMethod(Method method, OopClass oop) {
         return ((InterfaceMethod) method).getMethodForImplementation(oop.getClassObject());
+    }
+
+    @Override
+    protected final void afterInvoke(OperationContext ctx) {
+        ctx.getByteIterator().nextShort(); // InvokeInterface has 2 extra args which can be ignored
     }
 }

@@ -4,7 +4,6 @@ import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.NativeMethod;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
-import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.parse.Modifier;
 
@@ -12,14 +11,10 @@ import com.mcintyret.jvm.parse.Modifier;
  * User: tommcintyre
  * Date: 5/20/14
  */
-abstract class InvokeSimple extends OpCode {
+abstract class InvokeSimple extends Invoke {
 
     @Override
-    public final void execute(OperationContext ctx) {
-        Method method = ctx.getConstantPool().getMethod(ctx.getByteIterator().nextShortUnsigned());
-
-        System.out.println("Invoking " + method.getClassObject().getType().getClassName() + "." + method.getSignature());
-
+    protected final void doInvoke(Method method, OperationContext ctx) {
         int[] values = getValues(ctx, method);
 
         if (method.hasModifier(Modifier.NATIVE)) {
