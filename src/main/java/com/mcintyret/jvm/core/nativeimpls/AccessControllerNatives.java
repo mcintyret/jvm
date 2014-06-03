@@ -14,7 +14,9 @@ public enum AccessControllerNatives implements NativeImplementation {
             // Meh, I'm sure it's fine...
             OopClass privilegedAction = Heap.getOopClass(args[0]);
             Method run = privilegedAction.getClassObject().findMethod("run", "()Ljava/lang/Object;", false);
-            return Utils.executeMethod(run, new int[run.getCode().getMaxLocals()], ctx.getExecutionStack().getThread());
+            int[] runArgs = run.newArgArray();
+            runArgs[0] = args[0];
+            return Utils.executeMethod(run, runArgs, ctx.getExecutionStack().getThread());
         }
 
         @Override
