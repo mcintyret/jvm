@@ -91,8 +91,12 @@ public class ClassLoader {
     public void afterInitialLoad() {
         if (this == DEFAULT_CLASSLOADER) {
             // Do this somewhere else!
-            setSystemProperties();
-            setSystemOut();
+//            setSystemProperties();
+//            setSystemOut();
+
+            ClassObject system = getClassObject("java/lang/System");
+            Method init = system.findMethod("initializeSystemClass", true);
+            Utils.executeMethod(init, init.newArgArray(), Runner.MAIN_THREAD);
         }
     }
 

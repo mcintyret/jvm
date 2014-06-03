@@ -26,6 +26,7 @@ public class AThrow extends OpCode {
     @Override
     public void execute(OperationContext ctx) {
         OopClass thrown = Heap.getOopClass(ctx.getStack().pop());
+        LOG.warn("Throwing exception of type {} from method {}", thrown.getClassObject(), ctx.getMethod());
 
         ExecutionStackElement elem = ctx.getExecutionStack().peek();
         while (elem != null) {
@@ -50,7 +51,6 @@ public class AThrow extends OpCode {
                             caught = true;
                         }
                     }
-
 
                     if (caught) {
                         bi.setPos(exception.getHandlerPc());

@@ -117,7 +117,7 @@ public enum ClassNatives implements NativeImplementation {
                 return NativeReturn.forReference(ClassLoader.getDefaultClassLoader().getClassObject(className).getType().getClassOop());
             } catch (AssertionError e) {
                 // TODO: proper error, or some other system!
-                return NativeReturn.forThrowable(ClassLoader.getDefaultClassLoader().getClassObject("java/lang/ClassCastException").newObject());
+                return NativeReturn.forThrowable(ClassLoader.getDefaultClassLoader().getClassObject("java/lang/ClassNotFoundException").newObject());
             }
         }
     };

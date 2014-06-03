@@ -79,13 +79,21 @@ public enum SystemNatives implements NativeImplementation {
             return NativeReturn.forVoid();
         }
     },
+    SET_IN_0("setIn0", "(Ljava/io/InputStream;)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            ClassObject system = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/System");
+            system.findField("in", true).set(null, args[0]);
+            return NativeReturn.forVoid();
+        }
+    },
     INIT_PROPERTIES("initProperties", "(Ljava/util/Properties;)Ljava/util/Properties;") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
             OopClass props = Heap.getOopClass(args[0]);
             Method setProperty = props.getClassObject().findMethod("setProperty", false);
 
-            for (String key : System.getProperties().stringPropertyNames())  {
+            for (String key : System.getProperties().stringPropertyNames()) {
                 int[] spArgs = setProperty.newArgArray();
                 spArgs[0] = props.getAddress();
                 spArgs[1] = Heap.intern(key);
