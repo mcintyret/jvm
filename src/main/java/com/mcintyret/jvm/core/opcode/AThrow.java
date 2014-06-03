@@ -1,19 +1,15 @@
 package com.mcintyret.jvm.core.opcode;
 
+import java.util.List;
+
 import com.mcintyret.jvm.core.ByteIterator;
 import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.WordStack;
-import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.oop.OopClassClass;
 import com.mcintyret.jvm.parse.attribute.CodeException;
-import com.mcintyret.jvm.parse.attribute.CodeExceptions;
-
-import java.util.List;
 
 /**
  * User: tommcintyre
@@ -35,8 +31,9 @@ class AThrow extends OpCode {
 
             for (CodeException exception : exceptions) {
                 if (pos >= exception.getStartPc() && pos <= exception.getEndPc()) {
-                    AbstractClassObject caughtType = cp.getClassObject(exception.getCatchType());
-                    if (thrown.getClassObject().isInstanceOf(caughtType)) {
+                    int catchType = exception.getCatchType();
+
+                    if (catchType == 0 || thrown.getClassObject().isInstanceOf(cp.getClassObject(catchType))) {
                         // Actually caught it!
 
                         bi.setPos(exception.getHandlerPc());
