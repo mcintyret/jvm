@@ -15,6 +15,9 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.MagicClasses;
 import com.mcintyret.jvm.core.Utils;
@@ -56,6 +59,8 @@ import com.mcintyret.jvm.parse.cp.NameAndType;
 
 public class ClassLoader {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ClassLoader.class);
+
     private static final ClassLoader DEFAULT_CLASSLOADER = new ClassLoader();
 
     private final Map<String, ClassFile> classFiles = new HashMap<>();
@@ -74,7 +79,7 @@ public class ClassLoader {
         ClassFileReader reader = new ClassFileReader();
 
         for (ClassFileResource resource : classPath) {
-            System.out.println("Reading: " + resource.getName());
+            LOG.debug("Reading: {}", resource.getName());
             ClassFile file = reader.read(resource.getInputStream());
             classFiles.put(getClassName(file.getThisClass(), file.getConstantPool()), file);
         }
@@ -151,7 +156,7 @@ public class ClassLoader {
     public ClassObject getClassObject(String className) {
         ClassObject co = classes.get(className);
         if (co == null) {
-            System.out.println("Loading: " + className);
+            LOG.debug("Loading: {}", className);
             ClassFile file = assertNotNull(classFiles.remove(className), "No class file for " + className);
 
             ClassObject parent = null;
@@ -164,7 +169,7 @@ public class ClassLoader {
             co = makeClassObject(className, file, parent);
             classes.put(className, co);
             executeStaticInitMethod(co);
-            System.out.println("Done Loading: " + className);
+            LOG.debug("Done Loading: {}", className);
         }
         return co;
     }
@@ -372,7 +377,7 @@ public class ClassLoader {
                 NativeImplementation nativeImplementation = NativeImplementationRegistry.getNativeExecution(mis.className, mis.sig);
                 if (nativeImplementation == null) {
 //                throw new IllegalStateException("No NativeImplementation registered for " + mis.className + "." + mis.sig);
-                    System.out.println("NATIVE METHOD MISSING: " + mis.className + "." + mis.sig);
+                    LOG.warn("NATIVE METHOD MISSING: {}.{}", mis.className, mis.sig);
                 }
                 return new NativeMethod(info.getModifiers(), info.getAttributes(), mis.sig, offset, nativeImplementation);
             } else {

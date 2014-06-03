@@ -69,7 +69,7 @@ public enum SystemNatives implements NativeImplementation {
             return ObjectNatives.HASHCODE.execute(args, ctx);
         }
     },
-    SET_OUT_0("setIn0", "(Ljava/io/PrintStream;)V") {
+    SET_OUT_0("setOut0", "(Ljava/io/PrintStream;)V") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
             ClassObject system = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/System");

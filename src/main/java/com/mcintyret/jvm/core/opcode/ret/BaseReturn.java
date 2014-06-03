@@ -1,5 +1,8 @@
 package com.mcintyret.jvm.core.opcode.ret;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 
@@ -9,13 +12,15 @@ import com.mcintyret.jvm.core.opcode.OperationContext;
  */
 abstract class BaseReturn extends OpCode {
 
+    private static final Logger LOG = LoggerFactory.getLogger(BaseReturn.class);
+
     @Override
     public final void execute(OperationContext ctx) {
         ctx.getExecutionStack().pop();
 
         returnValue(ctx);
 
-        System.out.println("Returning from " + ctx.getMethod());
+        LOG.info("Returning from {}", ctx.getMethod());
     }
 
     protected abstract void returnValue(OperationContext ctx);

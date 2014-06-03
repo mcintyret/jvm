@@ -2,6 +2,9 @@ package com.mcintyret.jvm.core;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.opcode.OpCode;
@@ -9,6 +12,8 @@ import com.mcintyret.jvm.core.opcode.OpCodes;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 
 public class ExecutionStackElement implements OperationContext {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ExecutionStackElement.class);
 
     public final static AtomicInteger TOTAL_OPCODES_EXECUTED = new AtomicInteger();
 
@@ -38,10 +43,7 @@ public class ExecutionStackElement implements OperationContext {
         current = this;
         int pos = byteIterator.getPos();
         OpCode opCode = OpCodes.getOpcode(byteIterator.nextByte());
-//        if (method.getSignature().getName().equals("filterFields")) {
-            if (true) {
-            System.out.println(String.format("%4d: %s", pos, opCode));
-        }
+        LOG.debug(String.format("%4d: %s", pos, opCode));
         opCode.execute(this);
         TOTAL_OPCODES_EXECUTED.incrementAndGet();
     }

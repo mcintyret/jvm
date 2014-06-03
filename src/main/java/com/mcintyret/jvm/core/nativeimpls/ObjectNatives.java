@@ -71,7 +71,6 @@ public enum ObjectNatives implements NativeImplementation {
             return NativeReturn.forInt(args[0]);
         }
     },
-
     CLONE("clone", "()Ljava/lang/Object;") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
@@ -90,7 +89,6 @@ public enum ObjectNatives implements NativeImplementation {
             return NativeReturn.forReference(clone);
         }
     },
-
     GET_CLASS("getClass", "()Ljava/lang/Class;") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {

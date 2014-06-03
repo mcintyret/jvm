@@ -1,9 +1,12 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import com.mcintyret.jvm.core.domain.MethodSignature;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.mcintyret.jvm.core.domain.MethodSignature;
 
 /**
  * User: tommcintyre
@@ -11,11 +14,13 @@ import java.util.Map;
  */
 public class NativeImplementationRegistry {
 
+    private static final Logger LOG = LoggerFactory.getLogger(NativeImplementationRegistry.class);
+
     private static final Map<ClassNameAndMethodSignature, NativeImplementation> NATIVE_EXECUTION_MAP = new HashMap<>();
 
     public static void registerNative(NativeImplementation nativeImplementation) {
         ClassNameAndMethodSignature key = new ClassNameAndMethodSignature(nativeImplementation);
-        System.out.println("Loading native implementation for " + key);
+        LOG.info("Loading native implementation for {}", key);
         if (NATIVE_EXECUTION_MAP.put(key, nativeImplementation) != null) {
             throw new IllegalArgumentException("NativeImplementation already exists for " + key);
         }

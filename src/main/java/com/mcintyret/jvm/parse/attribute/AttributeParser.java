@@ -1,8 +1,13 @@
 package com.mcintyret.jvm.parse.attribute;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mcintyret.jvm.core.ByteIterator;
 
 public class AttributeParser implements Parser<Attribute> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AttributeParser.class);
 
     private final Object[] constantPool;
 
@@ -17,7 +22,7 @@ public class AttributeParser implements Parser<Attribute> {
         try {
             name = (String) constantPool[index];
         } catch (Throwable t) {
-            System.out.println("Looking for String at index " + index + " but found " + constantPool[index]);
+            LOG.error("Looking for String at index {} but found {}", index, constantPool[index]);
             throw t;
         }
         AttributeType at = AttributeType.forString(name);
