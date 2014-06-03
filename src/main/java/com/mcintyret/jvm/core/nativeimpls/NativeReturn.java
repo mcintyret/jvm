@@ -8,34 +8,61 @@ import com.mcintyret.jvm.core.oop.Oop;
  * User: tommcintyre
  * Date: 5/20/14
  */
-public interface NativeReturn {
+public abstract class NativeReturn {
 
-    static final NativeReturn FOR_VOID = stack -> {};
+    private static final NativeReturn FOR_VOID = new NativeReturn() {
+        @Override
+        public void applyToStack(WordStack stack) {
+            // Nothing
+        }
+    };
 
-    static final NativeReturn FOR_NULL = forInt(Heap.NULL_POINTER);
+    private static final NativeReturn FOR_NULL = forInt(Heap.NULL_POINTER);
 
-    static final NativeReturn FOR_TRUE = forInt(1);
+    private static final NativeReturn FOR_TRUE = forInt(1);
 
-    static final NativeReturn FOR_FALSE = forInt(0);
+    private static final NativeReturn FOR_FALSE = forInt(0);
 
     public static NativeReturn forInt(int i) {
-        return stack -> {
-            stack.push(i);
+        return new NativeReturn() {
+            @Override
+            public void applyToStack(WordStack stack) {
+                stack.push(i);
+            }
         };
     }
 
     public static NativeReturn forReference(Oop oop) {
-        return stack -> {
-            if (oop.getAddress() == Oop.UNALLOCATED_ADDRESS) {
-                Heap.allocate(oop);
-            }
-            stack.push(oop.getAddress());
-        };
+        if (oop.getAddress() == Oop.UNALLOCATED_ADDRESS) {
+            Heap.allocate(oop);
+        }
+        return forInt(oop.getAddress());
     }
 
     public static NativeReturn forLong(long l) {
-        return stack -> {
-            stack.push(l);
+        return new NativeReturn() {
+
+            @Override
+            public void applyToStack(WordStack stack) {
+                stack.push(l);
+            }
+        };
+    }
+
+    public static NativeReturn forThrowable(Oop throwable) {
+        if (throwable.getAddress() == Oop.UNALLOCATED_ADDRESS) {
+            Heap.allocate(throwable);
+        }
+        return new NativeReturn() {
+            @Override
+            public void applyToStack(WordStack stack) {
+                stack.push(throwable.getAddress());
+            }
+
+            @Override
+            public boolean isThrowable() {
+                return true;
+            }
         };
     }
 
@@ -51,6 +78,10 @@ public interface NativeReturn {
         return FOR_VOID;
     }
 
-    void applyToStack(WordStack stack);
+    public abstract void applyToStack(WordStack stack);
+
+    public boolean isThrowable() {
+        return false;
+    }
 
 }

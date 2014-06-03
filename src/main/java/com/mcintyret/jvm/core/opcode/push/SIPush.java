@@ -3,11 +3,11 @@ package com.mcintyret.jvm.core.opcode.push;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 
-class CIPush extends OpCode {
+class SIPush extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        ctx.getStack().push(ctx.getByteIterator().nextShort());
+        ctx.getStack().push(ctx.getByteIterator().nextShortUnsigned());
     }
 
     @Override

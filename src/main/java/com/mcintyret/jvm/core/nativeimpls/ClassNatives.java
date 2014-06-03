@@ -1,9 +1,15 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.MagicClasses;
 import com.mcintyret.jvm.core.Utils;
-import com.mcintyret.jvm.core.clazz.*;
+import com.mcintyret.jvm.core.clazz.ArrayClassObject;
+import com.mcintyret.jvm.core.clazz.ClassObject;
+import com.mcintyret.jvm.core.clazz.Field;
+import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.domain.SimpleType;
@@ -14,9 +20,6 @@ import com.mcintyret.jvm.core.oop.OopClassClass;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User: tommcintyre
@@ -102,6 +105,20 @@ public enum ClassNatives implements NativeImplementation {
             OopClassClass occ = (OopClassClass) Heap.getOop(args[0]);
 
             return NativeReturn.forInt(Heap.intern(occ.getThisClass().getType().toString()));
+        }
+    },
+    FOR_NAME_0("forName0", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            String className = Utils.toString(Heap.getOopClass(args[0]));
+            className = className.replaceAll("\\.", "/");
+
+            try {
+                return NativeReturn.forReference(ClassLoader.getDefaultClassLoader().getClassObject(className).getType().getClassOop());
+            } catch (AssertionError e) {
+                // TODO: proper error, or some other system!
+                return NativeReturn.forThrowable(ClassLoader.getDefaultClassLoader().getClassObject("java/lang/ClassCastException").newObject());
+            }
         }
     };
 

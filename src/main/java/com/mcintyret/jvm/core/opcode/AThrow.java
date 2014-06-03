@@ -2,24 +2,24 @@ package com.mcintyret.jvm.core.opcode;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mcintyret.jvm.core.ByteIterator;
 import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
-import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.parse.attribute.CodeException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * User: tommcintyre
  * Date: 5/26/14
  */
-class AThrow extends OpCode {
+public class AThrow extends OpCode {
 
     private static final Logger LOG = LoggerFactory.getLogger(AThrow.class);
 

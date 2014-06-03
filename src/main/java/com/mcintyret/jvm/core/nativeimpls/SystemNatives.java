@@ -3,6 +3,7 @@ package com.mcintyret.jvm.core.nativeimpls;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.clazz.ClassObject;
+import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.domain.Type;
@@ -73,7 +74,8 @@ public enum SystemNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
             ClassObject system = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/System");
-            system.getStaticFieldValues()[1] = args[0];
+            Field out = system.findField("out", true);
+            out.set(null, args[0]);
             return NativeReturn.forVoid();
         }
     },

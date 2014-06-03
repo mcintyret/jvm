@@ -4,6 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.clazz.NativeMethod;
+import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
+import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
+import com.mcintyret.jvm.core.opcode.AThrow;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 
@@ -20,5 +24,17 @@ abstract class Invoke extends OpCode {
     }
 
     protected abstract void doInvoke(Method method, OperationContext ctx);
+
+    protected void invokeNativeMethod(NativeMethod nativeMethod, int[] values, OperationContext ctx) {
+        NativeImplementation nativeImplementation = nativeMethod.getNativeImplementation();
+        if (nativeImplementation == null) {
+            throw new IllegalStateException("No Native implementation for " + nativeMethod.getClassObject().getType() + "." + nativeMethod.getSignature());
+        }
+        NativeReturn nr = nativeImplementation.execute(values, ctx);
+        nr.applyToStack(ctx.getStack());
+        if (nr.isThrowable()) {
+            new AThrow().execute(ctx);
+        }
+    }
 
 }

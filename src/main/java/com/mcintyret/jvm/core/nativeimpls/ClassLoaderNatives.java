@@ -1,31 +1,32 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 
-public enum DoubleNatives implements NativeImplementation {
-    DOUBLE_TO_RAW_LONG_BITS("doubleToRawLongBits", "(D)J") {
+public enum ClassLoaderNatives implements NativeImplementation {
+    REGISTER_NATIVES("registerNatives", "()V") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
-            // Already in that state
-            return NativeReturn.forLong(Utils.toLong(args[0], args[1]));
+            return NativeReturn.forVoid();
         }
     };
 
     private final MethodSignature methodSignature;
 
-    private DoubleNatives(String name, String descriptor) {
+    private ClassLoaderNatives(String name, String descriptor) {
         methodSignature = MethodSignature.parse(name, descriptor);
     }
 
+
     @Override
     public String getClassName() {
-        return "java/lang/Double";
+        return "java/lang/ClassLoader";
     }
 
     @Override
     public MethodSignature getMethodSignature() {
         return methodSignature;
     }
+
 }
+

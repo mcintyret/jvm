@@ -3,7 +3,6 @@ package com.mcintyret.jvm.core.opcode.invoke;
 import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.NativeMethod;
-import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.parse.Modifier;
 
@@ -18,11 +17,7 @@ abstract class InvokeSimple extends Invoke {
         int[] values = getValues(ctx, method);
 
         if (method.hasModifier(Modifier.NATIVE)) {
-            NativeImplementation nativeImplementation = ((NativeMethod) method).getNativeImplementation();
-            if (nativeImplementation == null) {
-                throw new IllegalStateException("No Native implementation for " + method.getClassObject().getType() + "." + method.getSignature());
-            }
-            nativeImplementation.execute(values, ctx).applyToStack(ctx.getStack());
+            invokeNativeMethod((NativeMethod) method, values, ctx);
         } else {
             ctx.getExecutionStack().push(
                 new ExecutionStackElement(method, values, method.getClassObject().getConstantPool(), ctx.getExecutionStack()));
