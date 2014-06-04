@@ -8,6 +8,7 @@ import com.mcintyret.jvm.core.clazz.ValueReceiver;
 import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
+import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.thread.Thread;
@@ -33,6 +34,15 @@ public class Utils {
             chars[i] = (char) charArrayOop.getFields()[i];
         }
         return new String(chars);
+    }
+
+    public static String toString(int oopAddress) {
+        Oop oop = Heap.getOop(oopAddress);
+        if (oop instanceof OopArray) {
+            return toString((OopArray) oop);
+        } else {
+            return toString((OopClass) oop);
+        }
     }
 
     public static NativeReturn executeMethodAndThrow(Method method, int[] args, Thread thread) {

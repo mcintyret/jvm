@@ -120,6 +120,14 @@ public enum ClassNatives implements NativeImplementation {
                 return NativeReturn.forThrowable(ClassLoader.getDefaultClassLoader().getClassObject("java/lang/ClassNotFoundException").newObject());
             }
         }
+    },
+    IS_INTERFACE("isInterface", "()Z") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            OopClassClass clazz = (OopClassClass) Heap.getOop(args[0]);
+
+            return NativeReturn.forBool(clazz.getThisClass().hasModifier(Modifier.INTERFACE));
+        }
     };
 
     private final MethodSignature methodSignature;
