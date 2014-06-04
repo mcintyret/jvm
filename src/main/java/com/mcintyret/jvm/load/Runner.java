@@ -45,11 +45,11 @@ public class Runner {
         }
         int[] actualArgs = new int[]{Heap.allocate(array)};
 
-        NativeReturn ret = Utils.executeMethod(mainMethod, actualArgs, MAIN_THREAD);
+        NativeReturn ret = Utils.executeMethodAndThrow(mainMethod, actualArgs, MAIN_THREAD);
 
         if (ret != null) {
             WordStack stack = new WordStack();
-            ret.applyToStack(stack);
+            ret.applyValue(stack);
             try {
                 int i = stack.pop();
                 OopClass obj = Heap.getOopClass(i);
@@ -86,7 +86,7 @@ public class Runner {
         int[] args = systemThreadGroupCtor.newArgArray();
         args[0] = Heap.allocate(systemThreadGroup);
 
-        Utils.executeMethod(systemThreadGroupCtor, args, null);
+        Utils.executeMethodAndThrow(systemThreadGroupCtor, args, null);
 
         // Cool, now we need the 'main' threadgroup...
         Method mainThreadGroupCtor =
@@ -101,7 +101,7 @@ public class Runner {
         args[2] = systemThreadGroup.getAddress(); // parent
         args[3] = mainString.getAddress(); // name
 
-        Utils.executeMethod(mainThreadGroupCtor, args, null);
+        Utils.executeMethodAndThrow(mainThreadGroupCtor, args, null);
 
         // OK, now we can create the main thread
         OopClass mainThread = threadClass.newObject();

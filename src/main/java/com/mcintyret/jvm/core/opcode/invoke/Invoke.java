@@ -31,7 +31,7 @@ abstract class Invoke extends OpCode {
             throw new IllegalStateException("No Native implementation for " + nativeMethod.getClassObject().getType() + "." + nativeMethod.getSignature());
         }
         NativeReturn nr = nativeImplementation.execute(values, ctx);
-        nr.applyToStack(ctx.getStack());
+        nr.applyValue(ctx.getStack());
         if (nr.isThrowable()) {
             new AThrow().execute(ctx);
         }

@@ -96,7 +96,7 @@ public class ClassLoader {
 
             ClassObject system = getClassObject("java/lang/System");
             Method init = system.findMethod("initializeSystemClass", true);
-            Utils.executeMethod(init, init.newArgArray(), Runner.MAIN_THREAD);
+            Utils.executeMethodAndThrow(init, init.newArgArray(), Runner.MAIN_THREAD);
         }
     }
 
@@ -107,7 +107,7 @@ public class ClassLoader {
         ClassObject system = getClassObject("java/lang/System");
         Method setProperties = system.findMethod("setProperties", true);
 
-        Utils.executeMethod(setProperties, setProperties.newArgArray(), thread);
+        Utils.executeMethodAndThrow(setProperties, setProperties.newArgArray(), thread);
     }
 
     private void setSystemOut() {
@@ -124,12 +124,12 @@ public class ClassLoader {
         args[1] = outFd.getAddress();
 
         // FileOutputStream constructor
-        Utils.executeMethod(ctor, args, thread);
+        Utils.executeMethodAndThrow(ctor, args, thread);
 
         ClassObject bufferedOutputStream = getClassObject("java/io/BufferedOutputStream");
         OopClass bos = bufferedOutputStream.newObject();
         Method bosConstructor = bufferedOutputStream.findMethod("<init>", "(Ljava/io/OutputStream;)V", false);
-        Utils.executeMethod(bosConstructor, new int[]{Heap.allocate(bos), fos.getAddress()}, thread);
+        Utils.executeMethodAndThrow(bosConstructor, new int[]{Heap.allocate(bos), fos.getAddress()}, thread);
 
         ClassObject printStream = getClassObject("java/io/PrintStream");
         OopClass ps = printStream.newObject();
@@ -138,7 +138,7 @@ public class ClassLoader {
         args[0] = Heap.allocate(ps);
         args[2] = bos.getAddress();
 
-        Utils.executeMethod(psConstructor, args, thread);
+        Utils.executeMethodAndThrow(psConstructor, args, thread);
 
         SystemNatives.SET_OUT_0.execute(new int[]{ps.getAddress()}, null);
     }
@@ -293,7 +293,7 @@ public class ClassLoader {
                         Threads.register(new Thread(thread));
 
                         // Do the actual method stuff
-                        Utils.executeMethod(method, args, ctx.getExecutionStack().getThread());
+                        Utils.executeMethodAndThrow(method, args, ctx.getExecutionStack().getThread());
 
                         return NativeReturn.forVoid();
                     }
@@ -353,7 +353,7 @@ public class ClassLoader {
     private void executeStaticInitMethod(ClassObject co) {
         Method staticInit = co.findMethod("<clinit>", "()V", true);
         if (staticInit != null) {
-            Utils.executeMethod(staticInit, new int[staticInit.getCode().getMaxLocals()], Runner.MAIN_THREAD);
+            Utils.executeMethodAndThrow(staticInit, new int[staticInit.getCode().getMaxLocals()], Runner.MAIN_THREAD);
         }
     }
 

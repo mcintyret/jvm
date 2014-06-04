@@ -29,6 +29,7 @@ public class AThrow extends OpCode {
         LOG.warn("Throwing exception of type {} from method {}", thrown.getClassObject(), ctx.getMethod());
 
         ExecutionStackElement elem = ctx.getExecutionStack().peek();
+        ExecutionStackElement prev = null;
         while (elem != null) {
             Method m = elem.getMethod();
             ConstantPool cp = m.getClassObject().getConstantPool();
@@ -47,7 +48,7 @@ public class AThrow extends OpCode {
                     } else {
                         AbstractClassObject catchTypeClass = cp.getClassObject(catchType);
                         if (thrown.getClassObject().isInstanceOf(catchTypeClass)) {
-                            LOG.info("In catch block of method {} for Exception type {}", ctx.getMethod(), catchTypeClass);
+                            LOG.info("In catch block of method {} for Exception type {}", elem.getMethod(), catchTypeClass);
                             caught = true;
                         }
                     }
@@ -63,12 +64,13 @@ public class AThrow extends OpCode {
             }
 
             ctx.getExecutionStack().pop();
+            prev = elem;
             elem = ctx.getExecutionStack().peek();
         }
 
         // If we're here, the Exception has gone all the way to the top.
-        LOG.warn("Did not catch error of type {}", thrown.getClassObject());
-        ctx.getExecutionStack().setFinalReturn(NativeReturn.forInt(thrown.getAddress()));
+        LOG.warn("Did not catch error of type {}. Exiting from method {}", thrown.getClassObject(), prev.getMethod());
+        ctx.getExecutionStack().setFinalReturn(NativeReturn.forThrowable(thrown));
     }
 
 

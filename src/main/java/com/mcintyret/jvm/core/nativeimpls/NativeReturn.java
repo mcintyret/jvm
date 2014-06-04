@@ -1,7 +1,7 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.WordStack;
+import com.mcintyret.jvm.core.clazz.ValueReceiver;
 import com.mcintyret.jvm.core.oop.Oop;
 
 /**
@@ -12,7 +12,7 @@ public abstract class NativeReturn {
 
     private static final NativeReturn FOR_VOID = new NativeReturn() {
         @Override
-        public void applyToStack(WordStack stack) {
+        public void applyValue(ValueReceiver vr) {
             // Nothing
         }
     };
@@ -26,8 +26,8 @@ public abstract class NativeReturn {
     public static NativeReturn forInt(int i) {
         return new NativeReturn() {
             @Override
-            public void applyToStack(WordStack stack) {
-                stack.push(i);
+            public void applyValue(ValueReceiver vr) {
+                vr.receiveInt(i);
             }
         };
     }
@@ -43,8 +43,8 @@ public abstract class NativeReturn {
         return new NativeReturn() {
 
             @Override
-            public void applyToStack(WordStack stack) {
-                stack.push(l);
+            public void applyValue(ValueReceiver vr) {
+                vr.receiveLong(l);
             }
         };
     }
@@ -55,8 +55,8 @@ public abstract class NativeReturn {
         }
         return new NativeReturn() {
             @Override
-            public void applyToStack(WordStack stack) {
-                stack.push(throwable.getAddress());
+            public void applyValue(ValueReceiver vr) {
+                vr.receiveInt(throwable.getAddress());
             }
 
             @Override
@@ -78,7 +78,7 @@ public abstract class NativeReturn {
         return FOR_VOID;
     }
 
-    public abstract void applyToStack(WordStack stack);
+    public abstract void applyValue(ValueReceiver vr);
 
     public boolean isThrowable() {
         return false;

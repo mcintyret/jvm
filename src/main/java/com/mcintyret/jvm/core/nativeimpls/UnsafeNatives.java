@@ -6,9 +6,14 @@ import java.security.PrivilegedAction;
 
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.Utils;
+import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.oop.Oop;
+import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.oop.OopClassClass;
 import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.load.ClassLoader;
+import com.mcintyret.jvm.parse.Modifier;
 
 import sun.misc.Unsafe;
 
@@ -31,6 +36,23 @@ public enum UnsafeNatives implements NativeImplementation {
         public NativeReturn execute(int[] args, OperationContext ctx) {
             // TODO: do this properly
             return NativeReturn.forInt(4);
+        }
+    },
+    OBJECT_FIELD_OFFSET("objectFieldOffset", "(Ljava/lang/reflect/Field;)J") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            ClassObject fieldClass = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/reflect/Field");
+            OopClass field = Heap.getOopClass(args[1]);
+
+            OopClassClass declaringClassOop = (OopClassClass) fieldClass.findField("clazz", false).getOop(field);
+
+            boolean isStatic = Modifier.translate(fieldClass.findField("modifiers", false).getInt(field)).contains(Modifier.STATIC);
+
+            ClassObject declaringClass = (ClassObject) declaringClassOop.getThisClass();
+
+            String fieldName = Utils.toString((OopClass) fieldClass.findField("name", false).getOop(field));
+
+            return NativeReturn.forLong(declaringClass.findField(fieldName, isStatic).getOffset());
         }
     },
     ADDRESS_SIZE("addressSize", "()I") {

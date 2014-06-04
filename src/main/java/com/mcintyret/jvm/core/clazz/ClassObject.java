@@ -114,7 +114,7 @@ public class ClassObject extends AbstractClassObject {
             }
         }
 
-        throw new IllegalArgumentException("No " + (isStatic ? "static " : "") + "field named " + name);
+        throw new IllegalArgumentException("No " + (isStatic ? "static " : "") + "field named '" + name + "' on class " + getClassName());
     }
 
     private static Method findMethod(MethodSignature methodSignature, Method[] methods) {

@@ -16,7 +16,7 @@ public enum AccessControllerNatives implements NativeImplementation {
             Method run = privilegedAction.getClassObject().findMethod("run", "()Ljava/lang/Object;", false);
             int[] runArgs = run.newArgArray();
             runArgs[0] = args[0];
-            return Utils.executeMethod(run, runArgs, ctx.getExecutionStack().getThread());
+            return Utils.executeMethodAndThrow(run, runArgs, ctx.getExecutionStack().getThread());
         }
 
         @Override

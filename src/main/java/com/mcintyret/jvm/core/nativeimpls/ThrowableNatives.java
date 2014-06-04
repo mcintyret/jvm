@@ -74,7 +74,7 @@ public enum ThrowableNatives implements NativeImplementation {
         ctorArgs[3] = Heap.NULL_POINTER;
         ctorArgs[4] = -1; // TODO: line number
 
-        Utils.executeMethod(ctor, ctorArgs, thread);
+        Utils.executeMethodAndThrow(ctor, ctorArgs, thread);
         return ste;
     }
 

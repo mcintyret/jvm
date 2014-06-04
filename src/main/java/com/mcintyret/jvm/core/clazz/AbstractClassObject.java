@@ -30,9 +30,9 @@ public abstract class AbstractClassObject {
         if (type == this) {
             return true;
         }
-        boolean argIsInterface = type.hasAttribute(Modifier.INTERFACE);
+        boolean argIsInterface = type.hasModifier(Modifier.INTERFACE);
 
-        if (hasAttribute(Modifier.INTERFACE) && !argIsInterface) {
+        if (hasModifier(Modifier.INTERFACE) && !argIsInterface) {
             return false;
         }
 
@@ -54,8 +54,12 @@ public abstract class AbstractClassObject {
         return false;
     }
 
-    public boolean hasAttribute(Modifier modifier) {
+    public boolean hasModifier(Modifier modifier) {
         return modifiers.contains(modifier);
+    }
+
+    public Set<Modifier> getModifiers() {
+        return modifiers;
     }
 
     public ClassObject getSuperClass() {

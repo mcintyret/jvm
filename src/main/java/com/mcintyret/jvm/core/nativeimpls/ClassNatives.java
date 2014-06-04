@@ -70,7 +70,7 @@ public enum ClassNatives implements NativeImplementation {
             ClassObject fieldClass = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/reflect/Field");
             Method ctor = fieldClass.findMethod("<init>", "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/Class;IILjava/lang/String;[B)V", false);
             for (int i = 0; i < list.size(); i++) {
-                Field field = list.get(0);
+                Field field = list.get(i);
                 int[] ctorArgs = ctor.newArgArray();
 
                 OopClass fieldObj = fieldClass.newObject();
@@ -85,7 +85,7 @@ public enum ClassNatives implements NativeImplementation {
                 ctorArgs[6] = Heap.NULL_POINTER;
                 ctorArgs[7] = Heap.NULL_POINTER;
 
-                Utils.executeMethod(ctor, ctorArgs, ctx.getExecutionStack().getThread());
+                Utils.executeMethodAndThrow(ctor, ctorArgs, ctx.getExecutionStack().getThread());
             }
 
             return NativeReturn.forReference(array);

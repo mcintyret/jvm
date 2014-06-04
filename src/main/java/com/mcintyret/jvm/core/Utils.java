@@ -1,7 +1,10 @@
 package com.mcintyret.jvm.core;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.clazz.ValueReceiver;
 import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
@@ -32,15 +35,39 @@ public class Utils {
         return new String(chars);
     }
 
-    public static NativeReturn executeMethod(Method method, int[] args, Thread thread) {
+    public static NativeReturn executeMethodAndThrow(Method method, int[] args, Thread thread) {
         ExecutionStack stack = new ExecutionStack(thread);
 
         stack.push(new ExecutionStackElement(method, args,
-                method.getClassObject().getConstantPool(), stack));
+            method.getClassObject().getConstantPool(), stack));
 
         stack.execute();
 
-        return stack.getFinalReturn();
+        // TODO: make less shit
+        NativeReturn ret = stack.getFinalReturn();
+        String message;
+        if (ret.isThrowable()) {
+            AtomicInteger address = new AtomicInteger();
+            ret.applyValue(new ValueReceiver() {
+                @Override
+                public void receiveInt(int i) {
+                    address.set(i);
+                }
+
+                @Override
+                public void receiveLong(long l) {
+                    throw new UnsupportedOperationException();
+                }
+            });
+            OopClass thrown = Heap.getOopClass(address.get());
+            message = Utils.toString((OopClass) thrown.getClassObject().findField("detailMessage", false).getOop(thrown));
+
+            // TODO: proper exception type
+            throw new RuntimeException("Error executing method " + method + ": " + thrown.getClassObject() + "(" + message + ")");
+        }
+        return ret;
     }
 
+
 }
+

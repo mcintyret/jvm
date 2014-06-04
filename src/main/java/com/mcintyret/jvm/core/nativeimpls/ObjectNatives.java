@@ -96,7 +96,6 @@ public enum ObjectNatives implements NativeImplementation {
         }
     };
 
-
     private final MethodSignature methodSignature;
 
     private ObjectNatives(String name, String descriptor) {
