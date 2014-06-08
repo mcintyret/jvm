@@ -117,7 +117,7 @@ public class ClassLoader {
         OopClass outFd = (OopClass) fileDescriptor.findField("out", true).getOop(null);
 
         ClassObject fileOutputStream = getClassObject("java/io/FileOutputStream");
-        Method ctor = fileOutputStream.findMethod("<init>", "(Ljava/io/FileDescriptor;)V", false);
+        Method ctor = fileOutputStream.findConstructor("(Ljava/io/FileDescriptor;)V");
         OopClass fos = fileOutputStream.newObject();
         int[] args = ctor.newArgArray();
         args[0] = Heap.allocate(fos);
@@ -128,12 +128,12 @@ public class ClassLoader {
 
         ClassObject bufferedOutputStream = getClassObject("java/io/BufferedOutputStream");
         OopClass bos = bufferedOutputStream.newObject();
-        Method bosConstructor = bufferedOutputStream.findMethod("<init>", "(Ljava/io/OutputStream;)V", false);
+        Method bosConstructor = bufferedOutputStream.findConstructor("(Ljava/io/OutputStream;)V");
         Utils.executeMethodAndThrow(bosConstructor, new int[]{Heap.allocate(bos), fos.getAddress()}, thread);
 
         ClassObject printStream = getClassObject("java/io/PrintStream");
         OopClass ps = printStream.newObject();
-        Method psConstructor = printStream.findMethod("<init>", "(ZLjava/io/OutputStream;)V", false);
+        Method psConstructor = printStream.findConstructor("(ZLjava/io/OutputStream;)V");
         args = psConstructor.newArgArray();
         args[0] = Heap.allocate(ps);
         args[2] = bos.getAddress();
@@ -179,6 +179,7 @@ public class ClassLoader {
         NonArrayType type = NonArrayType.forClass(className);
 
         List<Method> staticMethods = new ArrayList<>();
+        List<Method> constructors = new ArrayList<>();
         List<MethodInfoAndSig> instanceMethods = new LinkedList<>();
 
         int staticOffset = 0; // Probably never needed, but for completeness
@@ -186,7 +187,12 @@ public class ClassLoader {
             if (method.hasModifier(Modifier.STATIC)) {
                 staticMethods.add(translateMethod(new MethodInfoAndSig(method, file.getConstantPool(), className), false, staticOffset++));
             } else {
-                instanceMethods.add(new MethodInfoAndSig(method, file.getConstantPool(), className));
+                MethodInfoAndSig mis = new MethodInfoAndSig(method, file.getConstantPool(), className);
+                if (mis.sig.getName().equals(Method.CONSTRUCTOR_METHOD_NAME)) {
+                    constructors.add(translateMethod(mis, false, -1));
+                } else {
+                    instanceMethods.add(mis);
+                }
             }
         }
 
@@ -257,6 +263,7 @@ public class ClassLoader {
             ifaces,
             new ConstantPool(file.getConstantPool(), this),
             orderedMethods.toArray(new Method[orderedMethods.size()]),
+            constructors.toArray(new Method[constructors.size()]),
             staticMethods.toArray(new Method[staticMethods.size()]),
             translatedInstanceFields,
             translatedStaticFields,
@@ -272,6 +279,7 @@ public class ClassLoader {
         cacheFields(co.getStaticFields(), className);
 
         cacheMethods(co.getInstanceMethods(), className);
+        cacheMethods(co.getConstructors(), className);
         cacheMethods(co.getStaticMethods(), className);
 
         translateSimpleConstantPool(file.getConstantPool());

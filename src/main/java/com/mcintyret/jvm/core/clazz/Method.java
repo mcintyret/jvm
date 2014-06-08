@@ -10,6 +10,8 @@ import com.mcintyret.jvm.parse.attribute.Code;
 
 public class Method extends Member {
 
+    public static final String CONSTRUCTOR_METHOD_NAME = "<init>";
+
     private final MethodSignature signature;
 
     public Method(Set<Modifier> modifiers, Attributes attributes, MethodSignature signature, int offset) {

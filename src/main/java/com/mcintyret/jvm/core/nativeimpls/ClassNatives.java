@@ -6,6 +6,7 @@ import java.util.List;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.MagicClasses;
 import com.mcintyret.jvm.core.Utils;
+import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
@@ -13,6 +14,7 @@ import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.domain.SimpleType;
+import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.domain.Types;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
@@ -68,7 +70,7 @@ public enum ClassNatives implements NativeImplementation {
             OopArray array = arrayType.newArray(list.size());
 
             ClassObject fieldClass = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/reflect/Field");
-            Method ctor = fieldClass.findMethod("<init>", "(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/Class;IILjava/lang/String;[B)V", false);
+            Method ctor = fieldClass.findConstructor("(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/Class;IILjava/lang/String;[B)V");
             for (int i = 0; i < list.size(); i++) {
                 Field field = list.get(i);
                 int[] ctorArgs = ctor.newArgArray();
@@ -127,6 +129,73 @@ public enum ClassNatives implements NativeImplementation {
             OopClassClass clazz = (OopClassClass) Heap.getOop(args[0]);
 
             return NativeReturn.forBool(clazz.getThisClass().hasModifier(Modifier.INTERFACE));
+        }
+    },
+    GET_DECLARED_CONSTRUCTORS_0("getDeclaredConstructors0", "(Z)[Ljava/lang/reflect/Constructor;") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            OopClassClass clazz = (OopClassClass) Heap.getOop(args[0]);
+            AbstractClassObject thisClass = clazz.getThisClass();
+            ClassObject ctorClass = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/reflect/Constructor");
+            ArrayClassObject ctorArray = ArrayClassObject.forType(ArrayType.create(ctorClass.getType(), 1));
+
+            if (thisClass instanceof ArrayClassObject) {
+                OopArray ctors = ctorArray.newArray(0); // TODO: cache this?
+                return NativeReturn.forReference(ctors);
+            } else {
+                ClassObject thisClassObj = (ClassObject) thisClass;
+
+                boolean publicOnly = args[1] > 0;
+
+                List<Method> ctors = new ArrayList<>();
+
+                for (Method ctor : ((ClassObject) thisClass).getConstructors()) {
+                    if (!publicOnly || ctor.hasModifier(Modifier.PUBLIC)) {
+                        ctors.add(ctor);
+                    }
+                }
+
+                Method ctorCtor = null;
+                for (Method method : ctorClass.getConstructors()) {
+                    if (method.getSignature().getArgTypes().size() > 0) {
+                        ctorCtor = method;
+                        break;
+                    }
+                }
+
+                ArrayClassObject classArray = ArrayClassObject.forType(ArrayType.create(clazz.getClassObject().getType(), 1));
+
+                OopArray result = ctorArray.newArray(ctors.size());
+                for (int i = 0; i < ctors.size(); i++) {
+                    Method ctor = ctors.get(i);
+                    OopClass ctorObj = ctorClass.newObject();
+                    int[] ctorArgs = ctorCtor.newArgArray();
+
+                    ctorArgs[0] = Heap.allocate(ctorObj);
+                    ctorArgs[1] = clazz.getAddress(); // declaring class
+
+                    OopArray paramTypes = classArray.newArray(ctor.getSignature().getArgTypes().size());
+                    int j = 0;
+                    for (Type type : ctor.getSignature().getArgTypes()) {
+                        paramTypes.getFields()[j++] = type.getClassOop().getAddress();
+                    }
+
+                    ctorArgs[2] = Heap.allocate(paramTypes);
+                    // TODO
+                    ctorArgs[3] = Heap.NULL_POINTER; // checkedExceptions
+                    ctorArgs[4] = Modifier.translate(ctor.getModifiers());
+                    ctorArgs[5] = i; //slot - ??
+                    ctorArgs[6] = Heap.intern(ctor.getSignature().toString());
+                    ctorArgs[7] = Heap.NULL_POINTER; // annotations
+                    ctorArgs[8] = Heap.NULL_POINTER; // parameter annotations
+
+                    Utils.executeMethodAndThrow(ctor, ctorArgs, ctx.getExecutionStack().getThread());
+
+                    result.getFields()[i] = ctorObj.getAddress();
+                }
+
+                return NativeReturn.forReference(result);
+            }
         }
     };
 

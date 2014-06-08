@@ -80,7 +80,7 @@ public class Runner {
         ClassObject threadClass = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/Thread");
         ClassObject threadGroupClass = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/ThreadGroup");
 
-        Method systemThreadGroupCtor = threadGroupClass.findMethod("<init>", "()V", false);
+        Method systemThreadGroupCtor = threadGroupClass.getDefaultConstructor();
         OopClass systemThreadGroup = threadGroupClass.newObject();
 
         int[] args = systemThreadGroupCtor.newArgArray();
@@ -90,7 +90,7 @@ public class Runner {
 
         // Cool, now we need the 'main' threadgroup...
         Method mainThreadGroupCtor =
-            threadGroupClass.findMethod("<init>", "(Ljava/lang/Void;Ljava/lang/ThreadGroup;Ljava/lang/String;)V", false);
+            threadGroupClass.findConstructor("(Ljava/lang/Void;Ljava/lang/ThreadGroup;Ljava/lang/String;)V");
         OopClass mainThreadGroup = threadGroupClass.newObject();
 
         OopClass mainString = Heap.getOopClass(Heap.intern("main"));

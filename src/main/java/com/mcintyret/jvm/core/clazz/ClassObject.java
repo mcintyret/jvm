@@ -15,6 +15,8 @@ public class ClassObject extends AbstractClassObject {
 
     private final ConstantPool constantPool;
 
+    private final Method[] constructors;
+
     private final Method[] staticMethods;
 
     private final Field[] instanceFields;
@@ -26,11 +28,12 @@ public class ClassObject extends AbstractClassObject {
     private final ClassLoader classLoader;
 
     public ClassObject(NonArrayType type, Set<Modifier> modifiers, ClassObject parent, ClassObject[] interfaces,
-                       ConstantPool constantPool, Method[] instanceMethods, Method[] staticMethods,
+                       ConstantPool constantPool, Method[] instanceMethods, Method[] constructors, Method[] staticMethods,
                        Field[] instanceFields, Field[] staticFields, ClassLoader classLoader) {
         super(parent, interfaces, instanceMethods, modifiers);
         this.type = type;
         this.constantPool = constantPool;
+        this.constructors = constructors;
         this.staticMethods = staticMethods;
         this.instanceFields = instanceFields;
         this.staticFields = staticFields;
@@ -41,6 +44,7 @@ public class ClassObject extends AbstractClassObject {
         finalizeMembers(instanceMethods);
         finalizeMembers(staticFields);
         finalizeMembers(staticMethods);
+        finalizeMembers(constructors);
     }
 
     public ConstantPool getConstantPool() {
@@ -106,6 +110,14 @@ public class ClassObject extends AbstractClassObject {
         return isStatic ? findMethod(methodSignature, staticMethods) : findMethod(methodSignature, getInstanceMethods());
     }
 
+    public Method getDefaultConstructor() {
+        return findConstructor("()V");
+    }
+
+    public Method findConstructor(String descriptor) {
+        return findMethod(MethodSignature.parse(Method.CONSTRUCTOR_METHOD_NAME, descriptor), constructors);
+    }
+
     public Field findField(String name, boolean isStatic) {
         Field[] fields = isStatic ? staticFields : instanceFields;
         for (Field field : fields) {
@@ -137,6 +149,10 @@ public class ClassObject extends AbstractClassObject {
 
     public Method[] getStaticMethods() {
         return staticMethods;
+    }
+
+    public Method[] getConstructors() {
+        return constructors;
     }
 
     public ClassLoader getClassLoader() {

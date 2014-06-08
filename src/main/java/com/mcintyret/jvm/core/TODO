@@ -15,3 +15,9 @@ Reflection?
 Volatile (use UNSAFE)
 
 Releasing locks on throwing!
+
+Runtime exceptions
+- NPE
+- DivideBy0
+- ArrayIndex
+- ClassCast
