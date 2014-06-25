@@ -79,6 +79,15 @@ public enum SystemNatives implements NativeImplementation {
             return NativeReturn.forVoid();
         }
     },
+    SET_ERR_0("setErr0", "(Ljava/io/PrintStream;)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            ClassObject system = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/System");
+            Field err = system.findField("err", true);
+            err.set(null, args[0]);
+            return NativeReturn.forVoid();
+        }
+    },
     SET_IN_0("setIn0", "(Ljava/io/InputStream;)V") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {

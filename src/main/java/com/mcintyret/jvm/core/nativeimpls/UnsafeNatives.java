@@ -67,6 +67,13 @@ public enum UnsafeNatives implements NativeImplementation {
             return NativeReturn.forLong(THE_UNSAFE.allocateMemory(Utils.toLong(args[1], args[2])));
         }
     },
+    FREE_MEMORY("freeMemory", "(J)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            THE_UNSAFE.freeMemory(Utils.toLong(args[1], args[2]));
+            return NativeReturn.forVoid();
+        }
+    },
     PUT_LONG("putLong", "(JJ)V") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
