@@ -454,13 +454,23 @@ public class ClassLoader {
 
     public Field translate(CpFieldReference cfr, Object[] constantPool) {
         ClassObject co = findClassObject(cfr, constantPool);
+        ClassObject coCopy = co;
 
         NameAndType nat = (NameAndType) constantPool[cfr.getNameAndTypeIndex()];
         String name = (String) constantPool[nat.getNameIndex()];
         Type type = Types.parseType((String) constantPool[nat.getDescriptorIndex()]);
 
-        FieldKey key = new FieldKey(co.getClassName(), name, type);
-        return assertNotNull(fields.get(key), "No FieldReference for " + key);
+        while (co != null) {
+            FieldKey key = new FieldKey(co.getClassName(), name, type);
+            Field field = fields.get(key);
+
+            if (field != null) {
+                return field;
+            }
+            co = co.getSuperClass();
+        }
+
+        throw new IllegalArgumentException("No FieldReference for " + new FieldKey(coCopy.getClassName(), name, type));
     }
 
     public Method translate(CpMethodReference cmr, Object[] constantPool) {

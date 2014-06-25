@@ -19,6 +19,7 @@ import com.mcintyret.jvm.core.domain.Types;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.oop.OopClassClass;
+import com.mcintyret.jvm.core.oop.OopClassMethod;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
@@ -134,6 +135,7 @@ public enum ClassNatives implements NativeImplementation {
     GET_DECLARED_CONSTRUCTORS_0("getDeclaredConstructors0", "(Z)[Ljava/lang/reflect/Constructor;") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
+            // TODO: good god caching!
             OopClassClass clazz = (OopClassClass) Heap.getOop(args[0]);
             AbstractClassObject thisClass = clazz.getThisClass();
             ClassObject ctorClass = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/reflect/Constructor");
@@ -149,7 +151,7 @@ public enum ClassNatives implements NativeImplementation {
 
                 List<Method> ctors = new ArrayList<>();
 
-                for (Method ctor : ((ClassObject) thisClass).getConstructors()) {
+                for (Method ctor : thisClassObj.getConstructors()) {
                     if (!publicOnly || ctor.hasModifier(Modifier.PUBLIC)) {
                         ctors.add(ctor);
                     }
@@ -168,7 +170,7 @@ public enum ClassNatives implements NativeImplementation {
                 OopArray result = ctorArray.newArray(ctors.size());
                 for (int i = 0; i < ctors.size(); i++) {
                     Method ctor = ctors.get(i);
-                    OopClass ctorObj = ctorClass.newObject();
+                    OopClass ctorObj = ctorClass.newObject((thisClazz, fields) -> new OopClassMethod(thisClazz, fields, ctor));
                     int[] ctorArgs = ctorCtor.newArgArray();
 
                     ctorArgs[0] = Heap.allocate(ctorObj);
@@ -189,13 +191,27 @@ public enum ClassNatives implements NativeImplementation {
                     ctorArgs[7] = Heap.NULL_POINTER; // annotations
                     ctorArgs[8] = Heap.NULL_POINTER; // parameter annotations
 
-                    Utils.executeMethodAndThrow(ctor, ctorArgs, ctx.getExecutionStack().getThread());
+                    Utils.executeMethodAndThrow(ctorCtor, ctorArgs, ctx.getExecutionStack().getThread());
 
                     result.getFields()[i] = ctorObj.getAddress();
                 }
 
                 return NativeReturn.forReference(result);
             }
+        }
+    },
+    GET_MODIFIERS("getModifiers", "()I") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            // TODO: cache?
+            return NativeReturn.forInt(Modifier.translate(((OopClassClass) Heap.getOop(args[0])).getThisClass().getModifiers()));
+        }
+    },
+    GET_SUPERCLASS("getSuperclass", "()Ljava/lang/Class;") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            ClassObject superClass =  ((OopClassClass) Heap.getOop(args[0])).getThisClass().getSuperClass();
+            return superClass == null ? NativeReturn.forNull() : NativeReturn.forReference(superClass.getType().getClassOop());
         }
     };
 

@@ -64,7 +64,7 @@ public class ClassObject extends AbstractClassObject {
     }
 
     public OopClass newObject() {
-        return newObject(DefaultNewObjectCreator.INSTANCE);
+        return newObject(OopClass::new);
     }
 
     public <O extends OopClass> O newObject(NewObjectCreator<O> objectCreator) {
@@ -177,15 +177,6 @@ public class ClassObject extends AbstractClassObject {
     @Override
     public String toString() {
         return "Class[" + getClassName() + "]";
-    }
-
-    private enum DefaultNewObjectCreator implements NewObjectCreator<OopClass> {
-        INSTANCE;
-
-        @Override
-        public OopClass newObject(ClassObject clazz, int[] fields) {
-            return new OopClass(clazz, fields);
-        }
     }
 
 }

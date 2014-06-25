@@ -25,7 +25,6 @@ public class Field extends Member {
         return type;
     }
 
-
     public String getName() {
         return name;
     }
@@ -74,6 +73,11 @@ public class Field extends Member {
 
     public Oop getOop(Oop thisOop) {
         return Heap.getOop(getInt(thisOop));
+    }
+
+    @Override
+    public String toString() {
+        return type + "[" + name + "]";
     }
 
 }

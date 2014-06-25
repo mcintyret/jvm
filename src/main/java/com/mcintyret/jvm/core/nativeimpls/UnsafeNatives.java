@@ -61,6 +61,25 @@ public enum UnsafeNatives implements NativeImplementation {
             return NativeReturn.forInt(4);
         }
     },
+    ALLOCATE_MEMORY("allocateMemory", "(J)J") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            return NativeReturn.forLong(THE_UNSAFE.allocateMemory(Utils.toLong(args[1], args[2])));
+        }
+    },
+    PUT_LONG("putLong", "(JJ)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            THE_UNSAFE.putLong(Utils.toLong(args[1], args[2]), Utils.toLong(args[3], args[4]));
+            return NativeReturn.forVoid();
+        }
+    },
+    GET_BYTE("getByte", "(J)B") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            return NativeReturn.forInt(THE_UNSAFE.getByte(Utils.toLong(args[1], args[2])));
+        }
+    },
     COMPARE_AND_SWAP_INT("compareAndSwapInt", "(Ljava/lang/Object;JII)Z") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {

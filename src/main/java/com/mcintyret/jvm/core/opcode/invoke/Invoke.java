@@ -18,7 +18,7 @@ abstract class Invoke extends OpCode {
     @Override
     public final void execute(OperationContext ctx) {
         Method method = ctx.getConstantPool().getMethod(ctx.getByteIterator().nextShortUnsigned());
-        LOG.info("Invoking {}.{}", method.getClassObject().getType().getClassName(), method.getSignature());
+        LOG.info("Invoking {}.{}", method.getClassObject().getClassName(), method.getSignature());
 
         doInvoke(method, ctx);
     }
@@ -28,7 +28,7 @@ abstract class Invoke extends OpCode {
     protected void invokeNativeMethod(NativeMethod nativeMethod, int[] values, OperationContext ctx) {
         NativeImplementation nativeImplementation = nativeMethod.getNativeImplementation();
         if (nativeImplementation == null) {
-            throw new IllegalStateException("No Native implementation for " + nativeMethod.getClassObject().getType() + "." + nativeMethod.getSignature());
+            throw new IllegalStateException("No Native implementation for " + nativeMethod.getClassObject().getClassName() + "." + nativeMethod.getSignature());
         }
         NativeReturn nr = nativeImplementation.execute(values, ctx);
         nr.applyValue(ctx.getStack());
