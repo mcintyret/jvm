@@ -3,6 +3,7 @@ package com.mcintyret.jvm.core.clazz;
 import java.util.Set;
 
 import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.parse.Modifier;
 import com.mcintyret.jvm.parse.attribute.AttributeType;
 import com.mcintyret.jvm.parse.attribute.Attributes;
@@ -32,12 +33,18 @@ public class Method extends Member {
         return getClassObject().getClassName() + "." + signature;
     }
 
-    public int[] newArgArray() {
+    public int[] newArgArray(Oop... args) {
         Code code = getCode();
         int maxLocals = code == null ? 0 : code.getMaxLocals();
 
-        int args = getSignature().getLength();
-        return new int[Math.max(args + (isStatic() ? 0 : 1), maxLocals)];
+        int argCount = getSignature().getLength();
+        int[] argArray = new int[Math.max(argCount + (isStatic() ? 0 : 1), maxLocals)];
+
+        for (int i = 0; i < args.length; i++) {
+            argArray[i] = args[i].getAddress();
+        }
+
+        return argArray;
     }
 
 }

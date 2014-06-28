@@ -7,12 +7,10 @@ import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.domain.MethodSignature;
-import com.mcintyret.jvm.core.oop.OopArray;
-import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.oop.OopClassClass;
-import com.mcintyret.jvm.core.oop.OopClassMethod;
+import com.mcintyret.jvm.core.oop.*;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.load.*;
+import com.mcintyret.jvm.load.ClassLoader;
 
 public enum MiscNatives implements NativeImplementation {
     SUN_MISC_VM_INITIALIZE("initialize", "()V") {
@@ -47,6 +45,19 @@ public enum MiscNatives implements NativeImplementation {
         @Override
         public String getClassName() {
             return "java/io/FileDescriptor";
+        }
+    },
+    FILE_SYSTEM_GET_FILE_SYSTEM("getFileSystem", "()Ljava/io/FileSystem;") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            ClassObject unixFileSystem = ClassLoader.getDefaultClassLoader().getClassObject("java/io/UnixFileSystem");
+
+            return NativeReturn.forReference(Utils.construct(unixFileSystem, ctx.getExecutionStack().getThread()));
+        }
+
+        @Override
+        public String getClassName() {
+            return "java/io/FileSystem";
         }
     },
     CONSTRUCTOR_NEW_INSTANCE("newInstance0", "(Ljava/lang/reflect/Constructor;[Ljava/lang/Object;)Ljava/lang/Object;") {

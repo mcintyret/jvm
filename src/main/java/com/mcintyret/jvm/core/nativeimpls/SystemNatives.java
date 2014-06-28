@@ -112,6 +112,12 @@ public enum SystemNatives implements NativeImplementation {
 
             return NativeReturn.forReference(props);
         }
+    },
+    MAP_LIBRARY_NAME("mapLibraryName", "(Ljava/lang/String;)Ljava/lang/String;") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            return NativeReturn.forInt(Heap.intern(System.mapLibraryName(Utils.toString(args[0]))));
+        }
     };
 
     private final MethodSignature methodSignature;

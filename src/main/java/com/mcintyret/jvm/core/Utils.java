@@ -1,8 +1,7 @@
 package com.mcintyret.jvm.core;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
+import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.ValueReceiver;
 import com.mcintyret.jvm.core.domain.ArrayType;
@@ -12,6 +11,8 @@ import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.thread.Thread;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Utils {
 
@@ -49,7 +50,7 @@ public class Utils {
         ExecutionStack stack = new ExecutionStack(thread);
 
         stack.push(new ExecutionStackElement(method, args,
-            method.getClassObject().getConstantPool(), stack));
+                method.getClassObject().getConstantPool(), stack));
 
         stack.execute();
 
@@ -76,6 +77,25 @@ public class Utils {
             throw new RuntimeException("Error executing method " + method + ": " + thrown.getClassObject() + "(" + message + ")");
         }
         return ret;
+    }
+
+    public static OopClass construct(ClassObject co, Thread thread, Oop... args) {
+        return construct(co, "()V", thread, args);
+    }
+
+    public static OopClass construct(ClassObject co, String ctorSignature, Thread thread, Oop... args) {
+        OopClass obj = Heap.allocateAndGet(co.newObject());
+        Method ctor = co.findConstructor(ctorSignature);
+
+        Oop[] allArgs = new Oop[args.length + 1];
+        allArgs[0] = obj;
+        if (args.length > 0) {
+            System.arraycopy(args, 0, allArgs, 1, args.length);
+        }
+
+        Utils.executeMethodAndThrow(ctor, ctor.newArgArray(allArgs), thread);
+
+        return obj;
     }
 
 
