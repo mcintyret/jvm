@@ -24,13 +24,14 @@ public class InterfaceMethod extends Method {
 
     public Method getMethodForImplementation(ClassObject classObject) {
         ClassObject obj = classObject;
-        Method impl;
         do {
-            impl = methodMap.get(obj.getClassName());
-            obj = obj.getSuperClass();
-        } while (impl == null);
+            Method impl = methodMap.get(obj.getClassName());
+            if (impl != null) {
+                return impl;
+            }
+        } while ((obj = obj.getSuperClass()) != null);
 
-        return impl;
+        throw new IllegalStateException("No implementation method for " + getSignature() + " found on class " + classObject);
     }
 
 }

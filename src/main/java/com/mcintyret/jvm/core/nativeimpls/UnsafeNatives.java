@@ -81,6 +81,13 @@ public enum UnsafeNatives implements NativeImplementation {
             return NativeReturn.forVoid();
         }
     },
+    PUT_ORDERED_OBJECT("putOrderedObject", "(Ljava/lang/Object;JLjava/lang/Object;)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            THE_UNSAFE.putOrderedObject(Heap.getOop(args[1]).getFields(), Utils.toLong(args[2], args[3]), Heap.getOop(args[4]).getFields());
+            return NativeReturn.forVoid();
+        }
+    },
     GET_BYTE("getByte", "(J)B") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {

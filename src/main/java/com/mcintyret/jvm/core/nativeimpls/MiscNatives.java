@@ -100,6 +100,18 @@ public enum MiscNatives implements NativeImplementation {
         public String getClassName() {
             return "sun/reflect/NativeConstructorAccessorImpl";
         }
+    },
+    NATIVE_LIBRARY_LOAD("load", "(Ljava/lang/String;)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            // TODO - might use reflection to do the real thing?
+            return NativeReturn.forVoid(); // Hope this works!
+        }
+
+        @Override
+        public String getClassName() {
+            return "java/lang/ClassLoader$NativeLibrary";
+        }
     };
 
     private final MethodSignature methodSignature;

@@ -9,6 +9,12 @@ public enum RuntimeNatives implements NativeImplementation {
         public NativeReturn execute(int[] args, OperationContext ctx) {
             return NativeReturn.forLong(Runtime.getRuntime().freeMemory());
         }
+    },
+    AVAILABLE_PROCESSORS("availableProcessors", "()I") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            return NativeReturn.forInt(Runtime.getRuntime().availableProcessors());
+        }
     };
 
     private final MethodSignature methodSignature;
