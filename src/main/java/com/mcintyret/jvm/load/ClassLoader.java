@@ -463,17 +463,37 @@ public class ClassLoader {
 
         MethodSignature methodSignature = MethodSignature.parse(name, descriptor);
 
-        while (co != null) {
-            MethodKey key = new MethodKey(co.getClassName(), methodSignature);
-            Method method = methods.get(key);
+        Method method;
+        if (co.hasModifier(Modifier.INTERFACE)) {
+            method = translateInterfaceMethod(co, methodSignature);
+        } else {
+            do {
+                method = methods.get(new MethodKey(co.getClassName(), methodSignature));
+                co = co.getSuperClass();
+            } while (method == null && co != null);
+        }
 
+        if (method == null) {
+            throw new IllegalArgumentException("No Method for " + new MethodKey(coCopy.getClassName(), methodSignature));
+        }
+
+        return method;
+    }
+
+    private Method translateInterfaceMethod(ClassObject ifaceCo, MethodSignature methodSignature) {
+        Method method = methods.get(new MethodKey(ifaceCo.getClassName(), methodSignature));
+
+        if (method != null) {
+            return method;
+        }
+
+        for (ClassObject iface : ifaceCo.getInterfaces()) {
+            method = translateInterfaceMethod(iface, methodSignature);
             if (method != null) {
                 return method;
             }
-            co = co.getSuperClass();
         }
-
-        throw new IllegalArgumentException("No Method for " + new MethodKey(coCopy.getClassName(), methodSignature));
+        return null;
     }
 
     private ClassObject findClassObject(CpReference ref, Object[] constantPool) {
