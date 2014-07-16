@@ -58,7 +58,7 @@ public class WordStack implements ValueReceiver {
         if (head <= 1) {
             throw new NoSuchElementException();
         }
-        long val = Utils.toLong(stack[head - 1], stack[head]);
+        long val = Utils.toLong(stack[head - 2], stack[head -1]);
         head -= 2;
         return val;
     }
