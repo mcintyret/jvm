@@ -2,14 +2,13 @@ package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.Utils;
-import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.domain.NonArrayType;
 import com.mcintyret.jvm.core.oop.*;
 import com.mcintyret.jvm.core.opcode.OperationContext;
-import com.mcintyret.jvm.load.*;
 import com.mcintyret.jvm.load.ClassLoader;
 
 public enum MiscNatives implements NativeImplementation {
@@ -72,7 +71,8 @@ public enum MiscNatives implements NativeImplementation {
                 // TODO: could this be nicer??
                 ClassObject ctorClass = oop.getClassObject();
                 Field declaringClassField = ctorClass.findField("clazz", false);
-                ClassObject declaringClass = (ClassObject) ((OopClassClass) declaringClassField.getOop(oop)).getThisClass();
+                OopClassClass declaringClassClass = (OopClassClass) declaringClassField.getOop(oop);
+                ClassObject declaringClass = ((NonArrayType) declaringClassClass.getThisType()).getClassObject();
 
                 Field signatureField = ctorClass.findField("signature", false);
                 String sig = Utils.toString(signatureField.getInt(oop));

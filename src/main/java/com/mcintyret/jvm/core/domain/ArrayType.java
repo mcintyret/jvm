@@ -66,4 +66,14 @@ public final class ArrayType extends ReferenceType {
     public ArrayClassObject getClassObject() {
         return ArrayClassObject.forType(this);
     }
+
+    @Override
+    public boolean isArray() {
+        return true;
+    }
+
+    @Override
+    public boolean isInterface() {
+        return false;
+    }
 }

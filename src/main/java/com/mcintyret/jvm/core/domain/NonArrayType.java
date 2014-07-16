@@ -4,6 +4,7 @@ import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.load.*;
 import com.mcintyret.jvm.load.ClassLoader;
+import com.mcintyret.jvm.parse.Modifier;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,5 +55,15 @@ public final class NonArrayType extends ReferenceType {
     @Override
     public ClassObject getClassObject() {
         return ClassLoader.getDefaultClassLoader().getClassObject(className);
+    }
+
+    @Override
+    public boolean isArray() {
+        return false;
+    }
+
+    @Override
+    public boolean isInterface() {
+        return getClassObject().hasModifier(Modifier.INTERFACE);
     }
 }

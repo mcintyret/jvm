@@ -15,4 +15,8 @@ public interface Type {
 
     OopClass getClassOop();
 
+    boolean isArray();
+
+    boolean isInterface();
+
 }

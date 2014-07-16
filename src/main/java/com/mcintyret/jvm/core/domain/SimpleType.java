@@ -1,16 +1,11 @@
 package com.mcintyret.jvm.core.domain;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.oop.OopClassClass;
-import com.mcintyret.jvm.core.oop.OopPrimitiveClass;
-import com.mcintyret.jvm.load.*;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import static com.mcintyret.jvm.load.ClassLoader.*;
 
 public enum SimpleType implements Type {
     BOOLEAN("Z", 4),
@@ -48,7 +43,7 @@ public enum SimpleType implements Type {
 
     private final byte b;
 
-    private OopPrimitiveClass classOop;
+    private OopClassClass classOop;
 
     private SimpleType(String str, int i) {
         this.str = str;
@@ -102,8 +97,18 @@ public enum SimpleType implements Type {
     }
 
     @Override
-    public OopPrimitiveClass getClassOop() {
+    public OopClassClass getClassOop() {
         return classOop == null ? (classOop = Heap.allocateAndGet(CLASS_CLASS.newObject((clazz, fields) ->
-                new OopPrimitiveClass(clazz, fields, SimpleType.this)))) : classOop;
+            new OopClassClass(clazz, fields, SimpleType.this)))) : classOop;
+    }
+
+    @Override
+    public boolean isArray() {
+        return false;
+    }
+
+    @Override
+    public boolean isInterface() {
+        return false;
     }
 }

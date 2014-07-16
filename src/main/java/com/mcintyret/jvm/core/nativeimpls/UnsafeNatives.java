@@ -4,6 +4,7 @@ import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.domain.NonArrayType;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.oop.OopClassClass;
@@ -34,7 +35,7 @@ public enum UnsafeNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
 //            OopClassClass occ = (OopClassClass) Heap.getOop(args[1]);
-//            ArrayClassObject aco = (ArrayClassObject) occ.getThisClass();
+//            ArrayClassObject aco = (ArrayClassObject) occ.getThisType();
 
 //            return NativeReturn.forInt(aco.getType().getComponentType().getSimpleType().getWidth());
             return NativeReturn.forInt(1); // We'll do the math!
@@ -50,7 +51,7 @@ public enum UnsafeNatives implements NativeImplementation {
 
             boolean isStatic = Modifier.translate(fieldClass.findField("modifiers", false).getInt(field)).contains(Modifier.STATIC);
 
-            ClassObject declaringClass = (ClassObject) declaringClassOop.getThisClass();
+            ClassObject declaringClass = ((NonArrayType) declaringClassOop.getThisType()).getClassObject();
 
             String fieldName = Utils.toString((OopClass) fieldClass.findField("name", false).getOop(field));
 
