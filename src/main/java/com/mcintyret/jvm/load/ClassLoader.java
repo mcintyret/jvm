@@ -211,27 +211,31 @@ public class ClassLoader {
         Field[] translatedStaticFields;
         Field[] translatedInstanceFields;
 
-        if (isInterface) {
-            translatedStaticFields = translatedInstanceFields = new Field[0];
-        } else {
 
-            // Fields
-            List<MemberInfo> staticFields = new ArrayList<>();
-            List<MemberInfo> instanceFields = new ArrayList<>();
+        // Fields
+        List<MemberInfo> staticFields = new ArrayList<>();
+        List<MemberInfo> instanceFields = new ArrayList<>();
 
-            for (MemberInfo field : file.getFields()) {
-                if (field.hasModifier(Modifier.STATIC)) {
-                    staticFields.add(field);
-                } else {
-                    instanceFields.add(field);
-                }
+        for (MemberInfo field : file.getFields()) {
+            if (field.hasModifier(Modifier.STATIC)) {
+                staticFields.add(field);
+            } else {
+                instanceFields.add(field);
             }
+        }
 
-            translatedStaticFields = translateFields(new ArrayList<>(staticFields.size()), staticFields, file.getConstantPool());
+        translatedStaticFields = translateFields(new ArrayList<>(staticFields.size()), staticFields, file.getConstantPool());
 
+        if (isInterface) {
+            if (!instanceFields.isEmpty()) {
+                throw new IllegalStateException("Should not have instance fields on interface " + className);
+            }
+            translatedInstanceFields = new Field[0];
+        } else {
             translatedInstanceFields = translateFields(parent == null ? new ArrayList<>() :
                 new ArrayList<>(asList(parent.getInstanceFields())), instanceFields, file.getConstantPool());
         }
+
 
         ClassObject co = new ClassObject(
             type,
