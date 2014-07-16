@@ -88,7 +88,7 @@ public enum ClassNatives implements NativeImplementation {
                 ctorArgs[6] = Heap.NULL_POINTER;
                 ctorArgs[7] = Heap.NULL_POINTER;
 
-                Utils.executeMethodAndThrow(ctor, ctorArgs, ctx.getExecutionStack().getThread());
+                Utils.executeMethodAndThrow(ctor, ctorArgs, ctx.getThread());
             }
 
             return NativeReturn.forReference(array);
@@ -192,7 +192,7 @@ public enum ClassNatives implements NativeImplementation {
                     ctorArgs[7] = Heap.NULL_POINTER; // annotations
                     ctorArgs[8] = Heap.NULL_POINTER; // parameter annotations
 
-                    Utils.executeMethodAndThrow(ctorCtor, ctorArgs, ctx.getExecutionStack().getThread());
+                    Utils.executeMethodAndThrow(ctorCtor, ctorArgs, ctx.getThread());
 
                     result.getFields()[i] = ctorObj.getAddress();
                 }

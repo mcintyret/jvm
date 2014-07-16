@@ -2,6 +2,7 @@ package com.mcintyret.jvm.core.clazz;
 
 import java.util.Set;
 
+import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.parse.Modifier;
@@ -33,6 +34,7 @@ public class Method extends Member {
         return getClassObject().getClassName() + "." + signature;
     }
 
+    // what about primitive args??
     public int[] newArgArray(Oop... args) {
         Code code = getCode();
         int maxLocals = code == null ? 0 : code.getMaxLocals();
@@ -41,7 +43,7 @@ public class Method extends Member {
         int[] argArray = new int[Math.max(argCount + (isStatic() ? 0 : 1), maxLocals)];
 
         for (int i = 0; i < args.length; i++) {
-            argArray[i] = args[i].getAddress();
+            argArray[i] = args[i] == null ? Heap.NULL_POINTER : args[i].getAddress();
         }
 
         return argArray;

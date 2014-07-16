@@ -107,7 +107,7 @@ public enum SystemNatives implements NativeImplementation {
                 spArgs[0] = props.getAddress();
                 spArgs[1] = Heap.intern(key);
                 spArgs[2] = Heap.intern(System.getProperty(key));
-                Utils.executeMethodAndThrow(setProperty, spArgs, ctx.getExecutionStack().getThread());
+                Utils.executeMethodAndThrow(setProperty, spArgs, ctx.getThread());
             }
 
             return NativeReturn.forReference(props);

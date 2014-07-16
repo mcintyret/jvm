@@ -20,14 +20,16 @@ public class Main {
 
         String reversed = reverse(str);
 
+        print(reversed);
         System.out.println(reversed);
+        System.err.println("Now I'm printing an error message!");
 
         try {
             doFoo();
         } catch (FooBarException e) {
             print("Caught the exception!");
             print(Arrays.toString(e.getStackTrace()));
-            throw new RuntimeException();
+//            throw new RuntimeException();
         }
     }
 

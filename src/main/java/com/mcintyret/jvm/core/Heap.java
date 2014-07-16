@@ -15,8 +15,6 @@ import com.mcintyret.jvm.core.oop.OopClass;
 
 public class Heap {
 
-    private static ClassObject STRING_CLASS;
-
     private static final int HEAP_SIZE = 3000;
 
     private static final Oop[] OOP_TABLE = new Oop[HEAP_SIZE];
@@ -70,28 +68,11 @@ public class Heap {
         private final Map<String, Oop> lookupMap = new HashMap<>();
 
         public int intern(String string) {
-            // This is pretty fragile because if Sting ever changes this will need to change too
 
-            if (STRING_CLASS == null) {
-                STRING_CLASS = getDefaultClassLoader().getClassObject("java/lang/String");
-            }
 
             Oop stringOop = lookupMap.get(string);
             if (stringOop == null) {
-                stringOop = STRING_CLASS.newObject();
-                Heap.allocate(stringOop);
-
-                int[] chars = new int[string.length()];
-                for (int i = 0; i < string.length(); i++) {
-                    chars[i] = string.charAt(i);
-                }
-                ArrayClassObject co = ArrayClassObject.forType(ArrayType.create(SimpleType.CHAR, 1));
-                OopArray charArrayOop = new OopArray(co, chars);
-                int charArrayAddress = Heap.allocate(charArrayOop);
-
-                stringOop.getFields()[0] = charArrayAddress;
-                // The only other field, hash, is initially 0 and so doesn't need changing
-
+                stringOop = Utils.toOopString(string);
                 lookupMap.put(string, stringOop);
             }
             return stringOop.getAddress();

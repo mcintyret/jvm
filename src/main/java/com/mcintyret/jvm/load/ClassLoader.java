@@ -284,7 +284,7 @@ public class ClassLoader {
                         Threads.register(new Thread(thread));
 
                         // Do the actual method stuff
-                        Utils.executeMethodAndThrow(method, args, ctx.getExecutionStack().getThread());
+                        Utils.executeMethodAndThrow(method, args, ctx.getThread());
 
                         return NativeReturn.forVoid();
                     }

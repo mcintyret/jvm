@@ -1,6 +1,7 @@
 package com.mcintyret.jvm.core.opcode;
 
 import com.mcintyret.jvm.core.ByteIterator;
+import com.mcintyret.jvm.core.thread.Thread;
 import com.mcintyret.jvm.core.ExecutionStack;
 import com.mcintyret.jvm.core.WordStack;
 import com.mcintyret.jvm.core.clazz.Method;
@@ -17,6 +18,8 @@ public interface OperationContext {
     WordStack getStack();
 
     ExecutionStack getExecutionStack();
+
+    Thread getThread();
 
     Method getMethod();
 

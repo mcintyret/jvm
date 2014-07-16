@@ -2,6 +2,8 @@ package com.mcintyret.jvm.core;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.mcintyret.jvm.core.thread.*;
+import com.mcintyret.jvm.core.thread.Thread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +73,11 @@ public class ExecutionStackElement implements OperationContext {
     @Override
     public ExecutionStack getExecutionStack() {
         return executionStack;
+    }
+
+    @Override
+    public Thread getThread() {
+        return executionStack.getThread();
     }
 
     @Override

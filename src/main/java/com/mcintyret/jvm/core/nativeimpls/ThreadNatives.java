@@ -21,7 +21,7 @@ public enum ThreadNatives implements NativeImplementation {
     CURRENT_THREAD("currentThread", "()Ljava/lang/Thread;") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
-            Thread thread = ctx.getExecutionStack().getThread();
+            Thread thread = ctx.getThread();
             return NativeReturn.forReference(thread.getThisThread());
         }
     },

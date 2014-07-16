@@ -5,6 +5,7 @@ import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.ValueReceiver;
 import com.mcintyret.jvm.core.domain.ArrayType;
+import com.mcintyret.jvm.core.domain.SimpleType;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.Oop;
@@ -13,6 +14,8 @@ import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.thread.Thread;
 
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 
 public class Utils {
 
@@ -26,10 +29,16 @@ public class Utils {
     }
 
     public static String toString(OopClass stringOop) {
+        if (stringOop == null) {
+            return null;
+        }
         return toString((OopArray) Heap.getOop(stringOop.getFields()[0]));
     }
 
     public static String toString(OopArray charArrayOop) {
+        if (charArrayOop == null) {
+            return null;
+        }
         char[] chars = new char[charArrayOop.getLength()];
         for (int i = 0; i < chars.length; i++) {
             chars[i] = (char) charArrayOop.getFields()[i];
@@ -46,11 +55,34 @@ public class Utils {
         }
     }
 
+    public static OopClass toOopString(String string) {
+        if (string == null) {
+            return null;
+        }
+
+        ClassObject stringClass = getDefaultClassLoader().getClassObject("java/lang/String");
+        OopClass stringOop = stringClass.newObject();
+        Heap.allocate(stringOop);
+
+        int[] chars = new int[string.length()];
+        for (int i = 0; i < string.length(); i++) {
+            chars[i] = string.charAt(i);
+        }
+        ArrayClassObject co = ArrayClassObject.forType(ArrayType.create(SimpleType.CHAR, 1));
+        OopArray charArrayOop = new OopArray(co, chars);
+        int charArrayAddress = Heap.allocate(charArrayOop);
+
+        stringOop.getFields()[0] = charArrayAddress;
+        // The only other field, hash, is initially 0 and so doesn't need changing
+
+        return stringOop;
+    }
+
     public static NativeReturn executeMethodAndThrow(Method method, int[] args, Thread thread) {
         ExecutionStack stack = new ExecutionStack(thread);
 
         stack.push(new ExecutionStackElement(method, args,
-                method.getClassObject().getConstantPool(), stack));
+            method.getClassObject().getConstantPool(), stack));
 
         stack.execute();
 
@@ -79,8 +111,8 @@ public class Utils {
         return ret;
     }
 
-    public static OopClass construct(ClassObject co, Thread thread, Oop... args) {
-        return construct(co, "()V", thread, args);
+    public static OopClass construct(ClassObject co, Thread thread) {
+        return construct(co, "()V", thread);
     }
 
     public static OopClass construct(ClassObject co, String ctorSignature, Thread thread, Oop... args) {
@@ -96,6 +128,32 @@ public class Utils {
         Utils.executeMethodAndThrow(ctor, ctor.newArgArray(allArgs), thread);
 
         return obj;
+    }
+
+    public static OopClass toThrowableOop(Throwable t, Thread thread) {
+        ClassObject co = getDefaultClassLoader().getClassObject(toJvmClassName(t.getClass()));
+
+        OopClass messageOop = toOopString(t.getMessage());
+
+        Throwable cause = t.getCause();
+        String ctorSig;
+        Oop[] args;
+        if (cause == null) {
+            ctorSig = "(Ljava/lang/String;)V";
+            args = new Oop[]{messageOop};
+        } else {
+            ctorSig = "(Ljava/lang/String;Ljava/lang/Throwable;)V";
+            args = new Oop[]{messageOop, toThrowableOop(cause, thread)};
+        }
+        return construct(co, ctorSig, thread, args);
+    }
+
+    public static String toJvmClassName(Class<?> clazz) {
+        return toJvmClassName(clazz.getName());
+    }
+
+    public static String toJvmClassName(String className) {
+        return className.replaceAll("\\.", "/");
     }
 
 

@@ -51,7 +51,7 @@ public enum MiscNatives implements NativeImplementation {
         public NativeReturn execute(int[] args, OperationContext ctx) {
             ClassObject unixFileSystem = ClassLoader.getDefaultClassLoader().getClassObject("java/io/UnixFileSystem");
 
-            return NativeReturn.forReference(Utils.construct(unixFileSystem, ctx.getExecutionStack().getThread()));
+            return NativeReturn.forReference(Utils.construct(unixFileSystem, ctx.getThread()));
         }
 
         @Override
@@ -91,7 +91,7 @@ public enum MiscNatives implements NativeImplementation {
             int[] argInts = givenArgs == null ? new int[0] : givenArgs.getFields();
             System.arraycopy(argInts, 0, ctorArgs, 1, argInts.length);
 
-            Utils.executeMethodAndThrow(ctor, ctorArgs, ctx.getExecutionStack().getThread());
+            Utils.executeMethodAndThrow(ctor, ctorArgs, ctx.getThread());
 
             return NativeReturn.forReference(instance);
         }
@@ -105,6 +105,9 @@ public enum MiscNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
             // TODO - might use reflection to do the real thing?
+            OopClass nativeLibrary = Heap.getOopClass(args[0]);
+            ClassObject clazz = nativeLibrary.getClassObject();
+            clazz.findField("handle", false).set(nativeLibrary, 1L);
             return NativeReturn.forVoid(); // Hope this works!
         }
 
