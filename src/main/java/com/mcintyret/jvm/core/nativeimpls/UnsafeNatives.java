@@ -1,9 +1,5 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import java.lang.reflect.Field;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.clazz.ClassObject;
@@ -14,8 +10,11 @@ import com.mcintyret.jvm.core.oop.OopClassClass;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
-
 import sun.misc.Unsafe;
+
+import java.lang.reflect.Field;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 public enum UnsafeNatives implements NativeImplementation {
     REGISTER_NATIVES("registerNatives", "()V") {
@@ -28,14 +27,17 @@ public enum UnsafeNatives implements NativeImplementation {
     ARRAY_BASE_OFFSET("arrayBaseOffset", "(Ljava/lang/Class;)I") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
-            return NativeReturn.forInt(args[0]);
+            return NativeReturn.forInt(0);
         }
     },
     ARRAY_INDEX_SCALE("arrayIndexScale", "(Ljava/lang/Class;)I") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
-            // TODO: do this properly
-            return NativeReturn.forInt(4);
+//            OopClassClass occ = (OopClassClass) Heap.getOop(args[1]);
+//            ArrayClassObject aco = (ArrayClassObject) occ.getThisClass();
+
+//            return NativeReturn.forInt(aco.getType().getComponentType().getSimpleType().getWidth());
+            return NativeReturn.forInt(1); // We'll do the math!
         }
     },
     OBJECT_FIELD_OFFSET("objectFieldOffset", "(Ljava/lang/reflect/Field;)J") {
@@ -67,33 +69,6 @@ public enum UnsafeNatives implements NativeImplementation {
             return NativeReturn.forLong(THE_UNSAFE.allocateMemory(Utils.toLong(args[1], args[2])));
         }
     },
-    FREE_MEMORY("freeMemory", "(J)V") {
-        @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
-            THE_UNSAFE.freeMemory(Utils.toLong(args[1], args[2]));
-            return NativeReturn.forVoid();
-        }
-    },
-    PUT_LONG("putLong", "(JJ)V") {
-        @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
-            THE_UNSAFE.putLong(Utils.toLong(args[1], args[2]), Utils.toLong(args[3], args[4]));
-            return NativeReturn.forVoid();
-        }
-    },
-    PUT_ORDERED_OBJECT("putOrderedObject", "(Ljava/lang/Object;JLjava/lang/Object;)V") {
-        @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
-            THE_UNSAFE.putOrderedObject(Heap.getOop(args[1]).getFields(), Utils.toLong(args[2], args[3]), Heap.getOop(args[4]).getFields());
-            return NativeReturn.forVoid();
-        }
-    },
-    GET_BYTE("getByte", "(J)B") {
-        @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
-            return NativeReturn.forInt(THE_UNSAFE.getByte(Utils.toLong(args[1], args[2])));
-        }
-    },
     COMPARE_AND_SWAP_INT("compareAndSwapInt", "(Ljava/lang/Object;JII)Z") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
@@ -105,7 +80,110 @@ public enum UnsafeNatives implements NativeImplementation {
             boolean ret = THE_UNSAFE.compareAndSwapInt(oop.getFields(), byteOffset(offset), expect, update);
             return NativeReturn.forBool(ret);
         }
+    },
+    COMPARE_AND_SWAP_OBJECT("compareAndSwapObject", "(Ljava/lang/Object;JLjava/lang/Object;Ljava/lang/Object;)Z") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            return COMPARE_AND_SWAP_INT.execute(args, ctx);
+        }
+    },
+    FREE_MEMORY("freeMemory", "(J)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            THE_UNSAFE.freeMemory(Utils.toLong(args[1], args[2]));
+            return NativeReturn.forVoid();
+        }
+    },
+    GET_BYTE("getByte", "(J)B") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            return NativeReturn.forInt(THE_UNSAFE.getByte(Utils.toLong(args[1], args[2])));
+        }
+    },
+    GET_INT("getInt", "(Ljava/lang/Object;J)I") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            long offset = Utils.toLong(args[2], args[3]);
+            int[] fields = Heap.getOop(args[1]).getFields();
+            return NativeReturn.forInt(THE_UNSAFE.getInt(fields, byteOffset(offset)));
+        }
+    },
+    GET_INT_VOLATILE("getIntVolatile", "(Ljava/lang/Object;J)I") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            long offset = Utils.toLong(args[2], args[3]);
+            int[] fields = Heap.getOop(args[1]).getFields();
+            return NativeReturn.forInt(THE_UNSAFE.getIntVolatile(fields, byteOffset(offset)));
+        }
+    },
+    GET_OBJECT("getObject", "(Ljava/lang/Object;J)Ljava/lang/Object;") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            return GET_INT.execute(args, ctx);
+        }
+    },
+    GET_OBJECT_VOLATILE("getObjectVolatile", "(Ljava/lang/Object;J)Ljava/lang/Object;") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            return GET_INT_VOLATILE.execute(args, ctx);
+        }
+    },
+    PUT_INT("putInt", "(Ljava/lang/Object;JI)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            long offset = Utils.toLong(args[2], args[3]);
+            int[] fields = Heap.getOop(args[1]).getFields();
+
+            THE_UNSAFE.putInt(fields, byteOffset(offset), args[4]);
+            return NativeReturn.forVoid();
+        }
+    },
+    PUT_INT_VOLATILE("putIntVolatile", "(Ljava/lang/Object;JI)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            long offset = Utils.toLong(args[2], args[3]);
+            int[] fields = Heap.getOop(args[1]).getFields();
+
+            THE_UNSAFE.putIntVolatile(fields, byteOffset(offset), args[4]);
+            return NativeReturn.forVoid();
+        }
+    },
+    PUT_ORDERED_INT("putOrderedInt", "(Ljava/lang/Object;JI)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            long offset = Utils.toLong(args[2], args[3]);
+            int[] fields = Heap.getOop(args[1]).getFields();
+
+            THE_UNSAFE.putOrderedInt(fields, byteOffset(offset), args[4]);
+            return NativeReturn.forVoid();
+        }
+    },
+    PUT_LONG("putLong", "(JJ)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            THE_UNSAFE.putLong(Utils.toLong(args[1], args[2]), Utils.toLong(args[3], args[4]));
+            return NativeReturn.forVoid();
+        }
+    },
+    PUT_OBJECT("putObject", "(Ljava/lang/Object;JLjava/lang/Object;)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            return PUT_INT.execute(args, ctx);
+        }
+    },
+    PUT_OBJECT_VOLATILE("putObjectVolatile", "(Ljava/lang/Object;JLjava/lang/Object;)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            return PUT_INT_VOLATILE.execute(args, ctx);
+        }
+    },
+    PUT_ORDERED_OBJECT("putOrderedObject", "(Ljava/lang/Object;JLjava/lang/Object;)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            return PUT_ORDERED_INT.execute(args, ctx);
+        }
     };
+
 
     private static final Unsafe THE_UNSAFE = getTheUnsafe();
 

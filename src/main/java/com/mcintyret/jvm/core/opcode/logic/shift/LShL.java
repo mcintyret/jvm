@@ -9,7 +9,9 @@ public class LShL extends OpCode {
     @Override
     public void execute(OperationContext ctx) {
         WordStack stack = ctx.getStack();
-        stack.push(stack.popLong() << stack.pop());
+        int shift = stack.pop();
+        long l = stack.popLong();
+        stack.push(l << shift);
     }
 
     @Override

@@ -17,7 +17,9 @@ public class Heap {
 
     private static ClassObject STRING_CLASS;
 
-    private static final Oop[] OOP_TABLE = new Oop[2000];
+    private static final int HEAP_SIZE = 3000;
+
+    private static final Oop[] OOP_TABLE = new Oop[HEAP_SIZE];
 
     private static int heapAllocationPointer = 1;
 
