@@ -25,12 +25,12 @@ abstract class Invoke extends OpCode {
 
     protected abstract void doInvoke(Method method, OperationContext ctx);
 
-    protected void invokeNativeMethod(NativeMethod nativeMethod, int[] values, OperationContext ctx) {
+    protected void invokeNativeMethod(NativeMethod nativeMethod, int[] args, OperationContext ctx) {
         NativeImplementation nativeImplementation = nativeMethod.getNativeImplementation();
         if (nativeImplementation == null) {
             throw new IllegalStateException("No Native implementation for " + nativeMethod.getClassObject().getClassName() + "." + nativeMethod.getSignature());
         }
-        NativeReturn nr = nativeImplementation.execute(values, ctx);
+        NativeReturn nr = nativeImplementation.execute(args, ctx);
         nr.applyValue(ctx.getStack());
         if (nr.isThrowable()) {
             new AThrow().execute(ctx);

@@ -12,29 +12,29 @@ abstract class InvokeIndirect extends Invoke {
 
     @Override
     protected final void doInvoke(Method method, OperationContext ctx) {
-        int[] values = method.newArgArray();
-        int args = method.getSignature().getLength();
-        for (int i = args; i >= 1; i--) {
-            values[i] = ctx.getStack().pop();
+        int[] args = method.newArgArray();
+        int argCount = method.getSignature().getLength();
+        for (int i = argCount; i >= 1; i--) {
+            args[i] = ctx.getStack().pop();
         }
-        values[0] = ctx.getStack().pop();
+        args[0] = ctx.getStack().pop();
 
-        Oop oop = Heap.getOop(values[0]);
+        Oop oop = Heap.getOop(args[0]);
 
         Method implementation = getImplementationMethod(method, oop);
 
         if (implementation.hasModifier(Modifier.NATIVE)) {
-            invokeNativeMethod((NativeMethod) method, values, ctx);
+            invokeNativeMethod((NativeMethod) method, args, ctx);
         } else {
             int maxLocalVars = implementation.getCode().getMaxLocals();
-            if (maxLocalVars > values.length) {
+            if (maxLocalVars > args.length) {
                 int[] tmp = new int[maxLocalVars];
-                System.arraycopy(values, 0, tmp, 0, values.length);
-                values = tmp;
+                System.arraycopy(args, 0, tmp, 0, args.length);
+                args = tmp;
             }
 
             ctx.getExecutionStack().push(
-                new ExecutionStackElement(implementation, values, implementation.getClassObject().getConstantPool(), ctx.getExecutionStack()));
+                new ExecutionStackElement(implementation, args, implementation.getClassObject().getConstantPool(), ctx.getExecutionStack()));
         }
 
         afterInvoke(ctx);
