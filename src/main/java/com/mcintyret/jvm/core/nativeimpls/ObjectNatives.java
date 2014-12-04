@@ -1,7 +1,7 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.MagicClasses;
+import com.mcintyret.jvm.core.ImportantClasses;
 import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.oop.Oop;
@@ -104,7 +104,7 @@ public enum ObjectNatives implements NativeImplementation {
 
     @Override
     public String getClassName() {
-        return MagicClasses.JAVA_LANG_OBJECT;
+        return ImportantClasses.JAVA_LANG_OBJECT;
     }
 
     @Override

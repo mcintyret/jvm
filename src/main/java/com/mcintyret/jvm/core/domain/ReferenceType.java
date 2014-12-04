@@ -1,6 +1,7 @@
 package com.mcintyret.jvm.core.domain;
 
 import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.ImportantClasses;
 import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.oop.OopClassClass;
@@ -28,7 +29,7 @@ public abstract class ReferenceType implements Type {
     @Override
     public OopClassClass getOopClassClass() {
         return oopClassClass == null ? (oopClassClass = Heap.allocateAndGet(
-            Utils.getClassObject(CLASS_CLASS).newObject((clazz, fields) ->
+            Utils.getClassObject(ImportantClasses.JAVA_LANG_CLASS).newObject((clazz, fields) ->
                 new OopClassClass(clazz, fields, this)))) : oopClassClass;
     }
 

@@ -1,6 +1,7 @@
 package com.mcintyret.jvm.core.domain;
 
 import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.ImportantClasses;
 import com.mcintyret.jvm.core.oop.OopClassClass;
 
 import java.util.Collections;
@@ -93,7 +94,7 @@ public enum SimpleType implements Type {
     @Override
     public OopClassClass getOopClassClass() {
         return classOop == null ? (classOop = Heap.allocateAndGet(
-            getClassObject(CLASS_CLASS).newObject((clazz, fields) ->
+            getClassObject(ImportantClasses.JAVA_LANG_CLASS).newObject((clazz, fields) ->
                 new OopClassClass(clazz, fields, SimpleType.this)))) : classOop;
     }
 

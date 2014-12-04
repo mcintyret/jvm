@@ -1,5 +1,6 @@
 package com.mcintyret.jvm.core.clazz;
 
+import com.mcintyret.jvm.core.ImportantClasses;
 import com.mcintyret.jvm.core.domain.ReferenceType;
 import com.mcintyret.jvm.core.oop.OopClassClass;
 import com.mcintyret.jvm.parse.Modifier;
@@ -9,8 +10,6 @@ import java.util.Set;
 import static com.mcintyret.jvm.core.Utils.getClassObject;
 
 public abstract class AbstractClassObject {
-
-    private static final String OBJECT_CLASS = "java/lang/Object";
 
     public abstract ReferenceType getType();
 
@@ -36,7 +35,7 @@ public abstract class AbstractClassObject {
             return true;
         }
 
-        if (that == getClassObject(OBJECT_CLASS)) {
+        if (that == getClassObject(ImportantClasses.JAVA_LANG_OBJECT)) {
             return true; // everything extends object
         }
 

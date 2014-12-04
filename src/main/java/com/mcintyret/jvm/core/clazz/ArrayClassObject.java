@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.core.clazz;
 
-import com.mcintyret.jvm.core.MagicClasses;
+import com.mcintyret.jvm.core.ImportantClasses;
 import com.mcintyret.jvm.core.domain.ArrayType;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.parse.Modifier;
@@ -14,11 +14,11 @@ import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 
 public class ArrayClassObject extends AbstractClassObject {
 
-    private static final ClassObject PARENT = getDefaultClassLoader().getClassObject(MagicClasses.JAVA_LANG_OBJECT);
+    private static final ClassObject PARENT = getDefaultClassLoader().getClassObject(ImportantClasses.JAVA_LANG_OBJECT);
 
     private static final ClassObject[] INTERFACES = {
-            getDefaultClassLoader().getClassObject(MagicClasses.JAVA_LANG_CLONEABLE),
-            getDefaultClassLoader().getClassObject(MagicClasses.JAVA_IO_SERIALIZABLE)
+            getDefaultClassLoader().getClassObject(ImportantClasses.JAVA_LANG_CLONEABLE),
+            getDefaultClassLoader().getClassObject(ImportantClasses.JAVA_IO_SERIALIZABLE)
     };
 
     private static final Set<Modifier> MODIFIERS = EnumSet.of(Modifier.PUBLIC, Modifier.FINAL, Modifier.ABSTRACT);

@@ -1,12 +1,25 @@
 package com.mcintyret.jvm.load;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.MagicClasses;
 import com.mcintyret.jvm.core.Utils;
-import com.mcintyret.jvm.core.clazz.*;
+import com.mcintyret.jvm.core.clazz.AbstractClassObject;
+import com.mcintyret.jvm.core.clazz.ArrayClassObject;
+import com.mcintyret.jvm.core.clazz.ClassObject;
+import com.mcintyret.jvm.core.clazz.Field;
+import com.mcintyret.jvm.core.clazz.InterfaceMethod;
+import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.clazz.NativeMethod;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
-import com.mcintyret.jvm.core.domain.*;
-import com.mcintyret.jvm.core.nativeimpls.*;
+import com.mcintyret.jvm.core.domain.ArrayType;
+import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.domain.NonArrayType;
+import com.mcintyret.jvm.core.domain.Type;
+import com.mcintyret.jvm.core.domain.Types;
+import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
+import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
+import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
+import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
+import com.mcintyret.jvm.core.nativeimpls.SystemNatives;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.core.thread.Thread;
@@ -15,12 +28,29 @@ import com.mcintyret.jvm.parse.ClassFile;
 import com.mcintyret.jvm.parse.ClassFileReader;
 import com.mcintyret.jvm.parse.MemberInfo;
 import com.mcintyret.jvm.parse.Modifier;
-import com.mcintyret.jvm.parse.cp.*;
+import com.mcintyret.jvm.parse.cp.CpClass;
+import com.mcintyret.jvm.parse.cp.CpDouble;
+import com.mcintyret.jvm.parse.cp.CpFieldReference;
+import com.mcintyret.jvm.parse.cp.CpFloat;
+import com.mcintyret.jvm.parse.cp.CpInt;
+import com.mcintyret.jvm.parse.cp.CpLong;
+import com.mcintyret.jvm.parse.cp.CpMethodReference;
+import com.mcintyret.jvm.parse.cp.CpReference;
+import com.mcintyret.jvm.parse.cp.NameAndType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
 
 import static com.mcintyret.jvm.core.Assert.assertNotNull;
 import static java.util.Arrays.asList;
@@ -77,7 +107,6 @@ public class ClassLoader {
 
         if (firstLoad) {
             ObjectNatives.registerNatives();
-            MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_OBJECT));
         }
     }
 

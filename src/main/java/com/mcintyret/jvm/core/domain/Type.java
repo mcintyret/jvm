@@ -4,8 +4,6 @@ import com.mcintyret.jvm.core.oop.OopClassClass;
 
 public interface Type {
 
-    static final String CLASS_CLASS = "java/lang/Class";
-
     boolean isPrimitive();
 
     OopClassClass getOopClassClass();
