@@ -12,12 +12,12 @@ import com.mcintyret.jvm.core.oop.OopClassClass;
 public abstract class ReferenceType implements Type {
 
     @Override
-    public SimpleType getSimpleType() {
-        return SimpleType.REF;
+    public boolean isPrimitive() {
+        return false;
     }
 
     @Override
-    public boolean isPrimitive() {
+    public boolean isDoubleWidth() {
         return false;
     }
 

@@ -21,7 +21,7 @@ public class Utils {
 
     public static OopArray newArray(Type type, int size) {
         ArrayClassObject aco = ArrayClassObject.forType(ArrayType.create(type, 1));
-        return new OopArray(aco, new int[size * type.getSimpleType().getWidth()]);
+        return new OopArray(aco, new int[size * type.getWidth()]);
     }
 
     public static long toLong(int l, int r) {

@@ -6,8 +6,6 @@ public interface Type {
 
     static final String CLASS_CLASS = "java/lang/Class";
 
-    SimpleType getSimpleType();
-
     boolean isPrimitive();
 
     OopClassClass getOopClassClass();
@@ -15,5 +13,11 @@ public interface Type {
     boolean isArray();
 
     boolean isInterface();
+
+    boolean isDoubleWidth();
+
+    default int getWidth() {
+        return isDoubleWidth() ? 2 : 1;
+    }
 
 }

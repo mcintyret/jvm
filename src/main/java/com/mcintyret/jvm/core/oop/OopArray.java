@@ -11,7 +11,7 @@ public class OopArray extends Oop {
     public OopArray(ArrayClassObject classObject, int[] fields) {
         super(fields);
         this.arrayClassObject = classObject;
-        this.width = classObject.getType().getComponentType().getSimpleType().getWidth();
+        this.width = classObject.getType().getComponentType().getWidth();
     }
 
     public int getLength() {

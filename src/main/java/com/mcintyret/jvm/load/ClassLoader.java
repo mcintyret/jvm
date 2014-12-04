@@ -428,14 +428,14 @@ public class ClassLoader {
         int offset = 0;
         if (!fields.isEmpty() && !fomis.isEmpty()) {
             Field lastField = fields.get(fields.size() - 1);
-            offset = lastField.getOffset() + lastField.getType().getSimpleType().getWidth();
+            offset = lastField.getOffset() + lastField.getType().getWidth();
         }
 
         for (MemberInfo field : fomis) {
             Type type = Types.parseType((String) constantPool[field.getDescriptorIndex()]);
             String name = (String) constantPool[field.getNameIndex()];
             fields.add(new Field(field.getModifiers(), field.getAttributes(), name, type, offset));
-            offset += type.getSimpleType().getWidth();
+            offset += type.getWidth();
         }
         return fields.toArray(new Field[fields.size()]);
     }

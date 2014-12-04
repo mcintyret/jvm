@@ -1,13 +1,13 @@
 package com.mcintyret.jvm.core.clazz;
 
-import java.util.Set;
-
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.domain.NonArrayType;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
+
+import java.util.Set;
 
 public class ClassObject extends AbstractClassObject {
 
@@ -76,7 +76,7 @@ public class ClassObject extends AbstractClassObject {
             return new int[0];
         }
         Field lastField = fields[fields.length - 1];
-        int size = lastField.getOffset() + lastField.getType().getSimpleType().getWidth();
+        int size = lastField.getOffset() + lastField.getType().getWidth();
         return new int[size];
     }
 

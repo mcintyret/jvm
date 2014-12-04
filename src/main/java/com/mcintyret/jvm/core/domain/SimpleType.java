@@ -57,6 +57,7 @@ public enum SimpleType implements Type {
         return str;
     }
 
+    @Override
     public boolean isDoubleWidth() {
         switch (this) {
             case LONG:
@@ -67,15 +68,6 @@ public enum SimpleType implements Type {
             default:
                 return false;
         }
-    }
-
-    public int getWidth() {
-        return isDoubleWidth() ? 2 : 1;
-    }
-
-    @Override
-    public SimpleType getSimpleType() {
-        return this;
     }
 
     public static SimpleType forChar(char ch) {

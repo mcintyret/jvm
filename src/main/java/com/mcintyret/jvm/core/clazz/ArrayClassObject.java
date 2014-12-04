@@ -1,16 +1,16 @@
 package com.mcintyret.jvm.core.clazz;
 
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
+import com.mcintyret.jvm.core.MagicClasses;
+import com.mcintyret.jvm.core.domain.ArrayType;
+import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.parse.Modifier;
 
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import com.mcintyret.jvm.core.MagicClasses;
-import com.mcintyret.jvm.core.domain.ArrayType;
-import com.mcintyret.jvm.core.oop.OopArray;
-import com.mcintyret.jvm.parse.Modifier;
+import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 
 public class ArrayClassObject extends AbstractClassObject {
 
@@ -42,7 +42,7 @@ public class ArrayClassObject extends AbstractClassObject {
     }
 
     public OopArray newArray(int length) {
-        length *= arrayType.getComponentType().getSimpleType().getWidth();
+        length *= arrayType.getComponentType().getWidth();
         return new OopArray(this, new int[length]);
     }
 

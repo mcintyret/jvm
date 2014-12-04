@@ -32,7 +32,7 @@ public enum SystemNatives implements NativeImplementation {
                 // TODO: move isInstanceOf around - might need to be a Type property?
             }
 
-            int width = srcType.getSimpleType().getWidth();
+            int width = srcType.getWidth();
 
             int srcPos = args[1] * width;
             int destPos = args[3] * width;

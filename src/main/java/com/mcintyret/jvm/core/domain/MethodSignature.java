@@ -71,11 +71,7 @@ public class MethodSignature {
     }
 
     public int getLength() {
-        int length = 0;
-        for (Type argType : argTypes) {
-            length += argType.getSimpleType().getWidth();
-        }
-        return length;
+        return argTypes.stream().mapToInt(Type::getWidth).sum();
     }
 
     @Override

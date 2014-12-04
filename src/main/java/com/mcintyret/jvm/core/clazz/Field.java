@@ -1,13 +1,13 @@
 package com.mcintyret.jvm.core.clazz;
 
-import java.util.Set;
-
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.parse.Modifier;
 import com.mcintyret.jvm.parse.attribute.Attributes;
+
+import java.util.Set;
 
 public class Field extends Member {
 
@@ -55,7 +55,7 @@ public class Field extends Member {
 
     public void get(Oop thisOop, ValueReceiver valueReceiver) {
         int[] fields = getValues(thisOop);
-        if (type.getSimpleType().isDoubleWidth()) {
+        if (type.isDoubleWidth()) {
             valueReceiver.receiveLong(Utils.toLong(fields[getOffset()], fields[getOffset() + 1]));
         } else {
             valueReceiver.receiveInt(fields[getOffset()]);

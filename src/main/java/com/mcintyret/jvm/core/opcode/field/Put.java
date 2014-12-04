@@ -11,7 +11,7 @@ abstract class Put extends FieldOp {
     public final void doExecute(Field field, OperationContext ctx) {
         WordStack stack = ctx.getStack();
 
-        if (field.getType().getSimpleType().isDoubleWidth()) {
+        if (field.getType().isDoubleWidth()) {
             int two = stack.pop();
             int one = stack.pop();
             field.set(getOop(stack), one, two);
