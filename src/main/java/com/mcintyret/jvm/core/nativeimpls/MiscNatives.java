@@ -12,6 +12,17 @@ import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.load.ClassLoader;
 
 public enum MiscNatives implements NativeImplementation {
+    ATOMIC_LONG_VM_SUPPORTS_CS8("VMSupportsCS8", "()Z") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            return NativeReturn.forBool(false); //TODO: implement
+        }
+
+        @Override
+        public String getClassName() {
+            return "java/util/concurrent/atomic/AtomicLong";
+        }
+    },
     SUN_MISC_VM_INITIALIZE("initialize", "()V") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
