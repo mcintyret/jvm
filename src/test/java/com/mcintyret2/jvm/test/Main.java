@@ -1,13 +1,19 @@
 package com.mcintyret2.jvm.test;
 
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Main {
 
     public static void main(String[] args) {
 //        interfaceMethods();
 //        simpleIntArrays();
-        stringsAndNatives();
+//        stringsAndNatives();
+        simpleThreadingTest();
     }
 
     private static void interfaceMethods() {
@@ -31,6 +37,43 @@ public class Main {
             print(Arrays.toString(e.getStackTrace()));
 //            throw new RuntimeException();
         }
+
+        isAssignableFrom();
+    }
+
+    private static void simpleThreadingTest() {
+        AtomicInteger ai = new AtomicInteger();
+        int num = 4;
+        final Random random = new Random();
+        final CountDownLatch latch = new CountDownLatch(4);
+        for (int i = 0; i < num; i++) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(100 + random.nextInt(50));
+                    } catch (InterruptedException e) {
+                        throw new AssertionError(e);
+                    }
+                    ai.getAndIncrement();
+                    latch.countDown();
+                }
+            });
+        }
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new AssertionError(e);
+        }
+
+        System.out.println("Should be " + num + ": " + ai);
+    }
+
+    private static void isAssignableFrom() {
+        System.out.println("Should be true: " + Integer.class.isAssignableFrom(Number.class));
+        System.out.println("Should be false: " + Integer.class.isAssignableFrom(String.class));
+        System.out.println("Should be true: " + HashMap.class.isAssignableFrom(Map.class));
     }
 
     private static void doFoo() throws FooBarException {
