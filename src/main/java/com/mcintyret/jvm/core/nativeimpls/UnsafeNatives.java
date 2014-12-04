@@ -9,6 +9,7 @@ import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.oop.OopClassClass;
 import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.thread.Threads;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
 import sun.misc.Unsafe;
@@ -199,6 +200,20 @@ public enum UnsafeNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
             return PUT_ORDERED_INT.execute(args, ctx);
+        }
+    },
+    PARK("park", "(ZJ)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            THE_UNSAFE.park(args[1] > 0, Utils.toLong(args[2], args[3]));
+            return NativeReturn.forVoid();
+        }
+    },
+    UNPARK("unpark", "(Ljava/lang/Object;)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            THE_UNSAFE.unpark(Threads.get(Heap.getOopClass(args[1])).getThread());
+            return NativeReturn.forVoid();
         }
     };
 
