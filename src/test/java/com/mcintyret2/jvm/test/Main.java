@@ -58,7 +58,7 @@ public class Main {
                     ai.getAndIncrement();
                     latch.countDown();
                 }
-            });
+            }).start();
         }
 
         try {
