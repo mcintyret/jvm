@@ -30,7 +30,24 @@ public class ClassLoader {
 
     private static final Logger LOG = LoggerFactory.getLogger(ClassLoader.class);
 
-    private static final ClassLoader DEFAULT_CLASSLOADER = new ClassLoader();
+    private static final Comparator<MethodInfoAndSig> PRIVATE_LAST_COMPARATOR = (a, b) -> {
+        if (a.mi.hasModifier(Modifier.PRIVATE)) {
+            return b.mi.hasModifier(Modifier.PRIVATE) ? 0 : 1;
+        } else {
+            return !b.mi.hasModifier(Modifier.PRIVATE) ? 0 : -1;
+        }
+    };
+
+    private static final ClassLoader BOOTSTRAP_CLASSLOADER = makeBootstrapClassLoader();
+
+    private static ClassLoader makeBootstrapClassLoader() {
+        String libJarPath = System.getProperty("java.lib.jar.path");
+        try {
+            return new ClassLoader(new ZipClassPath(libJarPath));
+        } catch (IOException e) {
+            throw new IllegalStateException("Java standard library not found at " + libJarPath);
+        }
+    }
 
     private final Map<String, ClassFile> classFiles = new HashMap<>();
 
@@ -44,8 +61,13 @@ public class ClassLoader {
 
     }
 
+    protected ClassLoader(ClassPath classPath) throws IOException {
+        load(classPath);
+    }
+
     public void load(ClassPath classPath) throws IOException {
         ClassFileReader reader = new ClassFileReader();
+        boolean firstLoad = classFiles.isEmpty();
 
         for (ClassFileResource resource : classPath) {
             LOG.debug("Reading: {}", resource.getName());
@@ -53,12 +75,14 @@ public class ClassLoader {
             classFiles.put(getClassName(file.getThisClass(), file.getConstantPool()), file);
         }
 
-        ObjectNatives.registerNatives();
-        MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_OBJECT));
+        if (firstLoad) {
+            ObjectNatives.registerNatives();
+            MagicClasses.registerClass(getClassObject(MagicClasses.JAVA_LANG_OBJECT));
+        }
     }
 
     public void afterInitialLoad() {
-        if (this == DEFAULT_CLASSLOADER) {
+        if (this == BOOTSTRAP_CLASSLOADER) {
             // Do this somewhere else!
 //            setSystemProperties();
 //            setSystemOut();
@@ -421,14 +445,6 @@ public class ClassLoader {
         return (String) constantPool[cpClass.getNameIndex()];
     }
 
-    private static final Comparator<MethodInfoAndSig> PRIVATE_LAST_COMPARATOR = (a, b) -> {
-        if (a.mi.hasModifier(Modifier.PRIVATE)) {
-            return b.mi.hasModifier(Modifier.PRIVATE) ? 0 : 1;
-        } else {
-            return !b.mi.hasModifier(Modifier.PRIVATE) ? 0 : -1;
-        }
-    };
-
     public AbstractClassObject translate(CpClass cpClass, Object[] constantPool) {
         String className = (String) constantPool[cpClass.getNameIndex()];
         return className.startsWith("[") ?
@@ -619,7 +635,7 @@ public class ClassLoader {
     }
 
     public static ClassLoader getDefaultClassLoader() {
-        return DEFAULT_CLASSLOADER;
+        return BOOTSTRAP_CLASSLOADER;
     }
 
 }
