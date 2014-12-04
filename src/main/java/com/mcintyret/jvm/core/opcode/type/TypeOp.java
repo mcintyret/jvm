@@ -1,11 +1,11 @@
 package com.mcintyret.jvm.core.opcode.type;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.WordStack;
+import com.mcintyret.jvm.core.exec.WordStack;
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.exec.OperationContext;
 
 abstract class TypeOp extends OpCode {
 

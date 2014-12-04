@@ -1,11 +1,11 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.domain.ArrayType;
-import com.mcintyret.jvm.core.domain.MethodSignature;
-import com.mcintyret.jvm.core.domain.Type;
+import com.mcintyret.jvm.core.type.ArrayType;
+import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.type.Type;
 import com.mcintyret.jvm.core.oop.OopClassClass;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.exec.OperationContext;
 
 /**
  * User: tommcintyre

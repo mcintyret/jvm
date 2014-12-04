@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.parse;
 
-import com.mcintyret.jvm.core.ByteIterator;
+import com.mcintyret.jvm.core.util.ByteIterator;
 import com.mcintyret.jvm.parse.attribute.Attribute;
 import com.mcintyret.jvm.parse.attribute.Attributes;
 import com.mcintyret.jvm.parse.attribute.Parser;

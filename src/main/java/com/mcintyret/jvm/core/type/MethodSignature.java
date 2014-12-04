@@ -1,4 +1,4 @@
-package com.mcintyret.jvm.core.domain;
+package com.mcintyret.jvm.core.type;
 
 import java.util.ArrayList;
 import java.util.Collections;

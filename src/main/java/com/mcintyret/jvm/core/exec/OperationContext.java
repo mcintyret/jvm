@@ -1,9 +1,7 @@
-package com.mcintyret.jvm.core.opcode;
+package com.mcintyret.jvm.core.exec;
 
-import com.mcintyret.jvm.core.ByteIterator;
+import com.mcintyret.jvm.core.util.ByteIterator;
 import com.mcintyret.jvm.core.thread.Thread;
-import com.mcintyret.jvm.core.ExecutionStack;
-import com.mcintyret.jvm.core.WordStack;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 

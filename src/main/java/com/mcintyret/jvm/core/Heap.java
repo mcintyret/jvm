@@ -1,17 +1,12 @@
 package com.mcintyret.jvm.core;
 
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
-
-import java.util.HashMap;
-import java.util.Map;
-
-import com.mcintyret.jvm.core.clazz.ArrayClassObject;
-import com.mcintyret.jvm.core.clazz.ClassObject;
-import com.mcintyret.jvm.core.domain.ArrayType;
-import com.mcintyret.jvm.core.domain.SimpleType;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.util.Utils;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Heap {
 
@@ -68,7 +63,6 @@ public class Heap {
         private final Map<String, Oop> lookupMap = new HashMap<>();
 
         public int intern(String string) {
-
 
             Oop stringOop = lookupMap.get(string);
             if (stringOop == null) {

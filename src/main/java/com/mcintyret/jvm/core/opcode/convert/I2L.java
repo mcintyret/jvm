@@ -1,8 +1,8 @@
 package com.mcintyret.jvm.core.opcode.convert;
 
-import com.mcintyret.jvm.core.WordStack;
+import com.mcintyret.jvm.core.exec.WordStack;
 import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.exec.OperationContext;
 
 class I2L extends OpCode {
 

@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.core.opcode.load;
 
-import com.mcintyret.jvm.core.ByteIterator;
+import com.mcintyret.jvm.core.util.ByteIterator;
 
 abstract class DoubleWidthLoad_0 extends DoubleWidthLoad {
     

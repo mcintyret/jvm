@@ -1,15 +1,15 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.Utils;
+import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
-import com.mcintyret.jvm.core.domain.MethodSignature;
-import com.mcintyret.jvm.core.domain.Type;
+import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.type.Type;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.load.ClassLoader;
 
 /**

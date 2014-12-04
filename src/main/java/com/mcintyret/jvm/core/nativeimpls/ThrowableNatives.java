@@ -3,17 +3,17 @@ package com.mcintyret.jvm.core.nativeimpls;
 import java.util.Deque;
 
 import com.google.common.collect.Iterables;
-import com.mcintyret.jvm.core.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.Utils;
+import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
-import com.mcintyret.jvm.core.domain.ArrayType;
-import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.type.ArrayType;
+import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.thread.Thread;
 import com.mcintyret.jvm.load.ClassLoader;
 

@@ -2,11 +2,12 @@ package com.mcintyret.jvm.core.opcode;
 
 import java.util.List;
 
+import com.mcintyret.jvm.core.exec.OperationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mcintyret.jvm.core.ByteIterator;
-import com.mcintyret.jvm.core.ExecutionStackElement;
+import com.mcintyret.jvm.core.util.ByteIterator;
+import com.mcintyret.jvm.core.exec.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.Method;

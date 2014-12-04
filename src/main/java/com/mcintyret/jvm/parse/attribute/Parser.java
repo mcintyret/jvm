@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import com.mcintyret.jvm.core.ByteIterator;
+import com.mcintyret.jvm.core.util.ByteIterator;
 
 public interface Parser<T> {
 

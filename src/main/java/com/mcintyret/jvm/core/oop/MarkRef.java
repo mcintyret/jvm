@@ -1,4 +1,4 @@
-package com.mcintyret.jvm.core;
+package com.mcintyret.jvm.core.oop;
 
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;

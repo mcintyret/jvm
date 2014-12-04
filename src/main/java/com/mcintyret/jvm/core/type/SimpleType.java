@@ -1,4 +1,4 @@
-package com.mcintyret.jvm.core.domain;
+package com.mcintyret.jvm.core.type;
 
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.ImportantClasses;
@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.mcintyret.jvm.core.Utils.getClassObject;
+import static com.mcintyret.jvm.core.util.Utils.getClassObject;
 
 public enum SimpleType implements Type {
     BOOLEAN("Z", 4),

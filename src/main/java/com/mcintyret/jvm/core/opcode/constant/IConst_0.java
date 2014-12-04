@@ -1,7 +1,7 @@
 package com.mcintyret.jvm.core.opcode.constant;
 
 import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.exec.OperationContext;
 
 class IConst_0 extends OpCode {
 

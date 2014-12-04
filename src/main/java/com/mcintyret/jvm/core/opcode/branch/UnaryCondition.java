@@ -1,7 +1,7 @@
 package com.mcintyret.jvm.core.opcode.branch;
 
 import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.exec.OperationContext;
 
 abstract class UnaryCondition extends OpCode {
 

@@ -2,7 +2,7 @@ package com.mcintyret.jvm.core.opcode.monitor;
 
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.exec.OperationContext;
 import java.util.concurrent.locks.Lock;
 
 abstract class Monitor extends OpCode {

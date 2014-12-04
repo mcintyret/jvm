@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.core.opcode.type;
 
-import com.mcintyret.jvm.core.WordStack;
+import com.mcintyret.jvm.core.exec.WordStack;
 
 class InstanceOf extends TypeOp {
 

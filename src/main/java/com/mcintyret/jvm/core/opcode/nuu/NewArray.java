@@ -1,10 +1,10 @@
 package com.mcintyret.jvm.core.opcode.nuu;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.Utils;
-import com.mcintyret.jvm.core.domain.SimpleType;
+import com.mcintyret.jvm.core.util.Utils;
+import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.exec.OperationContext;
 
 class NewArray extends OpCode {
 

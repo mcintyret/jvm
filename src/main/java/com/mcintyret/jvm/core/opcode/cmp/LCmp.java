@@ -1,9 +1,9 @@
 package com.mcintyret.jvm.core.opcode.cmp;
 
 import com.google.common.primitives.Longs;
-import com.mcintyret.jvm.core.WordStack;
+import com.mcintyret.jvm.core.exec.WordStack;
 import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.exec.OperationContext;
 
 class LCmp extends OpCode {
 

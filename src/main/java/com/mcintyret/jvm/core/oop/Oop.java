@@ -1,6 +1,5 @@
 package com.mcintyret.jvm.core.oop;
 
-import com.mcintyret.jvm.core.MarkRef;
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 
 public abstract class Oop {

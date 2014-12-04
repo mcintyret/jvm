@@ -9,7 +9,7 @@ import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.opcode.AThrow;
 import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.exec.OperationContext;
 
 abstract class Invoke extends OpCode {
 

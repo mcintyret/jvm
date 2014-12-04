@@ -1,17 +1,16 @@
-package com.mcintyret.jvm.core;
+package com.mcintyret.jvm.core.exec;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import com.mcintyret.jvm.core.thread.*;
-import com.mcintyret.jvm.core.thread.Thread;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.mcintyret.jvm.core.util.ByteBufferIterator;
+import com.mcintyret.jvm.core.util.ByteIterator;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OpCodes;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.thread.Thread;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ExecutionStackElement implements OperationContext {
 

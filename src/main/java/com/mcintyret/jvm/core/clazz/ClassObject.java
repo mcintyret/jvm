@@ -1,8 +1,8 @@
 package com.mcintyret.jvm.core.clazz;
 
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
-import com.mcintyret.jvm.core.domain.MethodSignature;
-import com.mcintyret.jvm.core.domain.NonArrayType;
+import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.type.NonArrayType;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;

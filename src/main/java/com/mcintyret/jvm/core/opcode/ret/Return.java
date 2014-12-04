@@ -1,7 +1,7 @@
 package com.mcintyret.jvm.core.opcode.ret;
 
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.exec.OperationContext;
 
 class Return extends BaseReturn {
 

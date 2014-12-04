@@ -1,9 +1,7 @@
 package com.mcintyret.jvm.core.oop;
 
-import com.mcintyret.jvm.core.MarkRef;
-import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
-import com.mcintyret.jvm.core.domain.Type;
+import com.mcintyret.jvm.core.type.Type;
 
 /**
  * User: tommcintyre

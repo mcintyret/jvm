@@ -2,7 +2,7 @@ package com.mcintyret.jvm.core.opcode.field;
 
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.oop.Oop;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.exec.OperationContext;
 
 abstract class Get extends FieldOp {
 

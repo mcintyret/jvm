@@ -1,7 +1,7 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import com.mcintyret.jvm.core.domain.MethodSignature;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.exec.OperationContext;
 
 public enum FloatNatives implements NativeImplementation {
     FLOAT_TO_RAW_INT_BITS("floatToRawIntBits", "(F)I") {

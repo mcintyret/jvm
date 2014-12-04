@@ -2,7 +2,7 @@ package com.mcintyret.jvm.core.clazz;
 
 import java.util.Set;
 
-import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
 import com.mcintyret.jvm.parse.Modifier;
 import com.mcintyret.jvm.parse.attribute.Attributes;

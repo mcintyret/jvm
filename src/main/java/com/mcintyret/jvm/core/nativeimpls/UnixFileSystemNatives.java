@@ -1,10 +1,10 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.Utils;
+import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.core.clazz.Field;
-import com.mcintyret.jvm.core.domain.MethodSignature;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.exec.OperationContext;
 
 import java.io.File;
 

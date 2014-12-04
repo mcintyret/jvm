@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.type.MethodSignature;
 
 /**
 * User: tommcintyre

@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.parse.attribute;
 
-import com.mcintyret.jvm.core.ByteIterator;
+import com.mcintyret.jvm.core.util.ByteIterator;
 import com.mcintyret.jvm.parse.attribute.annotation.Annotation;
 import com.mcintyret.jvm.parse.attribute.annotation.RuntimeInvisibleAnnotations;
 import com.mcintyret.jvm.parse.attribute.annotation.RuntimeVisibleAnnotations;

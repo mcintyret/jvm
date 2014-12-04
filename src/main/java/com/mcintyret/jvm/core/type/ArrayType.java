@@ -1,7 +1,6 @@
-package com.mcintyret.jvm.core.domain;
+package com.mcintyret.jvm.core.type;
 
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
-import com.mcintyret.jvm.core.clazz.ClassObject;
 
 import java.util.HashMap;
 import java.util.Map;

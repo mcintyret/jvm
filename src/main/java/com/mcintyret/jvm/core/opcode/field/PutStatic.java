@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.core.opcode.field;
 
-import com.mcintyret.jvm.core.WordStack;
+import com.mcintyret.jvm.core.exec.WordStack;
 import com.mcintyret.jvm.core.oop.Oop;
 
 class PutStatic extends Put {

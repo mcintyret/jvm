@@ -1,9 +1,9 @@
 package com.mcintyret.jvm.core.thread;
 
-import com.mcintyret.jvm.core.ExecutionStack;
-import com.mcintyret.jvm.core.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.ExecutionStack;
+import com.mcintyret.jvm.core.exec.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.Utils;
+import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;

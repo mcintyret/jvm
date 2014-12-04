@@ -3,7 +3,7 @@ package com.mcintyret.jvm.parse.attribute;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mcintyret.jvm.core.ByteIterator;
+import com.mcintyret.jvm.core.util.ByteIterator;
 
 public class AttributeParser implements Parser<Attribute> {
 

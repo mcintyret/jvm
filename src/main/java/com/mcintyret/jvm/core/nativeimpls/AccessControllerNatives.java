@@ -1,11 +1,11 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.Utils;
+import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.core.clazz.Method;
-import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.exec.OperationContext;
 
 public enum AccessControllerNatives implements NativeImplementation {
     DO_PRIVILEGED("doPrivileged", "(Ljava/security/PrivilegedAction;)Ljava/lang/Object;") {

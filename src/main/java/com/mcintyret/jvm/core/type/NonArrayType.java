@@ -1,4 +1,4 @@
-package com.mcintyret.jvm.core.domain;
+package com.mcintyret.jvm.core.type;
 
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.load.ClassLoader;

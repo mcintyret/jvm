@@ -1,4 +1,4 @@
-package com.mcintyret.jvm.core;
+package com.mcintyret.jvm.core.exec;
 
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.thread.Thread;

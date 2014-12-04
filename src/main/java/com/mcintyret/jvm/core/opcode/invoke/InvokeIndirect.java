@@ -1,11 +1,11 @@
 package com.mcintyret.jvm.core.opcode.invoke;
 
-import com.mcintyret.jvm.core.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.NativeMethod;
 import com.mcintyret.jvm.core.oop.Oop;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.parse.Modifier;
 
 abstract class InvokeIndirect extends Invoke {

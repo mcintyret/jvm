@@ -1,4 +1,4 @@
-package com.mcintyret.jvm.core;
+package com.mcintyret.jvm.core.util;
 
 import java.nio.ByteBuffer;
 

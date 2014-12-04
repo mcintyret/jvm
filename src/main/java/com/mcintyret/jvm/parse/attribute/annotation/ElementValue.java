@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.parse.attribute.annotation;
 
-import com.mcintyret.jvm.core.ByteIterator;
+import com.mcintyret.jvm.core.util.ByteIterator;
 import com.mcintyret.jvm.parse.attribute.Parser;
 
 public abstract class ElementValue {

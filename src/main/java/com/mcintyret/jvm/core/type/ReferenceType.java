@@ -1,8 +1,8 @@
-package com.mcintyret.jvm.core.domain;
+package com.mcintyret.jvm.core.type;
 
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.ImportantClasses;
-import com.mcintyret.jvm.core.Utils;
+import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.oop.OopClassClass;
 

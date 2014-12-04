@@ -1,5 +1,7 @@
 package com.mcintyret.jvm.core.opcode;
 
+import com.mcintyret.jvm.core.exec.OperationContext;
+
 class Nop extends OpCode {
 
     @Override

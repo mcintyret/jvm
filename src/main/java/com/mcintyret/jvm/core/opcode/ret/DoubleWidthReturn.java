@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.core.opcode.ret;
 
-import com.mcintyret.jvm.core.WordStack;
+import com.mcintyret.jvm.core.exec.WordStack;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 
 abstract class DoubleWidthReturn extends BaseValueReturn {

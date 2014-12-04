@@ -1,6 +1,7 @@
 package com.mcintyret.jvm.core.opcode;
 
-import com.mcintyret.jvm.core.WordStack;
+import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.WordStack;
 
 public abstract class BinaryFloatOp extends OpCode {
 

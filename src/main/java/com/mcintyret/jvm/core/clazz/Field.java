@@ -1,8 +1,8 @@
 package com.mcintyret.jvm.core.clazz;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.Utils;
-import com.mcintyret.jvm.core.domain.Type;
+import com.mcintyret.jvm.core.util.Utils;
+import com.mcintyret.jvm.core.type.Type;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.parse.Modifier;
 import com.mcintyret.jvm.parse.attribute.Attributes;

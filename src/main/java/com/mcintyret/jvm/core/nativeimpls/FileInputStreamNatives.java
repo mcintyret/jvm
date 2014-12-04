@@ -1,7 +1,7 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import com.mcintyret.jvm.core.domain.MethodSignature;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.exec.OperationContext;
 
 public enum FileInputStreamNatives implements NativeImplementation {
     INIT_IDS("initIDs", "()V") {

@@ -1,7 +1,7 @@
 package com.mcintyret.jvm.load;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.Utils;
+import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
@@ -10,18 +10,18 @@ import com.mcintyret.jvm.core.clazz.InterfaceMethod;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.NativeMethod;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
-import com.mcintyret.jvm.core.domain.ArrayType;
-import com.mcintyret.jvm.core.domain.MethodSignature;
-import com.mcintyret.jvm.core.domain.NonArrayType;
-import com.mcintyret.jvm.core.domain.Type;
-import com.mcintyret.jvm.core.domain.Types;
+import com.mcintyret.jvm.core.type.ArrayType;
+import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.type.NonArrayType;
+import com.mcintyret.jvm.core.type.Type;
+import com.mcintyret.jvm.core.type.Types;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
 import com.mcintyret.jvm.core.nativeimpls.SystemNatives;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.opcode.OperationContext;
+import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.thread.Thread;
 import com.mcintyret.jvm.core.thread.Threads;
 import com.mcintyret.jvm.parse.ClassFile;
@@ -52,7 +52,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
-import static com.mcintyret.jvm.core.Assert.assertNotNull;
+import static com.mcintyret.jvm.core.util.Assert.assertNotNull;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 

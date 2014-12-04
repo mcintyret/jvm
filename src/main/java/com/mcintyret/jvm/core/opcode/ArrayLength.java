@@ -1,8 +1,9 @@
 package com.mcintyret.jvm.core.opcode;
 
 import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.oop.OopArray;
-import com.mcintyret.jvm.core.WordStack;
+import com.mcintyret.jvm.core.exec.WordStack;
 
 class ArrayLength extends OpCode {
 
