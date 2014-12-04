@@ -1,8 +1,6 @@
 package com.mcintyret.jvm.core.domain;
 
-import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
-import com.mcintyret.jvm.load.*;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
 
@@ -53,7 +51,7 @@ public final class NonArrayType extends ReferenceType {
     }
 
     @Override
-    public ClassObject getClassObject() {
+    public ClassObject getClassObject() { // TODO: cache this?
         return ClassLoader.getDefaultClassLoader().getClassObject(className);
     }
 

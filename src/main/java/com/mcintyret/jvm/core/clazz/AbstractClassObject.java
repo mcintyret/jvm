@@ -1,11 +1,13 @@
 package com.mcintyret.jvm.core.clazz;
 
-import java.util.Set;
-
 import com.mcintyret.jvm.core.domain.ReferenceType;
 import com.mcintyret.jvm.parse.Modifier;
 
+import java.util.Set;
+
 public abstract class AbstractClassObject {
+
+//    private static final ClassObject OBJECT_CLASS = getDefaultClassLoader().getClassObject("java/lang/Object");
 
     public abstract ReferenceType getType();
 
@@ -26,32 +28,53 @@ public abstract class AbstractClassObject {
     }
 
     // TODO: can this be made more efficient?
-    public boolean isInstanceOf(AbstractClassObject type) {
-        if (type == this) {
+    public boolean isInstanceOf(AbstractClassObject that) {
+        if (that == this) {
             return true;
         }
-        boolean argIsInterface = type.hasModifier(Modifier.INTERFACE);
 
-        if (hasModifier(Modifier.INTERFACE) && !argIsInterface) {
+//        if (that == OBJECT_CLASS) {
+//            return true; // everything extends object
+//        }
+
+        boolean thatIsInterface = that.hasModifier(Modifier.INTERFACE);
+
+        boolean thatIsArray = that.getType().isArray();
+
+        if (this.getType().isArray() || thatIsArray) {
+            if (this.getType().isArray() && thatIsArray) {
+                return getComponentTypeClassObject(this).isInstanceOf(getComponentTypeClassObject(that));
+            } else if (thatIsArray) {
+                return false;
+            }
+        }
+
+
+        if (hasModifier(Modifier.INTERFACE) && !thatIsInterface) {
             return false;
         }
 
-        if (argIsInterface) {
+        if (thatIsInterface) {
             for (ClassObject iface : interfaces) {
-                if (iface.isInstanceOf(type)) {
+                if (iface.isInstanceOf(that)) {
                     return true;
                 }
             }
         } else {
             ClassObject co = superClass;
             while (co != null) {
-                if (co.isInstanceOf(type)) {
+                if (co.isInstanceOf(that)) {
                     return true;
                 }
                 co = co.superClass;
             }
         }
         return false;
+    }
+
+    // TODO: this is too difficult!
+    private static AbstractClassObject getComponentTypeClassObject(AbstractClassObject aco) {
+        return ((ReferenceType) ((ArrayClassObject) aco).getType().getComponentType()).getClassObject();
     }
 
     public boolean hasModifier(Modifier modifier) {
