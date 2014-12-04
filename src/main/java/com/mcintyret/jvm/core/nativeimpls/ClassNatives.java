@@ -1,10 +1,22 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.MagicClasses;
 import com.mcintyret.jvm.core.Utils;
-import com.mcintyret.jvm.core.clazz.*;
-import com.mcintyret.jvm.core.domain.*;
+import com.mcintyret.jvm.core.clazz.AbstractClassObject;
+import com.mcintyret.jvm.core.clazz.ArrayClassObject;
+import com.mcintyret.jvm.core.clazz.ClassObject;
+import com.mcintyret.jvm.core.clazz.Field;
+import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.domain.ArrayType;
+import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.domain.NonArrayType;
+import com.mcintyret.jvm.core.domain.ReferenceType;
+import com.mcintyret.jvm.core.domain.SimpleType;
+import com.mcintyret.jvm.core.domain.Type;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.oop.OopClassClass;
@@ -12,9 +24,6 @@ import com.mcintyret.jvm.core.oop.OopClassMethod;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User: tommcintyre
@@ -130,6 +139,31 @@ public enum ClassNatives implements NativeImplementation {
             Type thisType = ((OopClassClass) Heap.getOop(args[0])).getThisType();
 
             return NativeReturn.forBool(thisType.isInterface());
+        }
+    },
+    IS_ASSIGNABLE_FROM("isAssignableFrom", "(Ljava/lang/Class;)Z") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            OopClassClass thisClass = (OopClassClass) Heap.getOop(args[0]);
+            OopClassClass thatClass = (OopClassClass) Heap.getOop(args[1]);
+
+            if (thisClass == thatClass) {
+                return NativeReturn.forBool(true); // This takes care of all primitive classes
+            }
+
+            Type thisType = thisClass.getThisType();
+            Type thatType = thatClass.getThisType();
+
+            if (thisType.isPrimitive() || thatType.isPrimitive()) {
+                return NativeReturn.forBool(false);
+            }
+
+            boolean instanceOf = getTypeClassObject(thisType).isInstanceOf(getTypeClassObject(thatType));
+            return NativeReturn.forBool(instanceOf);
+        }
+
+        private AbstractClassObject getTypeClassObject(Type type) {
+            return ((ReferenceType) type).getClassObject();
         }
     },
     GET_DECLARED_CONSTRUCTORS_0("getDeclaredConstructors0", "(Z)[Ljava/lang/reflect/Constructor;") {
