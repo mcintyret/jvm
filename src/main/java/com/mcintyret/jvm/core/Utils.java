@@ -130,6 +130,7 @@ public class Utils {
         return obj;
     }
 
+    // TODO: proper stack-traces for Throwables thrown from native code!
     public static OopClass toThrowableOop(Throwable t, Thread thread) {
         ClassObject co = getDefaultClassLoader().getClassObject(toJvmClassName(t.getClass()));
 

@@ -30,7 +30,7 @@ public class Thread {
 
     private java.lang.Thread thread;
 
-    private boolean interrupted;
+    private volatile boolean interrupted;
 
     public Thread(OopClass thisThread) {
         this.thisThread = thisThread;
@@ -52,8 +52,22 @@ public class Thread {
     }
 
     public void interrupt() {
-        thread.interrupt();
-        interrupted = true;
+        if (thread.isAlive()) {
+            interrupted = true;
+            thread.interrupt();
+        }
+    }
+
+    public void sleep(long millis) throws InterruptedException {
+        if (thread != java.lang.Thread.currentThread()) {
+            throw new AssertionError("Cannot call Thread.sleep from a different thread!");
+        }
+        try {
+            java.lang.Thread.sleep(millis);
+        } catch (InterruptedException e) {
+            interrupted = false;
+            throw e;
+        }
     }
 
     public boolean isInterrupted(boolean clear) {

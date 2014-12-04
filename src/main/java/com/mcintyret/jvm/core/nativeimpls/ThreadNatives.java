@@ -1,6 +1,7 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.domain.MethodSignature;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.opcode.OperationContext;
@@ -62,6 +63,17 @@ public enum ThreadNatives implements NativeImplementation {
         public NativeReturn execute(int[] args, OperationContext ctx) {
             Thread thread = Threads.get(Heap.getOopClass(args[0]));
             return NativeReturn.forBool(thread.isInterrupted(args[0] > 0));
+        }
+    },SLEEP("sleep", "(J)V") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            Thread thread = ctx.getThread();
+            try {
+                thread.sleep(Utils.toLong(args[0], args[1]));
+                return NativeReturn.forVoid();
+            } catch (InterruptedException e) {
+                return NativeReturn.forThrowable(Utils.toThrowableOop(e, thread));
+            }
         }
     };
 
