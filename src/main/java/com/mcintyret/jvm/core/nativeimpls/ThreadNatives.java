@@ -56,6 +56,13 @@ public enum ThreadNatives implements NativeImplementation {
             boolean isAlive = Threads.get(Heap.getOopClass(args[0])).getThread().isAlive();
             return NativeReturn.forBool(isAlive);
         }
+    },
+    IS_INTERRUPTED("isInterrupted", "(Z)Z") {
+        @Override
+        public NativeReturn execute(int[] args, OperationContext ctx) {
+            Thread thread = Threads.get(Heap.getOopClass(args[0]));
+            return NativeReturn.forBool(thread.isInterrupted(args[0] > 0));
+        }
     };
 
     private final MethodSignature methodSignature;

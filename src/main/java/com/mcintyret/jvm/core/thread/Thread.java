@@ -1,7 +1,5 @@
 package com.mcintyret.jvm.core.thread;
 
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
-
 import com.mcintyret.jvm.core.ExecutionStack;
 import com.mcintyret.jvm.core.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
@@ -11,6 +9,8 @@ import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopClass;
+
+import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 
 /**
  * User: tommcintyre
@@ -29,6 +29,8 @@ public class Thread {
     private final OopClass thisThread;
 
     private java.lang.Thread thread;
+
+    private boolean interrupted;
 
     public Thread(OopClass thisThread) {
         this.thisThread = thisThread;
@@ -51,6 +53,15 @@ public class Thread {
 
     public void interrupt() {
         thread.interrupt();
+        interrupted = true;
+    }
+
+    public boolean isInterrupted(boolean clear) {
+        boolean ret = interrupted;
+        if (clear) {
+            interrupted = false;
+        }
+        return ret;
     }
 
     public java.lang.Thread getThread() {
