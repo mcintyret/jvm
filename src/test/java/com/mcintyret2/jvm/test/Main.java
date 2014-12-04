@@ -43,9 +43,9 @@ public class Main {
 
     private static void simpleThreadingTest() {
         AtomicInteger ai = new AtomicInteger();
-        int num = 4;
+        int num = 40;
         final Random random = new Random();
-        final CountDownLatch latch = new CountDownLatch(4);
+        final CountDownLatch latch = new CountDownLatch(num);
         for (int i = 0; i < num; i++) {
             new Thread(new Runnable() {
                 @Override
