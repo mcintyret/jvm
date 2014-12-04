@@ -13,7 +13,7 @@ public class Main {
 //        interfaceMethods();
 //        simpleIntArrays();
 //        stringsAndNatives();
-        simpleThreadingTest();
+        simpleThreadingTest2();
     }
 
     private static void interfaceMethods() {
@@ -68,6 +68,37 @@ public class Main {
         }
 
         System.out.println("Should be " + num + ": " + ai);
+    }
+
+    private static void simpleThreadingTest2() {
+        final int[] a = new int[1];
+        int num = 40;
+        final Random random = new Random();
+        final CountDownLatch latch = new CountDownLatch(num);
+        for (int i = 0; i < num; i++) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(100 + random.nextInt(50));
+                    } catch (InterruptedException e) {
+                        throw new AssertionError(e);
+                    }
+                    synchronized (a) {
+                        a[0]++;
+                    }
+                    latch.countDown();
+                }
+            }).start();
+        }
+
+        try {
+            latch.await();
+        } catch (InterruptedException e) {
+            throw new AssertionError(e);
+        }
+
+        System.out.println("Should be " + num + ": " + a[0]);
     }
 
     private static void isAssignableFrom() {
