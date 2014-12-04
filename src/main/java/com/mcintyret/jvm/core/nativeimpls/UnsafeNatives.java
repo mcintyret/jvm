@@ -1,9 +1,5 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import java.lang.reflect.Field;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.Utils;
 import com.mcintyret.jvm.core.clazz.ClassObject;
@@ -15,8 +11,11 @@ import com.mcintyret.jvm.core.oop.OopClassClass;
 import com.mcintyret.jvm.core.opcode.OperationContext;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
-
 import sun.misc.Unsafe;
+
+import java.lang.reflect.Field;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 public enum UnsafeNatives implements NativeImplementation {
     REGISTER_NATIVES("registerNatives", "()V") {
@@ -86,14 +85,15 @@ public enum UnsafeNatives implements NativeImplementation {
     COMPARE_AND_SWAP_LONG("compareAndSwapLong", "(Ljava/lang/Object;JJJ)Z") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
-            // TODO: this currently doesn't work because the long words are the wrong way around!
-            // TODO: fixes:
-            // - take into account endianness
-            // - make a 64-bit JVM
             Oop oop = Heap.getOop(args[1]);
             long offset = Utils.toLong(args[2], args[3]);
-            long expect = Utils.toLong(args[4], args[5]);
-            long update = Utils.toLong(args[6], args[7]);
+
+            /*
+             Note that these arguments to toLong() look like they are inverted. This is because UNSAFE expects the
+             two 32-bit sections of a long to be in this order.
+              */
+            long expect = Utils.toLong(args[5], args[4]);
+            long update = Utils.toLong(args[7], args[6]);
 
             boolean ret = THE_UNSAFE.compareAndSwapLong(oop.getFields(), byteOffset(offset), expect, update);
             return NativeReturn.forBool(ret);
