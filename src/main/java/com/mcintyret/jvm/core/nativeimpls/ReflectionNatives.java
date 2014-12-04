@@ -18,7 +18,8 @@ public enum ReflectionNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
             // Literally no documentation in the world about what this no-arg form is.
-            return NativeReturn.forReference(NonArrayType.forClass("java/lang/Object").getClassOop());
+            // TODO: although I could make an educated guess...
+            return NativeReturn.forReference(NonArrayType.forClass("java/lang/Object").getOopClassClass());
         }
     },
     GET_CLASS_ACCESS_FLAGS("getClassAccessFlags", "(Ljava/lang/Class;)I") {

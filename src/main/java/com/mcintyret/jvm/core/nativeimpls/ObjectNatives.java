@@ -1,11 +1,5 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-
-import org.reflections.Reflections;
-
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.MagicClasses;
 import com.mcintyret.jvm.core.Utils;
@@ -14,6 +8,11 @@ import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.opcode.OperationContext;
+import org.reflections.Reflections;
+
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
 
 /**
  * User: tommcintyre
@@ -92,7 +91,7 @@ public enum ObjectNatives implements NativeImplementation {
     GET_CLASS("getClass", "()Ljava/lang/Class;") {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
-            return NativeReturn.forReference(Heap.getOop(args[0]).getClassObject().getType().getClassOop());
+            return NativeReturn.forReference(Heap.getOop(args[0]).getClassObject().getOop());
         }
     };
 

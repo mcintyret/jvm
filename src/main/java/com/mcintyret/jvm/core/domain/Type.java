@@ -1,19 +1,16 @@
 package com.mcintyret.jvm.core.domain;
 
-import com.mcintyret.jvm.core.clazz.ClassObject;
-import com.mcintyret.jvm.core.oop.OopClass;
-
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
+import com.mcintyret.jvm.core.oop.OopClassClass;
 
 public interface Type {
 
-    static final ClassObject CLASS_CLASS = getDefaultClassLoader().getClassObject("java/lang/Class");
+    static final String CLASS_CLASS = "java/lang/Class";
 
     SimpleType getSimpleType();
 
     boolean isPrimitive();
 
-    OopClass getClassOop();
+    OopClassClass getOopClassClass();
 
     boolean isArray();
 

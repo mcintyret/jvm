@@ -157,6 +157,10 @@ public class Utils {
         return className.replaceAll("\\.", "/");
     }
 
+    public static ClassObject getClassObject(String className) {
+        return getDefaultClassLoader().getClassObject(className);
+    }
+
 
 }
 

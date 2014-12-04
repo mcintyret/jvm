@@ -4,7 +4,6 @@ import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
-import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.cp.CpClass;
 import com.mcintyret.jvm.parse.cp.CpFieldReference;
@@ -70,7 +69,7 @@ public class ConstantPool {
                 co = (AbstractClassObject) constantPool[i];
             }
             if (co != null) {
-                return co.getType().getClassOop().getAddress();
+                return co.getOop().getAddress();
             }
 
         }

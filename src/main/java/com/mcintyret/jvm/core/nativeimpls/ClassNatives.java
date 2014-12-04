@@ -47,7 +47,7 @@ public enum ClassNatives implements NativeImplementation {
         public NativeReturn execute(int[] args, OperationContext ctx) {
             Type thisType = ((OopClassClass) Heap.getOop(args[0])).getThisType();
             if (thisType instanceof ArrayType) {
-                return NativeReturn.forReference(((ArrayType) thisType).getComponentType().getClassOop());
+                return NativeReturn.forReference(((ArrayType) thisType).getComponentType().getOopClassClass());
             } else {
                 return NativeReturn.forNull();
             }
@@ -65,7 +65,7 @@ public enum ClassNatives implements NativeImplementation {
             OopClass stringObj = Heap.getOopClass(args[0]);
             String arg = Utils.toString(stringObj);
             SimpleType st = SimpleType.valueOf(arg.toUpperCase());
-            return NativeReturn.forReference(st.getClassOop());
+            return NativeReturn.forReference(st.getOopClassClass());
         }
     },
     GET_DECLARED_FIELDS_0("getDeclaredFields0", "(Z)[Ljava/lang/reflect/Field;") {
@@ -100,9 +100,9 @@ public enum ClassNatives implements NativeImplementation {
                 array.getFields()[i] = Heap.allocate(fieldObj);
 
                 ctorArgs[0] = fieldObj.getAddress();
-                ctorArgs[1] = thisType.getClassOop().getAddress();
+                ctorArgs[1] = thisType.getOopClassClass().getAddress();
                 ctorArgs[2] = Heap.intern(field.getName());
-                ctorArgs[3] = field.getType().getClassOop().getAddress();
+                ctorArgs[3] = field.getType().getOopClassClass().getAddress();
                 ctorArgs[4] = Modifier.translate(field.getModifiers());
                 ctorArgs[5] = i; // slot, this is my best guess as to what this means...
                 ctorArgs[6] = Heap.NULL_POINTER;
@@ -137,7 +137,7 @@ public enum ClassNatives implements NativeImplementation {
             className = className.replaceAll("\\.", "/");
 
             try {
-                return NativeReturn.forReference(ClassLoader.getDefaultClassLoader().getClassObject(className).getType().getClassOop());
+                return NativeReturn.forReference(ClassLoader.getDefaultClassLoader().getClassObject(className).getOop());
             } catch (AssertionError e) {
                 // TODO: proper error, or some other system!
                 return NativeReturn.forThrowable(ClassLoader.getDefaultClassLoader().getClassObject("java/lang/ClassNotFoundException").newObject());
@@ -225,7 +225,7 @@ public enum ClassNatives implements NativeImplementation {
                     OopArray paramTypes = classArray.newArray(ctor.getSignature().getArgTypes().size());
                     int j = 0;
                     for (Type type : ctor.getSignature().getArgTypes()) {
-                        paramTypes.getFields()[j++] = type.getClassOop().getAddress();
+                        paramTypes.getFields()[j++] = type.getOopClassClass().getAddress();
                     }
 
                     ctorArgs[2] = Heap.allocate(paramTypes);
@@ -250,7 +250,7 @@ public enum ClassNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(int[] args, OperationContext ctx) {
             // TODO: cache?
-            return NativeReturn.forInt(Modifier.translate(((OopClassClass) Heap.getOop(args[0])).getThisType().getClassOop().getClassObject().getModifiers()));
+            return NativeReturn.forInt(Modifier.translate(((OopClassClass) Heap.getOop(args[0])).getThisType().getOopClassClass().getClassObject().getModifiers()));
         }
     },
     GET_SUPERCLASS("getSuperclass", "()Ljava/lang/Class;") {
@@ -268,7 +268,7 @@ public enum ClassNatives implements NativeImplementation {
                     if (superclass == null) {
                         return NativeReturn.forNull(); // if thisType is java.lang.Object
                     } else {
-                        return NativeReturn.forReference(superclass.getType().getClassOop());
+                        return NativeReturn.forReference(superclass.getOop());
                     }
                 }
             }

@@ -7,6 +7,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.mcintyret.jvm.core.Utils.getClassObject;
+
 public enum SimpleType implements Type {
     BOOLEAN("Z", 4),
     BYTE("B", 8),
@@ -97,9 +99,10 @@ public enum SimpleType implements Type {
     }
 
     @Override
-    public OopClassClass getClassOop() {
-        return classOop == null ? (classOop = Heap.allocateAndGet(CLASS_CLASS.newObject((clazz, fields) ->
-            new OopClassClass(clazz, fields, SimpleType.this)))) : classOop;
+    public OopClassClass getOopClassClass() {
+        return classOop == null ? (classOop = Heap.allocateAndGet(
+            getClassObject(CLASS_CLASS).newObject((clazz, fields) ->
+                new OopClassClass(clazz, fields, SimpleType.this)))) : classOop;
     }
 
     @Override
