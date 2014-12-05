@@ -20,7 +20,7 @@ public enum AttributeType {
                 bi.nextShort(),
                 bi.nextBytes(bi.nextInt()),
                 CodeException.PARSER.parseMulti(bi),
-                attributeParser.parseMulti(bi)
+                new Attributes(attributeParser.parseMulti(bi))
             );
         }
     },

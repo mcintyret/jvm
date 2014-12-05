@@ -12,9 +12,9 @@ public class Code extends Attribute {
 
     private final List<CodeException> codeExceptions;
 
-    private final List<Attribute> attributes;
+    private final Attributes attributes;
 
-    Code(int maxStack, int maxLocals, byte[] code, List<CodeException> codeExceptions, List<Attribute> attributes) {
+    Code(int maxStack, int maxLocals, byte[] code, List<CodeException> codeExceptions, Attributes attributes) {
         super(AttributeType.CODE);
         this.maxStack = maxStack;
         this.maxLocals = maxLocals;
