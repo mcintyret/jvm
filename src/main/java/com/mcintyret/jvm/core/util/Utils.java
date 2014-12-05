@@ -28,8 +28,20 @@ public class Utils {
         return new OopArray(aco, new int[size * type.getWidth()]);
     }
 
+    public static long toLong(double d) {
+        return Double.doubleToLongBits(d);
+    }
+
     public static long toLong(int l, int r) {
         return (long) l << 32 | r & 0xFFFFFFFFL;
+    }
+
+    public static int toInt(boolean b) {
+        return b ? 1 : 0;
+    }
+
+    public static int toInt(float f) {
+        return Float.floatToIntBits(f);
     }
 
     public static String toString(OopClass stringOop) {

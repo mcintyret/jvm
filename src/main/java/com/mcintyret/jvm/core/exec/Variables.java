@@ -79,7 +79,7 @@ public class Variables {
     private SimpleType checkType(int i, SimpleType type) {
         SimpleType currentType = types[i];
         if (currentType != null && currentType != type) {
-            throw new IllegalStateException(); // this may be completely invalid!
+//            throw new IllegalStateException("Expected value of type " + type + " but was of type " + types[i]); // this may be completely invalid!
         }
         return type;
     }

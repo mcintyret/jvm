@@ -4,6 +4,11 @@ import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.clazz.ValueReceiver;
+import com.mcintyret.jvm.core.exec.Variable;
+import com.mcintyret.jvm.core.exec.WideVariable;
+import com.mcintyret.jvm.core.type.SimpleType;
+import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.cp.CpClass;
 import com.mcintyret.jvm.parse.cp.CpFieldReference;
@@ -56,29 +61,52 @@ public class ConstantPool {
         return ref;
     }
 
-    public int getSingleWidth(int i) {
-        if (constantPool[i] instanceof CpString) {
-            int index = ((CpString) constantPool[i]).getStringIndex();
-            String string = (String) constantPool[index];
-            constantPool[i] = Heap.intern(string);
+    public void getConstant(int i, ValueReceiver receiver) {
+        Object constant = constantPool[i];
+        if (constant instanceof Variable) {
+            Variable v = (Variable) constant;
+            receiver.receiveSingleWidth(v.getValue(), v.getType());
+        } else if (constant instanceof WideVariable) {
+            WideVariable v = (WideVariable) constant;
+            receiver.receiveDoubleWidth(v.getValue(), v.getType());
+        } else if (constant instanceof AbstractClassObject) {
+            receiver.receiveSingleWidth(((AbstractClassObject) constant).getOop().getAddress(), SimpleType.REF);
         } else {
-            AbstractClassObject co = null;
-            // Asking for a class literal - this takes a bit of fiddling
-            if (constantPool[i] instanceof CpClass) {
-                co = translateClassObject(i);
-            } else if (constantPool[i] instanceof AbstractClassObject) {
-                co = (AbstractClassObject) constantPool[i];
+            switch (constant.getClass().getSimpleName().toLowerCase()) {
+                case "boolean":
+                    constantPool[i] = new Variable(SimpleType.BOOLEAN, Utils.toInt((Boolean) constant));
+                    break;
+                case "byte":
+                    constantPool[i] = new Variable(SimpleType.BYTE, (Byte) constant);
+                    break;
+                case "short":
+                    constantPool[i] = new Variable(SimpleType.SHORT, (Short) constant);
+                    break;
+                case "character":
+                    constantPool[i] = new Variable(SimpleType.CHAR, (Character) constant);
+                    break;
+                case "integer":
+                    constantPool[i] = new Variable(SimpleType.INT, (Integer) constant);
+                    break;
+                case "long":
+                    constantPool[i] = new WideVariable(SimpleType.LONG, (Long) constant);
+                    break;
+                case "float":
+                    constantPool[i] = new Variable(SimpleType.FLOAT, Utils.toInt((Float) constant));
+                    break;
+                case "double":
+                    constantPool[i] = new WideVariable(SimpleType.DOUBLE, Utils.toLong((Double) constant));
+                    break;
+                default:
+                    if (constant instanceof CpString) {
+                        int index = ((CpString) constant).getStringIndex();
+                        String string = (String) constantPool[index];
+                        constantPool[i] = new Variable(SimpleType.REF, Heap.intern(string));
+                    } else {
+                        throw new AssertionError("Can i get here??"); // TODO: less silly!
+                    }
             }
-            if (co != null) {
-                return co.getOop().getAddress();
-            }
-
+            getConstant(i, receiver);
         }
-        return (int) constantPool[i];
     }
-
-    public long getDoubleWidth(int i) {
-        return (long) constantPool[i];
-    }
-
 }

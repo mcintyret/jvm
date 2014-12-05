@@ -134,7 +134,7 @@ public enum ClassNatives implements NativeImplementation {
     FOR_NAME_0("forName0", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            String className = Utils.toString(args.getOop(0));
+            String className = Utils.toString(args.<OopClass>getOop(0));
             className = className.replaceAll("\\.", "/");
 
             try {

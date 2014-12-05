@@ -7,9 +7,7 @@ class Ldc extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        int i = ctx.getConstantPool().getSingleWidth(ctx.getByteIterator().nextByteUnsigned());
-
-        ctx.getStack().push(i);
+        ctx.getConstantPool().getConstant(ctx.getByteIterator().nextByteUnsigned(), ctx.getStack());
     }
 
     @Override
