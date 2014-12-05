@@ -9,11 +9,11 @@ public interface OperationContext {
 
     ByteIterator getByteIterator();
 
-    int[] getLocalVars();
+    Variable[] getLocalVars();
 
     ConstantPool getConstantPool();
 
-    WordStack getStack();
+    VariableStack getStack();
 
     ExecutionStack getExecutionStack();
 

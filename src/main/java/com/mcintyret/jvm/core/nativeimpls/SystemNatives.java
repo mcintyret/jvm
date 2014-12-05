@@ -1,15 +1,15 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
-import com.mcintyret.jvm.core.type.MethodSignature;
-import com.mcintyret.jvm.core.type.Type;
+import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.type.Type;
+import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
 
 /**
@@ -19,7 +19,7 @@ import com.mcintyret.jvm.load.ClassLoader;
 public enum SystemNatives implements NativeImplementation {
     ARRAY_COPY("arraycopy", "(Ljava/lang/Object;ILjava/lang/Object;II)V") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             OopArray src = Heap.getOopArray(args[0]);
             OopArray dest = Heap.getOopArray(args[2]);
 
@@ -45,13 +45,13 @@ public enum SystemNatives implements NativeImplementation {
     },
     CURRENT_TIME_MILLIS("currentTimeMillis", "()J") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             return NativeReturn.forLong(System.currentTimeMillis());
         }
     },
     REGISTER_NATIVES("registerNatives", "()V") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
 
             // Already done
             return NativeReturn.forVoid();
@@ -59,20 +59,20 @@ public enum SystemNatives implements NativeImplementation {
     },
     NANO_TIME("nanoTime", "()J") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             return NativeReturn.forLong(System.nanoTime());
         }
     },
     IDENTITY_HASH_CODE("identityHashCode", "(Ljava/lang/Object;)I") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             // TODO: this is NOT how this works!
             return ObjectNatives.HASHCODE.execute(args, ctx);
         }
     },
     SET_OUT_0("setOut0", "(Ljava/io/PrintStream;)V") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             ClassObject system = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/System");
             Field out = system.findField("out", true);
             out.set(null, args[0]);
@@ -81,7 +81,7 @@ public enum SystemNatives implements NativeImplementation {
     },
     SET_ERR_0("setErr0", "(Ljava/io/PrintStream;)V") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             ClassObject system = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/System");
             Field err = system.findField("err", true);
             err.set(null, args[0]);
@@ -90,7 +90,7 @@ public enum SystemNatives implements NativeImplementation {
     },
     SET_IN_0("setIn0", "(Ljava/io/InputStream;)V") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             ClassObject system = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/System");
             system.findField("in", true).set(null, args[0]);
             return NativeReturn.forVoid();
@@ -98,12 +98,12 @@ public enum SystemNatives implements NativeImplementation {
     },
     INIT_PROPERTIES("initProperties", "(Ljava/util/Properties;)Ljava/util/Properties;") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             OopClass props = Heap.getOopClass(args[0]);
             Method setProperty = props.getClassObject().findMethod("setProperty", false);
 
             for (String key : System.getProperties().stringPropertyNames()) {
-                int[] spArgs = setProperty.newArgArray();
+                int[] spArgs = setProperty.newEmptyArgArray();
                 spArgs[0] = props.getAddress();
                 spArgs[1] = Heap.intern(key);
                 spArgs[2] = Heap.intern(System.getProperty(key));
@@ -115,7 +115,7 @@ public enum SystemNatives implements NativeImplementation {
     },
     MAP_LIBRARY_NAME("mapLibraryName", "(Ljava/lang/String;)Ljava/lang/String;") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             return NativeReturn.forInt(Heap.intern(System.mapLibraryName(Utils.toString(args[0]))));
         }
     };

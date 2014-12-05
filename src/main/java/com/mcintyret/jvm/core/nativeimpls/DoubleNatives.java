@@ -1,13 +1,14 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import com.mcintyret.jvm.core.util.Utils;
-import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.Variable;
+import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.util.Utils;
 
 public enum DoubleNatives implements NativeImplementation {
     DOUBLE_TO_RAW_LONG_BITS("doubleToRawLongBits", "(D)J") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             // Already in that state
             return NativeReturn.forLong(Utils.toLong(args[0], args[1]));
         }

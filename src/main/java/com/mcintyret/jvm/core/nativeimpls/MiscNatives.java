@@ -1,20 +1,23 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.oop.OopClassClass;
+import com.mcintyret.jvm.core.oop.OopClassMethod;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.NonArrayType;
-import com.mcintyret.jvm.core.oop.*;
-import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
 
 public enum MiscNatives implements NativeImplementation {
     ATOMIC_LONG_VM_SUPPORTS_CS8("VMSupportsCS8", "()Z") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             return NativeReturn.forBool(false); //TODO: implement
         }
 
@@ -25,7 +28,7 @@ public enum MiscNatives implements NativeImplementation {
     },
     SUN_MISC_VM_INITIALIZE("initialize", "()V") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             return NativeReturn.forVoid();
         }
 
@@ -36,7 +39,7 @@ public enum MiscNatives implements NativeImplementation {
     },
     STRING_INTERN("intern", "()Ljava/lang/String;") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             return NativeReturn.forInt(Heap.intern(Utils.toString(Heap.getOopClass(args[0]))));
         }
 
@@ -47,7 +50,7 @@ public enum MiscNatives implements NativeImplementation {
     },
     FILE_DESCRIPTOR_SET_IDS("initIDs", "()V") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             // WTF do i do here??
             return NativeReturn.forVoid();
         }
@@ -59,7 +62,7 @@ public enum MiscNatives implements NativeImplementation {
     },
     FILE_SYSTEM_GET_FILE_SYSTEM("getFileSystem", "()Ljava/io/FileSystem;") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             ClassObject unixFileSystem = ClassLoader.getDefaultClassLoader().getClassObject("java/io/UnixFileSystem");
 
             return NativeReturn.forReference(Utils.construct(unixFileSystem, ctx.getThread()));
@@ -72,7 +75,7 @@ public enum MiscNatives implements NativeImplementation {
     },
     CONSTRUCTOR_NEW_INSTANCE("newInstance0", "(Ljava/lang/reflect/Constructor;[Ljava/lang/Object;)Ljava/lang/Object;") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             Method ctor;
             OopClass oop = Heap.getOopClass(args[0]);
             if (oop instanceof OopClassMethod) {
@@ -95,7 +98,7 @@ public enum MiscNatives implements NativeImplementation {
             ClassObject co = ctor.getClassObject();
             OopClass instance = co.newObject();
 
-            int[] ctorArgs = ctor.newArgArray();
+            int[] ctorArgs = ctor.newEmptyArgArray();
             ctorArgs[0] = Heap.allocate(instance);
 
             OopArray givenArgs = Heap.getOopArray(args[1]);
@@ -114,7 +117,7 @@ public enum MiscNatives implements NativeImplementation {
     },
     NATIVE_LIBRARY_LOAD("load", "(Ljava/lang/String;)V") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             // TODO - might use reflection to do the real thing?
             OopClass nativeLibrary = Heap.getOopClass(args[0]);
             ClassObject clazz = nativeLibrary.getClassObject();

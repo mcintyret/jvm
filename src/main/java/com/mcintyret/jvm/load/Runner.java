@@ -3,8 +3,8 @@ package com.mcintyret.jvm.load;
 import java.io.IOException;
 
 import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.exec.VariableStack;
 import com.mcintyret.jvm.core.util.Utils;
-import com.mcintyret.jvm.core.exec.WordStack;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
@@ -48,7 +48,7 @@ public class Runner {
         NativeReturn ret = Utils.executeMethodAndThrow(mainMethod, actualArgs, MAIN_THREAD);
 
         if (ret != null) {
-            WordStack stack = new WordStack();
+            VariableStack stack = new VariableStack();
             ret.applyValue(stack);
             try {
                 int i = stack.pop();
@@ -83,7 +83,7 @@ public class Runner {
         Method systemThreadGroupCtor = threadGroupClass.getDefaultConstructor();
         OopClass systemThreadGroup = threadGroupClass.newObject();
 
-        int[] args = systemThreadGroupCtor.newArgArray();
+        int[] args = systemThreadGroupCtor.newEmptyArgArray();
         args[0] = Heap.allocate(systemThreadGroup);
 
         Utils.executeMethodAndThrow(systemThreadGroupCtor, args, null);
@@ -95,7 +95,7 @@ public class Runner {
 
         OopClass mainString = Heap.getOopClass(Heap.intern("main"));
 
-        args = mainThreadGroupCtor.newArgArray();
+        args = mainThreadGroupCtor.newEmptyArgArray();
         args[0] = Heap.allocate(mainThreadGroup);
         args[1] = Heap.NULL_POINTER;
         args[2] = systemThreadGroup.getAddress(); // parent

@@ -1,12 +1,12 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.oop.OopClassClass;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.NonArrayType;
 import com.mcintyret.jvm.core.type.ReferenceType;
 import com.mcintyret.jvm.core.type.Type;
-import com.mcintyret.jvm.core.oop.OopClassClass;
-import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.parse.Modifier;
 
 /**
@@ -16,7 +16,7 @@ import com.mcintyret.jvm.parse.Modifier;
 public enum ReflectionNatives implements NativeImplementation {
     GET_CALLER_CLASS("getCallerClass", "()Ljava/lang/Class;") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             // Literally no documentation in the world about what this no-arg form is.
             // TODO: although I could make an educated guess...
             return NativeReturn.forReference(NonArrayType.forClass("java/lang/Object").getOopClassClass());
@@ -24,7 +24,7 @@ public enum ReflectionNatives implements NativeImplementation {
     },
     GET_CLASS_ACCESS_FLAGS("getClassAccessFlags", "(Ljava/lang/Class;)I") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             Type type = ((OopClassClass) Heap.getOop(args[0])).getThisType();
             if (type.isPrimitive()) {
                 throw new IllegalStateException("Don't know what to do here!");

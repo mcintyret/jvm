@@ -1,14 +1,15 @@
 package com.mcintyret.jvm.core.thread;
 
-import com.mcintyret.jvm.core.exec.ExecutionStack;
-import com.mcintyret.jvm.core.exec.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.exec.ExecutionStack;
+import com.mcintyret.jvm.core.exec.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.Variable;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.util.Utils;
 
 import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 
@@ -99,8 +100,8 @@ public class Thread {
         @Override
         public void run() {
             try {
-                int[] args = THREAD_RUN.newArgArray();
-                args[0] = thisThread.getAddress();
+                Variable[] args = THREAD_RUN.newEmptyArgArray();
+                args[0] = Variable.forOop(thisThread);
                 executionStack.push(new ExecutionStackElement(THREAD_RUN, args, THREAD_CLASS.getConstantPool(), executionStack));
                 executionStack.execute();
             } finally {

@@ -5,16 +5,17 @@ import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.ValueReceiver;
-import com.mcintyret.jvm.core.type.ArrayType;
-import com.mcintyret.jvm.core.type.SimpleType;
-import com.mcintyret.jvm.core.type.Type;
 import com.mcintyret.jvm.core.exec.ExecutionStack;
 import com.mcintyret.jvm.core.exec.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.Variable;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.thread.Thread;
+import com.mcintyret.jvm.core.type.ArrayType;
+import com.mcintyret.jvm.core.type.SimpleType;
+import com.mcintyret.jvm.core.type.Type;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -25,6 +26,10 @@ public class Utils {
     public static OopArray newArray(Type type, int size) {
         ArrayClassObject aco = ArrayClassObject.forType(ArrayType.create(type, 1));
         return new OopArray(aco, new int[size * type.getWidth()]);
+    }
+
+    public static long toLong(Variable l, Variable r) {
+        return toLong(l.assertType(SimpleType.LONG).getRawValue(), r.assertType(SimpleType.LONG).getRawValue());
     }
 
     public static long toLong(int l, int r) {
@@ -81,7 +86,7 @@ public class Utils {
         return stringOop;
     }
 
-    public static NativeReturn executeMethodAndThrow(Method method, int[] args, Thread thread) {
+    public static NativeReturn executeMethodAndThrow(Method method, Variable[] args, Thread thread) {
         ExecutionStack stack = new ExecutionStack(thread);
 
         stack.push(new ExecutionStackElement(method, args,

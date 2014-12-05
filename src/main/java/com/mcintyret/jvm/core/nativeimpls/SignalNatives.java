@@ -1,7 +1,7 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.type.MethodSignature;
 
 /**
  * User: tommcintyre
@@ -10,13 +10,13 @@ import com.mcintyret.jvm.core.exec.OperationContext;
 public enum SignalNatives implements NativeImplementation {
     FIND_SIGNAL("findSignal", "(Ljava/lang/String;)I") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             return NativeReturn.forInt(0); // TODO
         }
     },
     HANDLE_0("handle0", "(IJ)J") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             return NativeReturn.forLong(0L);
         }
     };

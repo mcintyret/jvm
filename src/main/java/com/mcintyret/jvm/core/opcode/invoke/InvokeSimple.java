@@ -30,7 +30,7 @@ abstract class InvokeSimple extends Invoke {
 
         int shift = isStatic ? 0 : 1;
 
-        int[] values = method.newArgArray();
+        int[] values = method.newEmptyArgArray();
         int args = method.getSignature().getLength();
 
         for (int i = args - (1 - shift); i >= shift; i--) {

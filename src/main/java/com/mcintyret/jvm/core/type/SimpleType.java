@@ -59,6 +59,11 @@ public enum SimpleType implements Type {
     }
 
     @Override
+    public SimpleType asSimpleType() {
+        return this;
+    }
+
+    @Override
     public boolean isDoubleWidth() {
         switch (this) {
             case LONG:

@@ -1,21 +1,21 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import java.util.Deque;
-
 import com.google.common.collect.Iterables;
-import com.mcintyret.jvm.core.exec.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
-import com.mcintyret.jvm.core.type.ArrayType;
-import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.exec.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.thread.Thread;
+import com.mcintyret.jvm.core.type.ArrayType;
+import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
+
+import java.util.Deque;
 
 /**
  * User: tommcintyre
@@ -24,7 +24,7 @@ import com.mcintyret.jvm.load.ClassLoader;
 public enum ThrowableNatives implements NativeImplementation {
     FILL_IN_STACK_TRACE("fillInStackTrace", "(I)Ljava/lang/Throwable;") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             Deque<ExecutionStackElement> stack = ctx.getExecutionStack().getStack();
 
             ClassObject stackTraceElemCo = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/StackTraceElement");
@@ -46,13 +46,13 @@ public enum ThrowableNatives implements NativeImplementation {
     },
     GET_STACK_TRACE_DEPTH("getStackTraceDepth", "()I") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             return NativeReturn.forInt(ctx.getExecutionStack().getStack().size());
         }
     },
     GET_STACK_TRACE_ELEMENT("getStackTraceElement", "(I)Ljava/lang/StackTraceElement;") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variable[] args, OperationContext ctx) {
             ClassObject stackTraceElemCo = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/StackTraceElement");
             Method ctor = stackTraceElemCo.findConstructor("(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V");
             ExecutionStackElement elem = Iterables.get(ctx.getExecutionStack().getStack(), args[1]);
@@ -64,7 +64,7 @@ public enum ThrowableNatives implements NativeImplementation {
     };
 
     private static OopClass makeStackTraceElement(ClassObject stackTraceElemCo, Method ctor, ExecutionStackElement ese, Thread thread) {
-        int[] ctorArgs = ctor.newArgArray();
+        int[] ctorArgs = ctor.newEmptyArgArray();
         OopClass ste = stackTraceElemCo.newObject();
 
         Method m = ese.getMethod();

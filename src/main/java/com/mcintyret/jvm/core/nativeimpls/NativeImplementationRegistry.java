@@ -1,12 +1,11 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.mcintyret.jvm.core.type.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mcintyret.jvm.core.type.MethodSignature;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User: tommcintyre

@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.core.opcode.dup;
 
-import com.mcintyret.jvm.core.exec.WordStack;
+import com.mcintyret.jvm.core.exec.VariableStack;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.exec.OperationContext;
 
@@ -8,7 +8,7 @@ class Dup_X2 extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        WordStack stack = ctx.getStack();
+        VariableStack stack = ctx.getStack();
         int one = stack.pop();
         int two = stack.pop();
         int three = stack.pop();

@@ -1,5 +1,6 @@
 package com.mcintyret.jvm.core.opcode.invoke;
 
+import com.mcintyret.jvm.core.exec.Variable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +26,7 @@ abstract class Invoke extends OpCode {
 
     protected abstract void doInvoke(Method method, OperationContext ctx);
 
-    protected void invokeNativeMethod(NativeMethod nativeMethod, int[] args, OperationContext ctx) {
+    protected void invokeNativeMethod(NativeMethod nativeMethod, Variable[] args, OperationContext ctx) {
         NativeImplementation nativeImplementation = nativeMethod.getNativeImplementation();
         if (nativeImplementation == null) {
             throw new IllegalStateException("No Native implementation for " + nativeMethod.getClassObject().getClassName() + "." + nativeMethod.getSignature());

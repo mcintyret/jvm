@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.core.opcode.field;
 
-import com.mcintyret.jvm.core.exec.WordStack;
+import com.mcintyret.jvm.core.exec.VariableStack;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.exec.OperationContext;
@@ -9,7 +9,7 @@ abstract class Put extends FieldOp {
 
     @Override
     public final void doExecute(Field field, OperationContext ctx) {
-        WordStack stack = ctx.getStack();
+        VariableStack stack = ctx.getStack();
 
         if (field.getType().isDoubleWidth()) {
             int two = stack.pop();
@@ -21,5 +21,5 @@ abstract class Put extends FieldOp {
         }
     }
 
-    protected abstract Oop getOop(WordStack stack);
+    protected abstract Oop getOop(VariableStack stack);
 }

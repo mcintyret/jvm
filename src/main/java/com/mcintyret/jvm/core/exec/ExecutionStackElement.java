@@ -24,15 +24,15 @@ public class ExecutionStackElement implements OperationContext {
 
     private final ByteIterator byteIterator;
 
-    private final int[] localVars;
+    private final Variable[] localVars;
 
     private final ConstantPool constantPool;
 
     private final ExecutionStack executionStack;
 
-    private final WordStack stack = new WordStack();
+    private final VariableStack stack = new VariableStack();
 
-    public ExecutionStackElement(Method method, int[] localVars, ConstantPool constantPool, ExecutionStack executionStack) {
+    public ExecutionStackElement(Method method, Variable[] localVars, ConstantPool constantPool, ExecutionStack executionStack) {
         this.method = method;
         this.byteIterator = method.getCode() == null ? null : new ByteBufferIterator(method.getCode().getCode());
         this.localVars = localVars;
@@ -55,7 +55,7 @@ public class ExecutionStackElement implements OperationContext {
     }
 
     @Override
-    public int[] getLocalVars() {
+    public Variable[] getLocalVars() {
         return localVars;
     }
 
@@ -65,7 +65,7 @@ public class ExecutionStackElement implements OperationContext {
     }
 
     @Override
-    public WordStack getStack() {
+    public VariableStack getStack() {
         return stack;
     }
 

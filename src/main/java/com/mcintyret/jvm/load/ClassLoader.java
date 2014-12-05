@@ -118,7 +118,7 @@ public class ClassLoader {
 
             ClassObject system = getClassObject("java/lang/System");
             Method init = system.findMethod("initializeSystemClass", true);
-            Utils.executeMethodAndThrow(init, init.newArgArray(), Runner.MAIN_THREAD);
+            Utils.executeMethodAndThrow(init, init.newEmptyArgArray(), Runner.MAIN_THREAD);
         }
     }
 
@@ -129,7 +129,7 @@ public class ClassLoader {
         ClassObject system = getClassObject("java/lang/System");
         Method setProperties = system.findMethod("setProperties", true);
 
-        Utils.executeMethodAndThrow(setProperties, setProperties.newArgArray(), thread);
+        Utils.executeMethodAndThrow(setProperties, setProperties.newEmptyArgArray(), thread);
     }
 
     private void setSystemOut() {
@@ -141,7 +141,7 @@ public class ClassLoader {
         ClassObject fileOutputStream = getClassObject("java/io/FileOutputStream");
         Method ctor = fileOutputStream.findConstructor("(Ljava/io/FileDescriptor;)V");
         OopClass fos = fileOutputStream.newObject();
-        int[] args = ctor.newArgArray();
+        int[] args = ctor.newEmptyArgArray();
         args[0] = Heap.allocate(fos);
         args[1] = outFd.getAddress();
 
@@ -156,7 +156,7 @@ public class ClassLoader {
         ClassObject printStream = getClassObject("java/io/PrintStream");
         OopClass ps = printStream.newObject();
         Method psConstructor = printStream.findConstructor("(ZLjava/io/OutputStream;)V");
-        args = psConstructor.newArgArray();
+        args = psConstructor.newEmptyArgArray();
         args[0] = Heap.allocate(ps);
         args[2] = bos.getAddress();
 
@@ -332,7 +332,7 @@ public class ClassLoader {
                 method.getModifiers().add(Modifier.NATIVE);
                 NativeImplementation ni = new NativeImplementation() {
                     @Override
-                    public NativeReturn execute(int[] args, OperationContext ctx) {
+                    public NativeReturn execute(Variable[] args, OperationContext ctx) {
                         OopClass thread = Heap.getOopClass(args[0]);
                         Threads.register(new Thread(thread));
 

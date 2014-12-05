@@ -4,6 +4,7 @@ import com.mcintyret.jvm.core.exec.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.NativeMethod;
+import com.mcintyret.jvm.core.exec.Variable;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.parse.Modifier;
@@ -12,14 +13,14 @@ abstract class InvokeIndirect extends Invoke {
 
     @Override
     protected final void doInvoke(Method method, OperationContext ctx) {
-        int[] args = method.newArgArray();
+        Variable[] args = method.newEmptyArgArray();
         int argCount = method.getSignature().getLength();
         for (int i = argCount; i >= 1; i--) {
             args[i] = ctx.getStack().pop();
         }
         args[0] = ctx.getStack().pop();
 
-        Oop oop = Heap.getOop(args[0]);
+        Oop oop = args[0].getOop();
 
         Method implementation = getImplementationMethod(method, oop);
 

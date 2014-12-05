@@ -1,42 +1,44 @@
 package com.mcintyret.jvm.core.exec;
 
-import java.util.NoSuchElementException;
-
 import com.mcintyret.jvm.core.clazz.ValueReceiver;
 import com.mcintyret.jvm.core.util.Utils;
 
-public class WordStack implements ValueReceiver {
+import java.util.NoSuchElementException;
+
+public class VariableStack implements ValueReceiver {
 
     private static final int DEFAULT_SIZE = 10;
 
-    private int[] stack;
+    private Variable[] stack;
 
     private int head = 0;
 
-    public WordStack(int size) {
-        stack = new int[size];
+    public VariableStack(int size) {
+        stack = new Variable[size];
     }
 
     public void clear() {
         head = 0;
     }
 
-    public WordStack() {
+    public VariableStack() {
         this(DEFAULT_SIZE);
     }
 
-    public void push(int i) {
+    public void push(Variable v) {
         if (head == stack.length) {
             resize();
         }
-        stack[head++] = i;
+        stack[head++] = v;
     }
 
-    public int pop() {
+    public Variable pop() {
         if (head == 0) {
             throw new NoSuchElementException();
         }
-        return stack[--head];
+        Variable ret = stack[--head];
+        stack[head] = null;
+        return ret;
     }
 
     public void push(float f) {
