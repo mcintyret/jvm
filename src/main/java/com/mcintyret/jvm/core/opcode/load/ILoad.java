@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.load;
 
-class ILoad extends SingleWidthLoadIndexed {
+import com.mcintyret.jvm.core.opcode.IntTyped;
+
+class ILoad extends SingleWidthLoadIndexed implements IntTyped {
 
     @Override
     public byte getByte() {

@@ -34,6 +34,10 @@ public interface VariableStack extends ValueReceiver {
 
     void pushDouble(double v);
 
+    void pushDoubleWidth(int l, int r, SimpleType type);
+
+    void pushDoubleWidth(long val, SimpleType type);
+
     void pushByte(byte b);
 
     void pushShort(short s);

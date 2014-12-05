@@ -1,6 +1,10 @@
 package com.mcintyret.jvm.core.opcode.load;
 
-class DLoad_0 extends DoubleWidthLoad_0 {
+import com.mcintyret.jvm.core.opcode.DoubleTyped;
+
+class DLoad_0 extends DoubleWidthLoad_0 implements DoubleTyped
+
+    {
 
     @Override
     public byte getByte() {

@@ -6,6 +6,7 @@ import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ValueReceiver;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.type.SimpleType;
+import com.mcintyret.jvm.core.util.Utils;
 
 public class VariableStackImpl implements ValueReceiver, VariableStack {
 
@@ -73,12 +74,21 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
 
     @Override
     public long popLong() {
-        throw new UnsupportedOperationException();
+        return popDoubleWidth(SimpleType.LONG);
     }
 
     @Override
     public double popDouble() {
-        throw new UnsupportedOperationException();
+        return Double.longBitsToDouble(popDoubleWidth(SimpleType.DOUBLE));
+    }
+
+    private long popDoubleWidth(SimpleType type) {
+        if (head <= 1) {
+            throw new NoSuchElementException();
+        }
+        long val = Utils.toLong(stack.getCheckedValue(head - 2, type), stack.getCheckedValue(head - 1, type));
+        head -= 2;
+        return val;
     }
 
     @Override
@@ -101,12 +111,12 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
 
     @Override
     public void pushLong(int l, int r) {
-        throw new UnsupportedOperationException();
+        pushDoubleWidth(l, r, SimpleType.LONG);
     }
 
     @Override
     public void pushLong(long val) {
-        throw new UnsupportedOperationException();
+        pushDoubleWidth(val, SimpleType.LONG);
     }
 
     @Override
@@ -116,7 +126,23 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
 
     @Override
     public void pushDouble(double d) {
-        throw new UnsupportedOperationException();
+        pushDoubleWidth(Double.doubleToLongBits(d), SimpleType.DOUBLE);
+    }
+
+    @Override
+    public void pushDoubleWidth(int l, int r, SimpleType type) {
+        if (head >= stack.length() - 1) {
+            resize();
+        }
+        stack.put(head++, type, l);
+        stack.put(head++, type, r);
+    }
+
+    @Override
+    public void pushDoubleWidth(long val, SimpleType type) {
+        int l = (int) (val >> 32);
+        int r = (int) val;
+        pushDoubleWidth(l, r, type);
     }
 
     @Override

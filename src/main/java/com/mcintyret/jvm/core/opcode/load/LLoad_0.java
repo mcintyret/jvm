@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.load;
 
-class LLoad_0 extends DoubleWidthLoad_0 {
+import com.mcintyret.jvm.core.opcode.LongTyped;
+
+class LLoad_0 extends DoubleWidthLoad_0 implements LongTyped {
 
     @Override
     public byte getByte() {
