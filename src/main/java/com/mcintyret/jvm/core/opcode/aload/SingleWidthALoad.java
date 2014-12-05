@@ -16,7 +16,7 @@ abstract class SingleWidthALoad extends OpCode implements Typed {
 
         OopArray array = stack.popOop();
 
-        stack.pushChecked(array.getFields()[index], getType());
+        stack.pushSingleWidth(array.getFields()[index], getType());
     }
 
 }

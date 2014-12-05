@@ -13,7 +13,7 @@ abstract class TypeOp extends OpCode {
     @Override
     public final void execute(OperationContext ctx) {
         VariableStack stack = ctx.getStack();
-        int address = stack.popChecked(SimpleType.REF);
+        int address = stack.popSingleWidth(SimpleType.REF);
         AbstractClassObject type = ctx.getConstantPool().getClassObject(ctx.getByteIterator().nextShort());
         if (address == Heap.NULL_POINTER) {
             handleNull(stack);

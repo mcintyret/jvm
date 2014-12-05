@@ -11,12 +11,12 @@ class CheckCast extends TypeOp {
         if (!instanceOf) {
             throw new ClassCastException();
         }
-        stack.pushChecked(address, SimpleType.REF);
+        stack.pushSingleWidth(address, SimpleType.REF);
     }
 
     @Override
     protected void handleNull(VariableStack stack) {
-        stack.pushChecked(Heap.NULL_POINTER, SimpleType.REF);
+        stack.pushSingleWidth(Heap.NULL_POINTER, SimpleType.REF);
     }
 
     @Override

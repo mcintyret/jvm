@@ -1,7 +1,7 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.OopClassClass;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.NonArrayType;
@@ -25,7 +25,8 @@ public enum ReflectionNatives implements NativeImplementation {
     GET_CLASS_ACCESS_FLAGS("getClassAccessFlags", "(Ljava/lang/Class;)I") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            Type type = ((OopClassClass) Heap.getOop(args[0])).getThisType();
+            OopClassClass thisClass = args.getOop(0);
+            Type type = thisClass.getThisType();
             if (type.isPrimitive()) {
                 throw new IllegalStateException("Don't know what to do here!");
             } else {

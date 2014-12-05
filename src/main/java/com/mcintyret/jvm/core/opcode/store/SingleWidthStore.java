@@ -12,7 +12,7 @@ abstract class SingleWidthStore extends OpCode implements Typed {
     public final void execute(OperationContext ctx) {
         int index = getIndex(ctx.getByteIterator());
         SimpleType type = getType();
-        ctx.getLocalVariables().put(index, type, ctx.getStack().popChecked(type));
+        ctx.getLocalVariables().put(index, type, ctx.getStack().popSingleWidth(type));
     }
 
     protected abstract int getIndex(ByteIterator bytes);

@@ -56,9 +56,9 @@ public class Field extends Member {
     public void get(Oop thisOop, ValueReceiver valueReceiver) {
         int[] fields = getValues(thisOop);
         if (type.isDoubleWidth()) {
-            valueReceiver.receiveLong(Utils.toLong(fields[getOffset()], fields[getOffset() + 1]));
+            valueReceiver.receiveDoubleWidth(Utils.toLong(fields[getOffset()], fields[getOffset() + 1]), type.asSimpleType());
         } else {
-            valueReceiver.receiveInt(fields[getOffset()]);
+            valueReceiver.receiveSingleWidth(fields[getOffset()], type.asSimpleType());
         }
     }
 

@@ -99,13 +99,14 @@ public class Utils {
         if (ret.isThrowable()) {
             AtomicInteger address = new AtomicInteger();
             ret.applyValue(new ValueReceiver() {
+
                 @Override
-                public void receiveInt(int i) {
+                public void receiveSingleWidth(int i, SimpleType type) {
                     address.set(i);
                 }
 
                 @Override
-                public void receiveLong(long l) {
+                public void receiveDoubleWidth(long l, SimpleType type) {
                     throw new UnsupportedOperationException();
                 }
             });

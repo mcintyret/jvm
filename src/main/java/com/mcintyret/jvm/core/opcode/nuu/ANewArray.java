@@ -13,7 +13,7 @@ class ANewArray extends OpCode {
     public void execute(OperationContext ctx) {
         AbstractClassObject clazz = ctx.getConstantPool().getClassObject(ctx.getByteIterator().nextShort());
 
-        ctx.getStack().pushChecked(Heap.allocate(Utils.newArray(clazz.getType(), ctx.getStack().popInt())), SimpleType.REF);
+        ctx.getStack().pushSingleWidth(Heap.allocate(Utils.newArray(clazz.getType(), ctx.getStack().popInt())), SimpleType.REF);
     }
 
     @Override

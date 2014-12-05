@@ -17,8 +17,8 @@ abstract class DoubleWidthALoad extends OpCode implements Typed {
         OopArray array = stack.popOop();
 
         SimpleType type = getType();
-        stack.pushChecked(array.getFields()[index], type);
-        stack.pushChecked(array.getFields()[index + 1], type);
+        stack.pushSingleWidth(array.getFields()[index], type);
+        stack.pushSingleWidth(array.getFields()[index + 1], type);
     }
 
 }

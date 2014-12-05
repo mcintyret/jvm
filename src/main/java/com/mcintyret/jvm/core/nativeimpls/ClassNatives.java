@@ -1,7 +1,5 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import static com.mcintyret.jvm.core.exec.Variable.forOop;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +11,6 @@ import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.exec.OperationContext;
-import com.mcintyret.jvm.core.exec.Variable;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
@@ -103,14 +100,14 @@ public enum ClassNatives implements NativeImplementation {
                 OopClass fieldObj = fieldClass.newObject();
                 array.getFields()[i] = Heap.allocate(fieldObj);
 
-                ctorArgs[0] = forOop(fieldObj.getAddress());
-                ctorArgs[1] = thisType.getOopClassClass().getAddress();
-                ctorArgs[2] = Heap.intern(field.getName());
-                ctorArgs[3] = field.getType().getOopClassClass().getAddress();
-                ctorArgs[4] = Modifier.translate(field.getModifiers());
-                ctorArgs[5] = i; // slot, this is my best guess as to what this means...
-                ctorArgs[6] = Heap.NULL_POINTER;
-                ctorArgs[7] = Heap.NULL_POINTER;
+                ctorArgs.putOop(0, fieldObj);
+                ctorArgs.putOop(1, thisType.getOopClassClass());
+                ctorArgs.put(2, SimpleType.REF, Heap.intern(field.getName()));
+                ctorArgs.putOop(3, field.getType().getOopClassClass());
+                ctorArgs.putInt(4, Modifier.translate(field.getModifiers()));
+                ctorArgs.putInt(5, i); // slot, this is my best guess as to what this means...
+                ctorArgs.putNull(6);
+                ctorArgs.putNull(7);
 
                 Utils.executeMethodAndThrow(ctor, ctorArgs, ctx.getThread());
             }
@@ -223,7 +220,7 @@ public enum ClassNatives implements NativeImplementation {
                     OopClass ctorObj = ctorClass.newObject((thisClazz, fields) -> new OopClassMethod(thisClazz, fields, ctor));
                     Variables ctorArgs = ctorCtor.newArgArray();
 
-                    ctorArgs[0] = Heap.allocate(ctorObj);
+                    ctorArgs.put(0, SimpleType.REF, Heap.allocate(ctorObj));
                     ctorArgs.putOop(1, clazz); // declaring class
 
                     OopArray paramTypes = classArray.newArray(ctor.getSignature().getArgTypes().size());
@@ -232,14 +229,14 @@ public enum ClassNatives implements NativeImplementation {
                         paramTypes.getFields()[j++] = type.getOopClassClass().getAddress();
                     }
 
-                    ctorArgs[2] = Heap.allocate(paramTypes);
+                    ctorArgs.put(2, SimpleType.REF, Heap.allocate(paramTypes));
                     // TODO
-                    ctorArgs[3] = Heap.NULL_POINTER; // checkedExceptions
-                    ctorArgs[4] = Modifier.translate(ctor.getModifiers());
-                    ctorArgs[5] = i; //slot - ??
-                    ctorArgs[6] = Heap.intern(ctor.getSignature().toString());
-                    ctorArgs[7] = Heap.NULL_POINTER; // annotations
-                    ctorArgs[8] = Heap.NULL_POINTER; // parameter annotations
+                    ctorArgs.putNull(3); // checkedExceptions
+                    ctorArgs.putInt(4, Modifier.translate(ctor.getModifiers()));
+                    ctorArgs.putInt(5, i); //slot - ??
+                    ctorArgs.put(6, SimpleType.REF, Heap.intern(ctor.getSignature().toString()));
+                    ctorArgs.putNull(7); // annotations
+                    ctorArgs.putNull(8); // parameter annotations
 
                     Utils.executeMethodAndThrow(ctorCtor, ctorArgs, ctx.getThread());
 
@@ -254,7 +251,7 @@ public enum ClassNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
             // TODO: cache?
-            return NativeReturn.forInt(Modifier.translate(((OopClassClass) Heap.getOop(args[0])).getThisType().getOopClassClass().getClassObject().getModifiers()));
+            return NativeReturn.forInt(Modifier.translate(args.<OopClassClass>getOop(0).getThisType().getOopClassClass().getClassObject().getModifiers()));
         }
     },
     GET_SUPERCLASS("getSuperclass", "()Ljava/lang/Class;") {

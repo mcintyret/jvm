@@ -14,8 +14,8 @@ abstract class DoubleWidthAStore extends OpCode implements Typed {
         VariableStack stack = ctx.getStack();
         SimpleType type = getType();
 
-        int val2 = stack.popChecked(type);
-        int val1 = stack.popChecked(type);
+        int val2 = stack.popSingleWidth(type);
+        int val1 = stack.popSingleWidth(type);
 
         int index = stack.popInt() * 2;
 

@@ -50,6 +50,10 @@ public class Variables {
         put(i, SimpleType.REF, val.getAddress());
     }
 
+    public void putNull(int i) {
+        put(i, SimpleType.REF, Heap.NULL_POINTER);
+    }
+
     public void putInt(int i, int val) {
         put(i, SimpleType.INT, val);
     }
@@ -65,6 +69,11 @@ public class Variables {
 
     public void put(int i, Variable v) {
         put(i, v.getType(), v.getValue());
+    }
+
+    public void putWide(int i, WideVariable v) {
+        put(i, v.getType(), v.getLeft());
+        put(i + 1, v.getType(), v.getRight());
     }
 
     private SimpleType checkType(int i, SimpleType type) {
@@ -114,6 +123,10 @@ public class Variables {
 
     public Variable get(int i) {
         return new Variable(types[i], values[i]);
+    }
+
+    public WideVariable getWide(int i) {
+        return new WideVariable(types[i], Utils.toLong(values[i], values[i + 1]));
     }
 
     void clear(int i) {

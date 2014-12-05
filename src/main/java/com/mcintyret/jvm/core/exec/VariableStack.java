@@ -8,9 +8,11 @@ public interface VariableStack extends ValueReceiver {
 
     int popRaw();
 
-    int popChecked(SimpleType type);
+    int popSingleWidth(SimpleType type);
 
     Variable pop();
+
+    WideVariable popWide();
 
     int popInt();
 
@@ -24,7 +26,7 @@ public interface VariableStack extends ValueReceiver {
 
     <O extends Oop> O popOop();
 
-    void pushChecked(int val, SimpleType type);
+    void pushSingleWidth(int val, SimpleType type);
 
     void pushInt(int val);
 
@@ -50,15 +52,19 @@ public interface VariableStack extends ValueReceiver {
 
     void push(Variable v);
 
-    default void receiveInt(int i) {
-        pushInt(i);
-    }
-
-    default void receiveLong(long l) {
-        pushLong(l);
-    }
+    void pushWide(WideVariable v);
 
     void clear(); // Required when exceptions are thrown
+
+    @Override
+    default void receiveSingleWidth(int i, SimpleType type) {
+        pushSingleWidth(i, type);
+    }
+
+    @Override
+    default void receiveDoubleWidth(long l, SimpleType type) {
+        pushDoubleWidth(l, type);
+    }
 
 
 

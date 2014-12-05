@@ -12,6 +12,6 @@ abstract class SingleWidthReturn extends BaseValueReturn {
 
     @Override
     protected final void pushReturnVal(VariableStack lower, VariableStack upper) {
-        lower.pushChecked(upper.popChecked(getType()),getType());
+        lower.pushSingleWidth(upper.popSingleWidth(getType()), getType());
     }
 }

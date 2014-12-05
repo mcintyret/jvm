@@ -9,7 +9,7 @@ abstract class UnaryCondition extends OpCode {
     @Override
     public void execute(OperationContext ctx) {
         int jump = ctx.getByteIterator().nextShort();
-        if (conditionMet(ctx.getStack().popChecked(getType()))) {
+        if (conditionMet(ctx.getStack().popSingleWidth(getType()))) {
             ctx.getByteIterator().seek(jump - 3);
         }
     }

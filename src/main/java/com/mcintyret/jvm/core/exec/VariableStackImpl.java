@@ -47,7 +47,7 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
     }
 
     @Override
-    public int popChecked(SimpleType type) {
+    public int popSingleWidth(SimpleType type) {
         return popInternal(type, true);
     }
 
@@ -63,13 +63,27 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
     }
 
     @Override
+    public WideVariable popWide() {
+        if (head <= 1) {
+            throw new NoSuchElementException();
+        }
+        WideVariable wv = stack.getWide(head - 2);
+        stack.clear(head - 1);
+        stack.clear(head - 2);
+
+        head -= 2;
+
+        return wv;
+    }
+
+    @Override
     public int popInt() {
-        return popChecked(SimpleType.INT);
+        return popSingleWidth(SimpleType.INT);
     }
 
     @Override
     public float popFloat() {
-        return Float.intBitsToFloat(popChecked(SimpleType.FLOAT));
+        return Float.intBitsToFloat(popSingleWidth(SimpleType.FLOAT));
     }
 
     @Override
@@ -94,11 +108,11 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
 
     @Override
     public <O extends Oop> O popOop() {
-        return (O) Heap.getOop(popChecked(SimpleType.REF));
+        return (O) Heap.getOop(popSingleWidth(SimpleType.REF));
     }
 
     @Override
-    public void pushChecked(int val, SimpleType type) {
+    public void pushSingleWidth(int val, SimpleType type) {
         if (head >= stack.length()) {
             resize();
         }
@@ -107,7 +121,7 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
 
     @Override
     public void pushInt(int val) {
-        pushChecked(val, SimpleType.INT);
+        pushSingleWidth(val, SimpleType.INT);
     }
 
     @Override
@@ -122,7 +136,7 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
 
     @Override
     public void pushFloat(float f) {
-        pushChecked(Float.floatToIntBits(f), SimpleType.FLOAT);
+        pushSingleWidth(Float.floatToIntBits(f), SimpleType.FLOAT);
     }
 
     @Override
@@ -148,27 +162,37 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
 
     @Override
     public void pushByte(byte b) {
-        pushChecked(b, SimpleType.BYTE);
+        pushSingleWidth(b, SimpleType.BYTE);
     }
 
     @Override
     public void pushShort(short s) {
-        pushChecked(s, SimpleType.SHORT);
+        pushSingleWidth(s, SimpleType.SHORT);
     }
 
     @Override
     public void pushOop(Oop oop) {
-        pushChecked(oop.getAddress(), SimpleType.REF);
+        pushSingleWidth(oop.getAddress(), SimpleType.REF);
     }
 
     @Override
     public void pushNull() {
-        pushChecked(Heap.NULL_POINTER, SimpleType.REF);
+        pushSingleWidth(Heap.NULL_POINTER, SimpleType.REF);
     }
 
     @Override
     public void push(Variable v) {
-        pushChecked(v.getValue(), v.getType());
+        pushSingleWidth(v.getValue(), v.getType());
+    }
+
+    @Override
+    public void pushWide(WideVariable v) {
+        if (head >= stack.length() - 1) {
+            resize();
+        }
+
+        stack.putWide(++head, v);
+        head++;
     }
 
     @Override

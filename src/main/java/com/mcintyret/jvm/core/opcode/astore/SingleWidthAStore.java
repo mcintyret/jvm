@@ -12,7 +12,7 @@ abstract class SingleWidthAStore extends OpCode implements Typed {
     public final void execute(OperationContext ctx) {
         VariableStack stack = ctx.getStack();
 
-        int val = stack.popChecked(getType());
+        int val = stack.popSingleWidth(getType());
         int index = stack.popInt();
         OopArray array = stack.popOop();
 

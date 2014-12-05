@@ -13,8 +13,8 @@ abstract class DoubleWidthStore extends OpCode implements Typed {
         int index = getIndex(ctx.getByteIterator());
         SimpleType type = getType();
 
-        ctx.getLocalVariables().put(index + 1, type, ctx.getStack().popChecked(type));
-        ctx.getLocalVariables().put(index, type, ctx.getStack().popChecked(type));
+        ctx.getLocalVariables().put(index + 1, type, ctx.getStack().popSingleWidth(type));
+        ctx.getLocalVariables().put(index, type, ctx.getStack().popSingleWidth(type));
     }
 
     protected abstract int getIndex(ByteIterator bytes);

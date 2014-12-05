@@ -17,7 +17,7 @@ abstract class InvokeIndirect extends Invoke {
         int argCount = method.getSignature().getLength();
         for (int i = argCount; i >= 1; i--) {
             SimpleType type = method.getSignature().getArgTypes().get(i).asSimpleType();
-            args.put(i, type, ctx.getStack().popChecked(type));
+            args.put(i, type, ctx.getStack().popSingleWidth(type));
         }
         Oop oop = ctx.getStack().popOop();
 
@@ -30,8 +30,10 @@ abstract class InvokeIndirect extends Invoke {
         } else {
             int maxLocalVars = implementation.getCode().getMaxLocals();
             if (maxLocalVars > args.length()) {
-                int[] tmp = new int[maxLocalVars];
-                System.arraycopy(args, 0, tmp, 0, args.length);
+                // TODO: refactor with similar code in VariableStackImpl
+                Variables tmp = new Variables(maxLocalVars);
+                System.arraycopy(args.getRawValues(), 0, tmp.getRawValues(), 0, args.length());
+                System.arraycopy(args.getTypes(), 0, tmp.getTypes(), 0, args.length());
                 args = tmp;
             }
 

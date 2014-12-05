@@ -12,7 +12,7 @@ class NewArray extends OpCode {
     public void execute(OperationContext ctx) {
         SimpleType type = SimpleType.forByte(ctx.getByteIterator().nextByte());
 
-        ctx.getStack().pushChecked(Heap.allocate(Utils.newArray(type, ctx.getStack().popInt())), SimpleType.REF);
+        ctx.getStack().pushSingleWidth(Heap.allocate(Utils.newArray(type, ctx.getStack().popInt())), SimpleType.REF);
     }
 
     @Override

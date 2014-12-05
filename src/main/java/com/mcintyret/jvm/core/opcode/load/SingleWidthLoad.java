@@ -13,7 +13,7 @@ abstract class SingleWidthLoad extends OpCode implements Typed {
         int index = getIndex(ctx.getByteIterator());
         SimpleType type = getType();
 
-        ctx.getStack().pushChecked(ctx.getLocalVariables().getCheckedValue(index, type), type);
+        ctx.getStack().pushSingleWidth(ctx.getLocalVariables().getCheckedValue(index, type), type);
     }
 
     protected abstract int getIndex(ByteIterator bytes);
