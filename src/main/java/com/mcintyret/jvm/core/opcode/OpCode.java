@@ -13,4 +13,8 @@ public abstract class OpCode {
         return getClass().getSimpleName().toLowerCase();
     }
 
+    public boolean isSafePoint() {
+        return false;
+    }
+
 }

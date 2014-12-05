@@ -1,20 +1,27 @@
 package com.mcintyret.jvm.core;
 
+import com.mcintyret.jvm.core.exec.ExecutionStackElement;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.thread.Thread;
+import com.mcintyret.jvm.core.thread.Threads;
 import com.mcintyret.jvm.core.util.Utils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Phaser;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Heap {
 
-    private static final int HEAP_SIZE = 3000;
+    private static final int INITIAL_HEAP_SIZE = 32;
 
-    private static final Oop[] OOP_TABLE = new Oop[HEAP_SIZE];
+    private static final int MAX_HEAP_SIZE = 4096;
 
-    private static int heapAllocationPointer = 1;
+    private static volatile Oop[] OOP_TABLE = new Oop[INITIAL_HEAP_SIZE];
+
+    private static AtomicInteger heapAllocationPointer = new AtomicInteger();
 
     public static final int NULL_POINTER = 0;
 
@@ -39,15 +46,65 @@ public class Heap {
         return (OopArray) getOop(address);
     }
 
+    public static void register() {
+        GC_PHASER.register();
+    }
+
+    public static void deregister() {
+        GC_PHASER.arriveAndDeregister();
+    }
+
+    public static void atSafePoint() {
+        if (GC_PHASER.getArrivedParties() > 0) {
+            GC_PHASER.arriveAndAwaitAdvance();
+        }
+    }
+
+    private static final Phaser GC_PHASER = new Phaser() {
+        @Override
+        protected boolean onAdvance(int ignoredA, int ignoredB) {
+            garbageCollection();
+
+            return false;
+        }
+
+    };
+
+    private static void garbageCollection() {
+        // At this point we know that all the threads are awaiting the Phaser (!)
+
+        // Optimistically assume we can reclaim enough resources that the existing heap size is big enough
+        int index = 0;
+        int[] newOops = new int[OOP_TABLE.length];
+
+        for (Thread thread : Threads.getAll()) {
+            for (ExecutionStackElement stack : thread.getExecutionStack().getStack()) {
+
+            }
+        }
+
+
+
+
+    }
 
     public static int allocate(Oop oop) {
-        if (heapAllocationPointer >= OOP_TABLE.length) {
-            throw new OutOfMemoryError("No more heap space! Should probably do some kind of GC...");
+        int heapPointer = heapAllocationPointer.incrementAndGet();
+
+        if (heapPointer >= OOP_TABLE.length) {
+            // need to do some GCing!
+            GC_PHASER.arriveAndAwaitAdvance();
+
+            if (heapPointer >= MAX_HEAP_SIZE) {
+                throw new OutOfMemoryError("No more heap space! Should probably do some kind of GC...");
+            }
         }
-        OOP_TABLE[heapAllocationPointer] = oop;
-        oop.setAddress(heapAllocationPointer);
-        return heapAllocationPointer++;
+
+        OOP_TABLE[heapPointer] = oop;
+        oop.setAddress(heapPointer);
+        return heapPointer;
     }
+
 
     public static <O extends Oop> O allocateAndGet(O oop) {
         allocate(oop);

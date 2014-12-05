@@ -1,9 +1,12 @@
 package com.mcintyret.jvm.core.thread;
 
+import com.mcintyret.jvm.core.oop.OopClass;
+
+import java.util.Collection;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-import com.mcintyret.jvm.core.oop.OopClass;
+import static java.util.Collections.unmodifiableCollection;
 
 /**
  * User: tommcintyre
@@ -15,6 +18,10 @@ public class Threads {
 
     public static Thread get(OopClass oopThread) {
         return THREADS.get(oopThread);
+    }
+
+    public static Collection<Thread> getAll() {
+        return unmodifiableCollection(THREADS.values());
     }
 
     public static void register(Thread thread) {

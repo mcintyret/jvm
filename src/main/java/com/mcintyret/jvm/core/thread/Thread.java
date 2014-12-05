@@ -32,14 +32,20 @@ public class Thread {
 
     private volatile boolean interrupted;
 
+    private final ExecutionStack executionStack;
+
     public Thread(OopClass thisThread) {
         this.thisThread = thisThread;
+        this.executionStack = new ExecutionStack(this);
         this.thread = new ActualThread();
+
     }
 
     // For system threads
     public Thread(OopClass thisThread, java.lang.Thread thread) {
+        Heap.register();
         this.thisThread = thisThread;
+        this.executionStack = null;
         this.thread = thread;
     }
 
@@ -82,6 +88,10 @@ public class Thread {
         return thread;
     }
 
+    public ExecutionStack getExecutionStack() {
+        return executionStack;
+    }
+
     private static String getThreadName(Oop thread) {
         return Utils.toString(Heap.getOopArray(thread.getFields()[NAME_FIELD.getOffset()]));
     }
@@ -94,10 +104,9 @@ public class Thread {
 
     private class ActualThread extends java.lang.Thread {
 
-        private final ExecutionStack executionStack = new ExecutionStack(Thread.this);
-
         @Override
         public void run() {
+            Heap.register();
             try {
                 int[] args = THREAD_RUN.newArgArray();
                 args[0] = thisThread.getAddress();
@@ -105,6 +114,7 @@ public class Thread {
                 executionStack.execute();
             } finally {
                 Threads.deregister(Thread.this);
+                Heap.deregister();
             }
         }
     }

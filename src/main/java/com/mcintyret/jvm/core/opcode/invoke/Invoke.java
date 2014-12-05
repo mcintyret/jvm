@@ -1,15 +1,14 @@
 package com.mcintyret.jvm.core.opcode.invoke;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.NativeMethod;
+import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.opcode.AThrow;
 import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.exec.OperationContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 abstract class Invoke extends OpCode {
 
@@ -35,6 +34,12 @@ abstract class Invoke extends OpCode {
         if (nr.isThrowable()) {
             new AThrow().execute(ctx);
         }
+    }
+
+    // Method invocations are a safe point to stop and do GC
+    @Override
+    public boolean isSafePoint() {
+        return true;
     }
 
 }

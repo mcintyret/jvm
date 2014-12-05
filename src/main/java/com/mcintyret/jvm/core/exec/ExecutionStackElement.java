@@ -1,5 +1,6 @@
 package com.mcintyret.jvm.core.exec;
 
+import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.util.ByteBufferIterator;
 import com.mcintyret.jvm.core.util.ByteIterator;
 import com.mcintyret.jvm.core.clazz.Method;
@@ -45,6 +46,11 @@ public class ExecutionStackElement implements OperationContext {
         int pos = byteIterator.getPos();
         OpCode opCode = OpCodes.getOpcode(byteIterator.nextByte());
         LOG.debug(String.format("%4d: %s", pos, opCode));
+
+        if (opCode.isSafePoint()) {
+            Heap.atSafePoint();
+        }
+
         opCode.execute(this);
         TOTAL_OPCODES_EXECUTED.incrementAndGet();
     }
