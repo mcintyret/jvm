@@ -2,7 +2,7 @@ package com.mcintyret.jvm.core.opcode.branch;
 
 import com.mcintyret.jvm.core.Heap;
 
-class IfNull extends UnaryCondition {
+class IfNull extends RefUnaryCondition {
 
     @Override
     protected boolean conditionMet(int pop) {

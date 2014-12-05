@@ -1,7 +1,7 @@
 package com.mcintyret.jvm.core.opcode.constant;
 
-import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.opcode.OpCode;
 
 class Ldc extends OpCode {
 

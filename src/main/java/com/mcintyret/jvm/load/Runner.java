@@ -3,20 +3,23 @@ package com.mcintyret.jvm.load;
 import java.io.IOException;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.exec.VariableStack;
-import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
-import com.mcintyret.jvm.core.type.ArrayType;
-import com.mcintyret.jvm.core.type.MethodSignature;
-import com.mcintyret.jvm.core.type.NonArrayType;
+import com.mcintyret.jvm.core.exec.VariableStack;
+import com.mcintyret.jvm.core.exec.VariableStackImpl;
+import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.thread.Thread;
 import com.mcintyret.jvm.core.thread.Threads;
+import com.mcintyret.jvm.core.type.ArrayType;
+import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.type.NonArrayType;
+import com.mcintyret.jvm.core.type.SimpleType;
+import com.mcintyret.jvm.core.util.Utils;
 
 public class Runner {
 
@@ -43,16 +46,16 @@ public class Runner {
         for (int i = 0; i < args.length; i++) {
             array.getFields()[i] = Heap.intern(args[i]);
         }
-        int[] actualArgs = new int[]{Heap.allocate(array)};
+        Variables actualArgs = new Variables(1);
+        actualArgs.put(0, SimpleType.REF, Heap.allocate(array));
 
         NativeReturn ret = Utils.executeMethodAndThrow(mainMethod, actualArgs, MAIN_THREAD);
 
         if (ret != null) {
-            VariableStack stack = new VariableStack();
+            VariableStack stack = new VariableStackImpl();
             ret.applyValue(stack);
             try {
-                int i = stack.pop();
-                OopClass obj = Heap.getOopClass(i);
+                OopClass obj = stack.popOop();
                 if (obj.getClassObject().isInstanceOf(loader.getClassObject("java/lang/Throwable"))) {
                     System.out.println("Died with Exception of type: " + obj.getClassObject().getClassName());
                 }
@@ -83,8 +86,8 @@ public class Runner {
         Method systemThreadGroupCtor = threadGroupClass.getDefaultConstructor();
         OopClass systemThreadGroup = threadGroupClass.newObject();
 
-        int[] args = systemThreadGroupCtor.newEmptyArgArray();
-        args[0] = Heap.allocate(systemThreadGroup);
+        Variables args = systemThreadGroupCtor.newArgArray();
+        args.put(0, SimpleType.REF, Heap.allocate(systemThreadGroup));
 
         Utils.executeMethodAndThrow(systemThreadGroupCtor, args, null);
 
@@ -95,11 +98,11 @@ public class Runner {
 
         OopClass mainString = Heap.getOopClass(Heap.intern("main"));
 
-        args = mainThreadGroupCtor.newEmptyArgArray();
-        args[0] = Heap.allocate(mainThreadGroup);
-        args[1] = Heap.NULL_POINTER;
-        args[2] = systemThreadGroup.getAddress(); // parent
-        args[3] = mainString.getAddress(); // name
+        args = mainThreadGroupCtor.newArgArray();
+        args.put(0, SimpleType.REF, Heap.allocate(mainThreadGroup));
+        args.put(1, SimpleType.REF, Heap.NULL_POINTER);
+        args.put(2, SimpleType.REF, systemThreadGroup.getAddress()); // parent
+        args.put(3, SimpleType.REF, mainString.getAddress()); // name
 
         Utils.executeMethodAndThrow(mainThreadGroupCtor, args, null);
 

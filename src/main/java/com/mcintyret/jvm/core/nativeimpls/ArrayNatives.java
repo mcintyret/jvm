@@ -1,11 +1,10 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.exec.OperationContext;
-import com.mcintyret.jvm.core.exec.Variable;
+import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.OopClassClass;
 import com.mcintyret.jvm.core.type.ArrayType;
 import com.mcintyret.jvm.core.type.MethodSignature;
-import com.mcintyret.jvm.core.type.Type;
 
 /**
  * User: tommcintyre
@@ -14,11 +13,11 @@ import com.mcintyret.jvm.core.type.Type;
 public enum ArrayNatives implements NativeImplementation {
     NEW_ARRAY("newArray", "(Ljava/lang/Class;I)Ljava/lang/Object;") {
         @Override
-        public NativeReturn execute(Variable[] args, OperationContext ctx) {
-            Type componentType = ((OopClassClass) args[0].getOop()).getThisType();
-            ArrayType arrayType = ArrayType.create(componentType, 1);
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            OopClassClass componentClass = args.getOop(0);
+            ArrayType arrayType = ArrayType.create(componentClass.getThisType(), 1);
 
-            return NativeReturn.forReference(arrayType.getClassObject().newArray(args[1].getRawValue()));
+            return NativeReturn.forReference(arrayType.getClassObject().newArray(args.getInt(1)));
         }
     };
 

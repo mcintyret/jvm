@@ -1,7 +1,7 @@
 package com.mcintyret.jvm.core.opcode.math.neg;
 
-import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.opcode.OpCode;
 
 public class INeg extends OpCode {
 

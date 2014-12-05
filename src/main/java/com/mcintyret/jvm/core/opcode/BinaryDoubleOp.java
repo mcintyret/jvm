@@ -8,7 +8,7 @@ public abstract class BinaryDoubleOp extends OpCode {
     @Override
     public final void execute(OperationContext ctx) {
         VariableStack stack = ctx.getStack();
-        stack.push(binaryOp(stack.popDouble(), stack.popDouble()));
+        stack.pushDouble(binaryOp(stack.popDouble(), stack.popDouble()));
     }
 
     protected abstract double binaryOp(double a, double b);

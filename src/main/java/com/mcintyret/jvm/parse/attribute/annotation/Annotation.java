@@ -1,7 +1,8 @@
 package com.mcintyret.jvm.parse.attribute.annotation;
 
-import com.mcintyret.jvm.parse.attribute.Parser;
 import java.util.List;
+
+import com.mcintyret.jvm.parse.attribute.Parser;
 
 public class Annotation {
 

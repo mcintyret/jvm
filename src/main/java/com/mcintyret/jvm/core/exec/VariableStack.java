@@ -1,99 +1,58 @@
 package com.mcintyret.jvm.core.exec;
 
 import com.mcintyret.jvm.core.clazz.ValueReceiver;
-import com.mcintyret.jvm.core.util.Utils;
+import com.mcintyret.jvm.core.oop.Oop;
+import com.mcintyret.jvm.core.type.SimpleType;
 
-import java.util.NoSuchElementException;
+public interface VariableStack extends ValueReceiver {
 
-public class VariableStack implements ValueReceiver {
+    int popRaw();
 
-    private static final int DEFAULT_SIZE = 10;
+    int popChecked(SimpleType type);
 
-    private Variable[] stack;
+    Variable pop();
 
-    private int head = 0;
+    int popInt();
 
-    public VariableStack(int size) {
-        stack = new Variable[size];
+    float popFloat();
+
+    long popLong();
+
+    double popDouble();
+
+    <O extends Oop> O popOop();
+
+    void pushChecked(int val, SimpleType type);
+
+    void pushInt(int val);
+
+    void pushLong(int l, int r);
+
+    void pushLong(long val);
+
+    void pushFloat(float f);
+
+    void pushDouble(double v);
+
+    void pushByte(byte b);
+
+    void pushShort(short s);
+
+    void pushOop(Oop oop);
+
+    void pushNull();
+
+    void push(Variable v);
+
+    default void receiveInt(int i) {
+        pushInt(i);
     }
 
-    public void clear() {
-        head = 0;
+    default void receiveLong(long l) {
+        pushLong(l);
     }
 
-    public VariableStack() {
-        this(DEFAULT_SIZE);
-    }
+    void clear(); // Required when exceptions are thrown
 
-    public void push(Variable v) {
-        if (head == stack.length) {
-            resize();
-        }
-        stack[head++] = v;
-    }
 
-    public Variable pop() {
-        if (head == 0) {
-            throw new NoSuchElementException();
-        }
-        Variable ret = stack[--head];
-        stack[head] = null;
-        return ret;
-    }
-
-    public void push(float f) {
-        push(Float.floatToIntBits(f));
-    }
-
-    public float popFloat() {
-        return Float.intBitsToFloat(pop());
-    }
-
-    public void push(long l) {
-        if (head >= stack.length - 1) {
-            resize();
-        }
-        stack[head++] = (int) (l >> 32);
-        stack[head++] = (int) l;
-    }
-
-    public long popLong() {
-        if (head <= 1) {
-            throw new NoSuchElementException();
-        }
-        long val = Utils.toLong(stack[head - 2], stack[head - 1]);
-        head -= 2;
-        return val;
-    }
-
-    public void push(double d) {
-        push(Double.doubleToLongBits(d));
-    }
-
-    public double popDouble() {
-        return Double.longBitsToDouble(popLong());
-    }
-
-    public int peek() {
-        if (head == 0) {
-            throw new NoSuchElementException();
-        }
-        return stack[head - 1];
-    }
-
-    private void resize() {
-        int[] newStack = new int[stack.length * 2];
-        System.arraycopy(stack, 0, newStack, 0, stack.length);
-        stack = newStack;
-    }
-
-    @Override
-    public void receiveInt(int i) {
-        push(i);
-    }
-
-    @Override
-    public void receiveLong(long l) {
-        push(l);
-    }
 }

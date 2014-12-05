@@ -1,13 +1,13 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.exec.OperationContext;
-import com.mcintyret.jvm.core.exec.Variable;
+import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.type.MethodSignature;
 
 public enum ClassLoaderNatives implements NativeImplementation {
     REGISTER_NATIVES("registerNatives", "()V") {
         @Override
-        public NativeReturn execute(Variable[] args, OperationContext ctx) {
+        public NativeReturn execute(Variables args, OperationContext ctx) {
             return NativeReturn.forVoid();
         }
     };

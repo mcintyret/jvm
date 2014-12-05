@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.type;
 
+import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.exec.VariableStack;
+import com.mcintyret.jvm.core.type.SimpleType;
 
 class CheckCast extends TypeOp {
 
@@ -9,12 +11,12 @@ class CheckCast extends TypeOp {
         if (!instanceOf) {
             throw new ClassCastException();
         }
-        stack.push(address);
+        stack.pushChecked(address, SimpleType.REF);
     }
 
     @Override
-    protected void handleNull(VariableStack stack, int address) {
-        stack.push(address);
+    protected void handleNull(VariableStack stack) {
+        stack.pushChecked(Heap.NULL_POINTER, SimpleType.REF);
     }
 
     @Override

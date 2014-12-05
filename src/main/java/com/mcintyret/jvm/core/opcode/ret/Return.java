@@ -1,7 +1,8 @@
 package com.mcintyret.jvm.core.opcode.ret;
 
-import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
+import com.mcintyret.jvm.core.type.SimpleType;
 
 class Return extends BaseReturn {
 
@@ -15,5 +16,10 @@ class Return extends BaseReturn {
         if (ctx.getExecutionStack().peek() == null) {
             ctx.getExecutionStack().setFinalReturn(NativeReturn.forVoid());
         }
+    }
+
+    @Override
+    protected SimpleType getType() {
+        throw new UnsupportedOperationException();
     }
 }

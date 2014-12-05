@@ -1,8 +1,8 @@
 package com.mcintyret.jvm.core.opcode.math;
 
-import com.mcintyret.jvm.core.util.ByteIterator;
-import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.opcode.OpCode;
+import com.mcintyret.jvm.core.util.ByteIterator;
 
 /**
  * User: tommcintyre
@@ -13,7 +13,7 @@ class IInc extends OpCode {
     @Override
     public void execute(OperationContext ctx) {
         ByteIterator bi = ctx.getByteIterator();
-        ctx.getLocalVars()[bi.nextByte()] += bi.nextByte();
+        ctx.getLocalVariables()[bi.nextByte()] += bi.nextByte();
     }
 
     @Override

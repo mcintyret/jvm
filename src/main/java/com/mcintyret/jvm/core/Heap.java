@@ -1,12 +1,12 @@
 package com.mcintyret.jvm.core;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.util.Utils;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class Heap {
 

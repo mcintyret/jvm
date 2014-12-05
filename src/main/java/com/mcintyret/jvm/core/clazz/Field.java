@@ -1,13 +1,13 @@
 package com.mcintyret.jvm.core.clazz;
 
+import java.util.Set;
+
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.util.Utils;
-import com.mcintyret.jvm.core.type.Type;
 import com.mcintyret.jvm.core.oop.Oop;
+import com.mcintyret.jvm.core.type.Type;
+import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.parse.Modifier;
 import com.mcintyret.jvm.parse.attribute.Attributes;
-
-import java.util.Set;
 
 public class Field extends Member {
 

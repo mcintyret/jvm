@@ -1,9 +1,10 @@
 package com.mcintyret.jvm.parse.cp;
 
-import com.mcintyret.jvm.core.util.ByteIterator;
 import java.util.Collections;
 import java.util.Map;
 import java.util.TreeMap;
+
+import com.mcintyret.jvm.core.util.ByteIterator;
 
 public enum ConstantPoolConstant {
     CLASS(7) {

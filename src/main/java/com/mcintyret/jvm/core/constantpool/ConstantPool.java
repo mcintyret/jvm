@@ -10,6 +10,7 @@ import com.mcintyret.jvm.parse.cp.CpFieldReference;
 import com.mcintyret.jvm.parse.cp.CpMethodReference;
 import com.mcintyret.jvm.parse.cp.CpString;
 
+// TODO: this all needs to be typed!
 public class ConstantPool {
 
     private final Object[] constantPool;

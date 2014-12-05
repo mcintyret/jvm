@@ -11,11 +11,11 @@ class InstanceOf extends TypeOp {
 
     @Override
     protected void handleType(boolean instanceOf, VariableStack stack, int address) {
-        stack.push(instanceOf ? 1 : 0);
+        stack.pushInt(instanceOf ? 1 : 0);
     }
 
     @Override
-    protected void handleNull(VariableStack stack, int address) {
-        stack.push(0);
+    protected void handleNull(VariableStack stack) {
+        stack.pushInt(0);
     }
 }

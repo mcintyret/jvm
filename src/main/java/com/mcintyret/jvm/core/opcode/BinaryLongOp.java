@@ -8,7 +8,7 @@ public abstract class BinaryLongOp extends OpCode {
     @Override
     public final void execute(OperationContext ctx) {
         VariableStack stack = ctx.getStack();
-        stack.push(binaryOp(stack.popLong(), stack.popLong()));
+        stack.pushLong(binaryOp(stack.popLong(), stack.popLong()));
     }
 
     protected abstract long binaryOp(long a, long b);

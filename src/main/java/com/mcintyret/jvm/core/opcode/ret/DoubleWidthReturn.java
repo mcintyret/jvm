@@ -12,6 +12,6 @@ abstract class DoubleWidthReturn extends BaseValueReturn {
 
     @Override
     protected final void pushReturnVal(VariableStack lower, VariableStack upper) {
-        lower.push(upper.popLong());
+        lower.pushLong(upper.popLong());
     }
 }

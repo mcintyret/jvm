@@ -1,7 +1,7 @@
 package com.mcintyret.jvm.core.opcode;
 
 import com.mcintyret.jvm.core.exec.OperationContext;
-import com.mcintyret.jvm.core.exec.VariableStack;
+import com.mcintyret.jvm.core.exec.VariableStackImpl;
 
 /**
  * User: tommcintyre
@@ -11,7 +11,7 @@ class Swap extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        VariableStack stack = ctx.getStack();
+        VariableStackImpl stack = ctx.getStack();
         int one = stack.pop();
         int two = stack.pop();
 

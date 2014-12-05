@@ -1,13 +1,5 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import com.mcintyret.jvm.core.exec.OperationContext;
-import com.mcintyret.jvm.core.exec.Variable;
-import com.mcintyret.jvm.core.oop.OopArray;
-import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.type.MethodSignature;
-import com.mcintyret.jvm.core.util.Utils;
-import sun.misc.SharedSecrets;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
@@ -16,11 +8,20 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.Variables;
+import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.util.Utils;
+
+import sun.misc.SharedSecrets;
+
 public enum FileOutputStreamNatives implements NativeImplementation {
     CLOSE_0("close0", "()V") {
         @Override
-        public NativeReturn execute(Variable[] args, OperationContext ctx) {
-            int fd = getFileDescriptor(args[0].getOop());
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            int fd = getFileDescriptor(args.getOop(0));
             FileOutputStream fos = OPEN_FOSES.remove(fd);
             try {
                 fos.close();
@@ -32,16 +33,16 @@ public enum FileOutputStreamNatives implements NativeImplementation {
     },
     INIT_IDS("initIDs", "()V") {
         @Override
-        public NativeReturn execute(Variable[] args, OperationContext ctx) {
+        public NativeReturn execute(Variables args, OperationContext ctx) {
             // Do nothing??
             return NativeReturn.forVoid();
         }
     },
     OPEN("open", "(Ljava/lang/String;Z)V") {
         @Override
-        public NativeReturn execute(Variable[] args, OperationContext ctx) {
-            String name = Utils.toString(args[1].getOop());
-            boolean append = args[2].getRawValue() > 0;
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            String name = Utils.toString((OopClass) args.getOop(1));
+            boolean append = args.getBoolean(2);
 
             try {
                 FileOutputStream fos = new FileOutputStream(new File(name), append);
@@ -56,16 +57,16 @@ public enum FileOutputStreamNatives implements NativeImplementation {
     },
     WRITE_BYTES("writeBytes", "([BIIZ)V") {
         @Override
-        public NativeReturn execute(Variable[] args, OperationContext ctx) {
-            FileOutputStream fos = OPEN_FOSES.get(getFileDescriptor(args[0].getOop()));
-            OopArray bytesOop = args[1].getOop();
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            FileOutputStream fos = OPEN_FOSES.get(getFileDescriptor(args.getOop(0)));
+            OopArray bytesOop = args.getOop(1);
             byte[] bytes = new byte[bytesOop.getLength()];
             for (int i = 0; i < bytes.length; i++) {
                 bytes[i] = (byte) bytesOop.getFields()[i];
             }
 
             try {
-                fos.write(bytes, args[2].getRawValue(), args[3].getRawValue());
+                fos.write(bytes, args.getInt(2), args.getInt(3));
                 return NativeReturn.forVoid();
             } catch (IOException e) {
                 return NativeReturn.forThrowable(Utils.toThrowableOop(e, ctx.getThread()));

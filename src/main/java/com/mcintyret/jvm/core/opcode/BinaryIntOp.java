@@ -8,7 +8,7 @@ public abstract class BinaryIntOp extends OpCode {
     @Override
     public final void execute(OperationContext ctx) {
         VariableStack stack = ctx.getStack();
-        stack.push(binaryOp(stack.pop(), stack.pop()));
+        stack.pushInt(binaryOp(stack.popInt(), stack.popInt()));
     }
 
     protected abstract int binaryOp(int a, int b);

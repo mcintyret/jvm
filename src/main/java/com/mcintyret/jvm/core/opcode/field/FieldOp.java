@@ -1,8 +1,8 @@
 package com.mcintyret.jvm.core.opcode.field;
 
 import com.mcintyret.jvm.core.clazz.Field;
-import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.opcode.OpCode;
 
 abstract class FieldOp extends OpCode {
 

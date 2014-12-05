@@ -1,9 +1,8 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.exec.OperationContext;
-import com.mcintyret.jvm.core.exec.Variable;
+import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.util.Utils;
@@ -11,12 +10,12 @@ import com.mcintyret.jvm.core.util.Utils;
 public enum AccessControllerNatives implements NativeImplementation {
     DO_PRIVILEGED("doPrivileged", "(Ljava/security/PrivilegedAction;)Ljava/lang/Object;") {
         @Override
-        public NativeReturn execute(Variable[] args, OperationContext ctx) {
+        public NativeReturn execute(Variables args, OperationContext ctx) {
             // Meh, I'm sure it's fine...
-            OopClass privilegedAction = Heap.getOopClass(args[0].getRawValue());
+            OopClass privilegedAction = args.getOop(0);
             Method run = privilegedAction.getClassObject().findMethod("run", "()Ljava/lang/Object;", false);
-            Variable[] runArgs = run.newEmptyArgArray();
-            runArgs[0] = args[0];
+            Variables runArgs = run.newArgArray();
+            runArgs.put(0, args.get(0));
             return Utils.executeMethodAndThrow(run, runArgs, ctx.getThread());
         }
 
@@ -27,7 +26,7 @@ public enum AccessControllerNatives implements NativeImplementation {
     },
     GET_STACK_ACCESS_CONTROL_CONTEXT("getStackAccessControlContext", "()Ljava/security/AccessControlContext;") {
         @Override
-        public NativeReturn execute(Variable[] args, OperationContext ctx) {
+        public NativeReturn execute(Variables args, OperationContext ctx) {
             return NativeReturn.forNull();
         }
     };

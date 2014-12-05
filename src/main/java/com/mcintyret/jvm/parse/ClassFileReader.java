@@ -1,5 +1,10 @@
 package com.mcintyret.jvm.parse;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 import com.google.common.io.ByteStreams;
 import com.mcintyret.jvm.core.util.ByteBufferIterator;
 import com.mcintyret.jvm.core.util.ByteIterator;
@@ -8,10 +13,6 @@ import com.mcintyret.jvm.parse.attribute.AttributeParser;
 import com.mcintyret.jvm.parse.attribute.Attributes;
 import com.mcintyret.jvm.parse.attribute.Parser;
 import com.mcintyret.jvm.parse.cp.ConstantPoolConstant;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 public class ClassFileReader {
 

@@ -1,10 +1,10 @@
 package com.mcintyret.jvm.core.opcode.nuu;
 
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.util.Utils;
-import com.mcintyret.jvm.core.type.SimpleType;
-import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.opcode.OpCode;
+import com.mcintyret.jvm.core.type.SimpleType;
+import com.mcintyret.jvm.core.util.Utils;
 
 class NewArray extends OpCode {
 
@@ -12,7 +12,7 @@ class NewArray extends OpCode {
     public void execute(OperationContext ctx) {
         SimpleType type = SimpleType.forByte(ctx.getByteIterator().nextByte());
 
-        ctx.getStack().push(Heap.allocate(Utils.newArray(type, ctx.getStack().pop())));
+        ctx.getStack().pushChecked(Heap.allocate(Utils.newArray(type, ctx.getStack().popInt())), SimpleType.REF);
     }
 
     @Override

@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.core.opcode.branch;
 
-class If_ACmpEq extends BinaryCondition {
+class If_ACmpEq extends RefBinaryCondition {
 
     @Override
     protected boolean conditionMet(int a, int b) {

@@ -7,11 +7,11 @@ abstract class SingleWidthReturn extends BaseValueReturn {
 
     @Override
     protected final NativeReturn finalReturn(VariableStack stack) {
-        return NativeReturn.forInt(stack.pop());
+        return NativeReturn.forInt(stack.popInt());
     }
 
     @Override
     protected final void pushReturnVal(VariableStack lower, VariableStack upper) {
-        lower.push(upper.pop());
+        lower.pushChecked(upper.popChecked(getType()),getType());
     }
 }

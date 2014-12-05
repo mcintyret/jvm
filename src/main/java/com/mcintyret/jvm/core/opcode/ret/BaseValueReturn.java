@@ -2,9 +2,9 @@ package com.mcintyret.jvm.core.opcode.ret;
 
 import com.mcintyret.jvm.core.exec.ExecutionStack;
 import com.mcintyret.jvm.core.exec.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.VariableStack;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
-import com.mcintyret.jvm.core.exec.OperationContext;
 
 abstract class BaseValueReturn extends BaseReturn {
 

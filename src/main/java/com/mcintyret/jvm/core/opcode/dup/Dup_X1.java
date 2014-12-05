@@ -1,16 +1,19 @@
 package com.mcintyret.jvm.core.opcode.dup;
 
+import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.Variable;
 import com.mcintyret.jvm.core.exec.VariableStack;
 import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.exec.OperationContext;
 
 class Dup_X1 extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
         VariableStack stack = ctx.getStack();
-        int top = stack.pop();
-        int next = stack.pop();
+
+        Variable top = stack.pop();
+        Variable next = stack.pop();
+
         stack.push(top);
         stack.push(next);
         stack.push(top);

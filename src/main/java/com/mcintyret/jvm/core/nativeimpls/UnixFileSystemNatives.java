@@ -1,14 +1,14 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.clazz.Field;
-import com.mcintyret.jvm.core.exec.OperationContext;
-import com.mcintyret.jvm.core.type.MethodSignature;
-import com.mcintyret.jvm.core.util.Utils;
+import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 
 import java.io.File;
 
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
+import com.mcintyret.jvm.core.clazz.Field;
+import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.Variables;
+import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.util.Utils;
 
 /**
  * User: tommcintyre
@@ -17,16 +17,16 @@ import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 public enum UnixFileSystemNatives implements NativeImplementation {
     INIT_IDS("initIDs", "()V") {
         @Override
-        public NativeReturn execute(Variable[] args, OperationContext ctx) {
+        public NativeReturn execute(Variables args, OperationContext ctx) {
             return NativeReturn.forVoid();
         }
     },
     GET_BOOLEAN_ATTRIBUTES_0("getBooleanAttributes0", "(Ljava/io/File;)I") {
         @Override
-        public NativeReturn execute(Variable[] args, OperationContext ctx) {
+        public NativeReturn execute(Variables args, OperationContext ctx) {
             Field filePath = getDefaultClassLoader().getClassObject("java/io/File").findField("path", false);
 
-            String path = Utils.toString(filePath.getInt(Heap.getOop(args[1])));
+            String path = Utils.toString(filePath.getInt(args.getOop(1)));
 
             File file = new File(path);
 
@@ -45,8 +45,8 @@ public enum UnixFileSystemNatives implements NativeImplementation {
     },
     CANONICALIZE_0("canonicalize0", "(Ljava/lang/String;)Ljava/lang/String;") {
         @Override
-        public NativeReturn execute(Variable[] args, OperationContext ctx) {
-            return NativeReturn.forInt(args[1]);
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            return NativeReturn.forInt(args.getRawValue(1)); // Just return the input
         }
     };
 

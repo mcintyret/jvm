@@ -16,7 +16,7 @@ import com.mcintyret.jvm.parse.Modifier;
 public enum ReflectionNatives implements NativeImplementation {
     GET_CALLER_CLASS("getCallerClass", "()Ljava/lang/Class;") {
         @Override
-        public NativeReturn execute(Variable[] args, OperationContext ctx) {
+        public NativeReturn execute(Variables args, OperationContext ctx) {
             // Literally no documentation in the world about what this no-arg form is.
             // TODO: although I could make an educated guess...
             return NativeReturn.forReference(NonArrayType.forClass("java/lang/Object").getOopClassClass());
@@ -24,7 +24,7 @@ public enum ReflectionNatives implements NativeImplementation {
     },
     GET_CLASS_ACCESS_FLAGS("getClassAccessFlags", "(Ljava/lang/Class;)I") {
         @Override
-        public NativeReturn execute(Variable[] args, OperationContext ctx) {
+        public NativeReturn execute(Variables args, OperationContext ctx) {
             Type type = ((OopClassClass) Heap.getOop(args[0])).getThisType();
             if (type.isPrimitive()) {
                 throw new IllegalStateException("Don't know what to do here!");

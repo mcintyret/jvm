@@ -1,44 +1,8 @@
 package com.mcintyret.jvm.load;
 
-import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.util.Utils;
-import com.mcintyret.jvm.core.clazz.AbstractClassObject;
-import com.mcintyret.jvm.core.clazz.ArrayClassObject;
-import com.mcintyret.jvm.core.clazz.ClassObject;
-import com.mcintyret.jvm.core.clazz.Field;
-import com.mcintyret.jvm.core.clazz.InterfaceMethod;
-import com.mcintyret.jvm.core.clazz.Method;
-import com.mcintyret.jvm.core.clazz.NativeMethod;
-import com.mcintyret.jvm.core.constantpool.ConstantPool;
-import com.mcintyret.jvm.core.type.ArrayType;
-import com.mcintyret.jvm.core.type.MethodSignature;
-import com.mcintyret.jvm.core.type.NonArrayType;
-import com.mcintyret.jvm.core.type.Type;
-import com.mcintyret.jvm.core.type.Types;
-import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
-import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
-import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
-import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
-import com.mcintyret.jvm.core.nativeimpls.SystemNatives;
-import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.exec.OperationContext;
-import com.mcintyret.jvm.core.thread.Thread;
-import com.mcintyret.jvm.core.thread.Threads;
-import com.mcintyret.jvm.parse.ClassFile;
-import com.mcintyret.jvm.parse.ClassFileReader;
-import com.mcintyret.jvm.parse.MemberInfo;
-import com.mcintyret.jvm.parse.Modifier;
-import com.mcintyret.jvm.parse.cp.CpClass;
-import com.mcintyret.jvm.parse.cp.CpDouble;
-import com.mcintyret.jvm.parse.cp.CpFieldReference;
-import com.mcintyret.jvm.parse.cp.CpFloat;
-import com.mcintyret.jvm.parse.cp.CpInt;
-import com.mcintyret.jvm.parse.cp.CpLong;
-import com.mcintyret.jvm.parse.cp.CpMethodReference;
-import com.mcintyret.jvm.parse.cp.CpReference;
-import com.mcintyret.jvm.parse.cp.NameAndType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static com.mcintyret.jvm.core.util.Assert.assertNotNull;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -52,9 +16,47 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
-import static com.mcintyret.jvm.core.util.Assert.assertNotNull;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.clazz.AbstractClassObject;
+import com.mcintyret.jvm.core.clazz.ArrayClassObject;
+import com.mcintyret.jvm.core.clazz.ClassObject;
+import com.mcintyret.jvm.core.clazz.Field;
+import com.mcintyret.jvm.core.clazz.InterfaceMethod;
+import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.clazz.NativeMethod;
+import com.mcintyret.jvm.core.constantpool.ConstantPool;
+import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.Variables;
+import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
+import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
+import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
+import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
+import com.mcintyret.jvm.core.nativeimpls.SystemNatives;
+import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.thread.Thread;
+import com.mcintyret.jvm.core.thread.Threads;
+import com.mcintyret.jvm.core.type.ArrayType;
+import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.type.NonArrayType;
+import com.mcintyret.jvm.core.type.Type;
+import com.mcintyret.jvm.core.type.Types;
+import com.mcintyret.jvm.core.util.Utils;
+import com.mcintyret.jvm.parse.ClassFile;
+import com.mcintyret.jvm.parse.ClassFileReader;
+import com.mcintyret.jvm.parse.MemberInfo;
+import com.mcintyret.jvm.parse.Modifier;
+import com.mcintyret.jvm.parse.cp.CpClass;
+import com.mcintyret.jvm.parse.cp.CpDouble;
+import com.mcintyret.jvm.parse.cp.CpFieldReference;
+import com.mcintyret.jvm.parse.cp.CpFloat;
+import com.mcintyret.jvm.parse.cp.CpInt;
+import com.mcintyret.jvm.parse.cp.CpLong;
+import com.mcintyret.jvm.parse.cp.CpMethodReference;
+import com.mcintyret.jvm.parse.cp.CpReference;
+import com.mcintyret.jvm.parse.cp.NameAndType;
 
 public class ClassLoader {
 
@@ -118,7 +120,7 @@ public class ClassLoader {
 
             ClassObject system = getClassObject("java/lang/System");
             Method init = system.findMethod("initializeSystemClass", true);
-            Utils.executeMethodAndThrow(init, init.newEmptyArgArray(), Runner.MAIN_THREAD);
+            Utils.executeMethodAndThrow(init, init.newArgArray(), Runner.MAIN_THREAD);
         }
     }
 
@@ -129,7 +131,7 @@ public class ClassLoader {
         ClassObject system = getClassObject("java/lang/System");
         Method setProperties = system.findMethod("setProperties", true);
 
-        Utils.executeMethodAndThrow(setProperties, setProperties.newEmptyArgArray(), thread);
+        Utils.executeMethodAndThrow(setProperties, setProperties.newArgArray(), thread);
     }
 
     private void setSystemOut() {
@@ -141,7 +143,7 @@ public class ClassLoader {
         ClassObject fileOutputStream = getClassObject("java/io/FileOutputStream");
         Method ctor = fileOutputStream.findConstructor("(Ljava/io/FileDescriptor;)V");
         OopClass fos = fileOutputStream.newObject();
-        int[] args = ctor.newEmptyArgArray();
+        int[] args = ctor.newArgArray();
         args[0] = Heap.allocate(fos);
         args[1] = outFd.getAddress();
 
@@ -156,7 +158,7 @@ public class ClassLoader {
         ClassObject printStream = getClassObject("java/io/PrintStream");
         OopClass ps = printStream.newObject();
         Method psConstructor = printStream.findConstructor("(ZLjava/io/OutputStream;)V");
-        args = psConstructor.newEmptyArgArray();
+        args = psConstructor.newArgArray();
         args[0] = Heap.allocate(ps);
         args[2] = bos.getAddress();
 
@@ -332,8 +334,8 @@ public class ClassLoader {
                 method.getModifiers().add(Modifier.NATIVE);
                 NativeImplementation ni = new NativeImplementation() {
                     @Override
-                    public NativeReturn execute(Variable[] args, OperationContext ctx) {
-                        OopClass thread = Heap.getOopClass(args[0]);
+                    public NativeReturn execute(Variables args, OperationContext ctx) {
+                        OopClass thread = args.getOop(0);
                         Threads.register(new Thread(thread));
 
                         // Do the actual method stuff
@@ -396,7 +398,7 @@ public class ClassLoader {
     private void executeStaticInitMethod(ClassObject co) {
         Method staticInit = co.findMethod("<clinit>", "()V", true);
         if (staticInit != null) {
-            Utils.executeMethodAndThrow(staticInit, new int[staticInit.getCode().getMaxLocals()], Runner.MAIN_THREAD);
+            Utils.executeMethodAndThrow(staticInit, new Variables(staticInit.getCode().getMaxLocals()), Runner.MAIN_THREAD);
         }
     }
 

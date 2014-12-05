@@ -21,7 +21,7 @@ public class GiveItAllAGo {
 
         NativeImplementationRegistry.registerNative(new NativeImplementationAdapter(mainClass, MethodSignature.parse("print", "(Ljava/lang/String;)V")) {
             @Override
-            public NativeReturn execute(Variable[] args, OperationContext ctx) {
+            public NativeReturn execute(Variables args, OperationContext ctx) {
                 System.out.println("NATIVE METHOD!!!: " + Utils.toString(Heap.getOopClass(args[0])));
                 return NativeReturn.forVoid();
             }

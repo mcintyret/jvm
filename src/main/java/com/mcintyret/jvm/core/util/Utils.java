@@ -1,5 +1,9 @@
 package com.mcintyret.jvm.core.util;
 
+import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
@@ -7,7 +11,7 @@ import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.ValueReceiver;
 import com.mcintyret.jvm.core.exec.ExecutionStack;
 import com.mcintyret.jvm.core.exec.ExecutionStackElement;
-import com.mcintyret.jvm.core.exec.Variable;
+import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
@@ -17,19 +21,11 @@ import com.mcintyret.jvm.core.type.ArrayType;
 import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.type.Type;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
-
 public class Utils {
 
     public static OopArray newArray(Type type, int size) {
         ArrayClassObject aco = ArrayClassObject.forType(ArrayType.create(type, 1));
         return new OopArray(aco, new int[size * type.getWidth()]);
-    }
-
-    public static long toLong(Variable l, Variable r) {
-        return toLong(l.assertType(SimpleType.LONG).getRawValue(), r.assertType(SimpleType.LONG).getRawValue());
     }
 
     public static long toLong(int l, int r) {
@@ -54,13 +50,16 @@ public class Utils {
         return new String(chars);
     }
 
-    public static String toString(int oopAddress) {
-        Oop oop = Heap.getOop(oopAddress);
+    public static String toString(Oop oop) {
         if (oop instanceof OopArray) {
             return toString((OopArray) oop);
         } else {
             return toString((OopClass) oop);
         }
+    }
+
+    public static String toString(int oopAddress) {
+        return toString(Heap.getOop(oopAddress));
     }
 
     public static OopClass toOopString(String string) {
@@ -86,7 +85,7 @@ public class Utils {
         return stringOop;
     }
 
-    public static NativeReturn executeMethodAndThrow(Method method, Variable[] args, Thread thread) {
+    public static NativeReturn executeMethodAndThrow(Method method, Variables args, Thread thread) {
         ExecutionStack stack = new ExecutionStack(thread);
 
         stack.push(new ExecutionStackElement(method, args,

@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.core.opcode.branch;
 
-class IfGT extends UnaryCondition {
+class IfGT extends IntUnaryCondition {
 
     @Override
     protected boolean conditionMet(int pop) {
