@@ -1,25 +1,21 @@
-import java.io.IOException;
-
-import com.mcintyret.jvm.core.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.ExecutionStackElement;
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.Utils;
-import com.mcintyret.jvm.core.domain.MethodSignature;
+import com.mcintyret.jvm.core.util.Utils;
+import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationAdapter;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
-import com.mcintyret.jvm.core.opcode.OperationContext;
-import com.mcintyret.jvm.load.AggregatingClassPath;
+import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.load.ClassPath;
 import com.mcintyret.jvm.load.DirectoryClassPath;
 import com.mcintyret.jvm.load.Runner;
-import com.mcintyret.jvm.load.ZipClassPath;
+
+import java.io.IOException;
 
 public class GiveItAllAGo {
 
     public static void main(String[] args) throws IOException {
-        ClassPath classPath = new AggregatingClassPath(
-                new ZipClassPath("/Library/Java/JavaVirtualMachines/jdk1.7.0_67.jdk/Contents/Home/jre/lib/rt.jar"),
-                new DirectoryClassPath(System.getProperty("user.dir") + "/target/test-classes/com/mcintyret2/jvm"));
+        ClassPath classPath = new DirectoryClassPath(System.getProperty("user.dir") + "/target/test-classes/com/mcintyret2/jvm");
 
         String mainClass = "com/mcintyret2/jvm/test/Main";
 
