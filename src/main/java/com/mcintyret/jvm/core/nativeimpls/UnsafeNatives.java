@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.Variables;
@@ -14,6 +13,7 @@ import com.mcintyret.jvm.core.oop.OopClassClass;
 import com.mcintyret.jvm.core.thread.Threads;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.NonArrayType;
+import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
@@ -95,10 +95,9 @@ public enum UnsafeNatives implements NativeImplementation {
              Note that these arguments to toLong() look like they are inverted. This is because UNSAFE expects the
              two 32-bit sections of a long to be in this order.
               */
-            long expect = Utils.toLong(args[5], args[4]);
-            long update = Utils.toLong(args[7], args[6]);
+            long expect = Utils.toLong(args.getCheckedValue(5, SimpleType.LONG), args.getCheckedValue(4, SimpleType.LONG));
+            long update = Utils.toLong(args.getCheckedValue(7, SimpleType.LONG), args.getCheckedValue(6, SimpleType.LONG));
 
-            // TODO: THIS IS BROKEN NOW!!!
             boolean ret = THE_UNSAFE.compareAndSwapLong(oop.getFields(), byteOffset(offset), expect, update);
             return NativeReturn.forBool(ret);
         }

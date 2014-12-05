@@ -7,7 +7,7 @@ public class DNeg extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        ctx.getStack().push(-ctx.getStack().popDouble());
+        ctx.getStack().pushDouble(-ctx.getStack().popDouble());
     }
 
     @Override

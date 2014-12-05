@@ -13,7 +13,11 @@ class IInc extends OpCode {
     @Override
     public void execute(OperationContext ctx) {
         ByteIterator bi = ctx.getByteIterator();
-        ctx.getLocalVariables()[bi.nextByte()] += bi.nextByte();
+
+        int index = bi.nextByte();
+        int val = ctx.getLocalVariables().getInt(index);
+
+        ctx.getLocalVariables().putInt(index, val + bi.nextByte());
     }
 
     @Override

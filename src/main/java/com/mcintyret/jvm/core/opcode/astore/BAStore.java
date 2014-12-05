@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.astore;
 
-class BAStore extends SingleWidthAStore {
+import com.mcintyret.jvm.core.opcode.ByteTyped;
+
+class BAStore extends SingleWidthAStore implements ByteTyped {
 
     @Override
     public byte getByte() {

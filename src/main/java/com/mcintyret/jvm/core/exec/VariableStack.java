@@ -20,6 +20,8 @@ public interface VariableStack extends ValueReceiver {
 
     double popDouble();
 
+    long popDoubleWidth(SimpleType type);
+
     <O extends Oop> O popOop();
 
     void pushChecked(int val, SimpleType type);
@@ -57,6 +59,7 @@ public interface VariableStack extends ValueReceiver {
     }
 
     void clear(); // Required when exceptions are thrown
+
 
 
 }

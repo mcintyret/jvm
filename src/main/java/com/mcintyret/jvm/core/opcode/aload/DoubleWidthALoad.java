@@ -1,12 +1,13 @@
 package com.mcintyret.jvm.core.opcode.aload;
 
-import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.VariableStack;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.opcode.OpCode;
+import com.mcintyret.jvm.core.opcode.Typed;
+import com.mcintyret.jvm.core.type.SimpleType;
 
-abstract class DoubleWidthALoad extends OpCode {
+abstract class DoubleWidthALoad extends OpCode implements Typed {
 
     @Override
     public final void execute(OperationContext ctx) {
@@ -15,8 +16,9 @@ abstract class DoubleWidthALoad extends OpCode {
         int index = stack.popInt() * 2;
         OopArray array = stack.popOop();
 
-        stack.push(array.getFields()[index]);
-        stack.push(array.getFields()[index + 1]);
+        SimpleType type = getType();
+        stack.pushChecked(array.getFields()[index], type);
+        stack.pushChecked(array.getFields()[index + 1], type);
     }
 
 }

@@ -82,7 +82,8 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
         return Double.longBitsToDouble(popDoubleWidth(SimpleType.DOUBLE));
     }
 
-    private long popDoubleWidth(SimpleType type) {
+    @Override
+    public long popDoubleWidth(SimpleType type) {
         if (head <= 1) {
             throw new NoSuchElementException();
         }

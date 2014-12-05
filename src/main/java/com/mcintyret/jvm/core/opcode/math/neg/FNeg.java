@@ -7,7 +7,7 @@ public class FNeg extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        ctx.getStack().push(-ctx.getStack().popFloat());
+        ctx.getStack().pushFloat(-ctx.getStack().popFloat());
     }
 
     @Override

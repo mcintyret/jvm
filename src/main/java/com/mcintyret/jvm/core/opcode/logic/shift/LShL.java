@@ -1,17 +1,17 @@
 package com.mcintyret.jvm.core.opcode.logic.shift;
 
 import com.mcintyret.jvm.core.exec.OperationContext;
-import com.mcintyret.jvm.core.exec.VariableStackImpl;
+import com.mcintyret.jvm.core.exec.VariableStack;
 import com.mcintyret.jvm.core.opcode.OpCode;
 
 public class LShL extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        VariableStackImpl stack = ctx.getStack();
-        int shift = stack.pop();
+        VariableStack stack = ctx.getStack();
+        int shift = stack.popInt();
         long l = stack.popLong();
-        stack.push(l << shift);
+        stack.pushLong(l << shift);
     }
 
     @Override

@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.type.SimpleType;
 
 /**
  * User: tommcintyre
@@ -25,7 +24,5 @@ abstract class BaseReturn extends OpCode {
     }
 
     protected abstract void returnValue(OperationContext ctx);
-
-    protected abstract SimpleType getType();
 
 }

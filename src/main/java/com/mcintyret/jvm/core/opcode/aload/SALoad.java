@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.aload;
 
-class SALoad extends SingleWidthALoad {
+import com.mcintyret.jvm.core.opcode.ShortTyped;
+
+class SALoad extends SingleWidthALoad implements ShortTyped {
 
     @Override
     public byte getByte() {

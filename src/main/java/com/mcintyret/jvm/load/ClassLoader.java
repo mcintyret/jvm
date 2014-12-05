@@ -19,7 +19,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
@@ -34,7 +33,6 @@ import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
-import com.mcintyret.jvm.core.nativeimpls.SystemNatives;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.thread.Thread;
 import com.mcintyret.jvm.core.thread.Threads;
@@ -134,38 +132,38 @@ public class ClassLoader {
         Utils.executeMethodAndThrow(setProperties, setProperties.newArgArray(), thread);
     }
 
-    private void setSystemOut() {
-        com.mcintyret.jvm.core.thread.Thread thread = Runner.MAIN_THREAD;
-
-        ClassObject fileDescriptor = getClassObject("java/io/FileDescriptor");
-        OopClass outFd = (OopClass) fileDescriptor.findField("out", true).getOop(null);
-
-        ClassObject fileOutputStream = getClassObject("java/io/FileOutputStream");
-        Method ctor = fileOutputStream.findConstructor("(Ljava/io/FileDescriptor;)V");
-        OopClass fos = fileOutputStream.newObject();
-        int[] args = ctor.newArgArray();
-        args[0] = Heap.allocate(fos);
-        args[1] = outFd.getAddress();
-
-        // FileOutputStream constructor
-        Utils.executeMethodAndThrow(ctor, args, thread);
-
-        ClassObject bufferedOutputStream = getClassObject("java/io/BufferedOutputStream");
-        OopClass bos = bufferedOutputStream.newObject();
-        Method bosConstructor = bufferedOutputStream.findConstructor("(Ljava/io/OutputStream;)V");
-        Utils.executeMethodAndThrow(bosConstructor, new int[]{Heap.allocate(bos), fos.getAddress()}, thread);
-
-        ClassObject printStream = getClassObject("java/io/PrintStream");
-        OopClass ps = printStream.newObject();
-        Method psConstructor = printStream.findConstructor("(ZLjava/io/OutputStream;)V");
-        args = psConstructor.newArgArray();
-        args[0] = Heap.allocate(ps);
-        args[2] = bos.getAddress();
-
-        Utils.executeMethodAndThrow(psConstructor, args, thread);
-
-        SystemNatives.SET_OUT_0.execute(new int[]{ps.getAddress()}, null);
-    }
+//    private void setSystemOut() {
+//        com.mcintyret.jvm.core.thread.Thread thread = Runner.MAIN_THREAD;
+//
+//        ClassObject fileDescriptor = getClassObject("java/io/FileDescriptor");
+//        OopClass outFd = (OopClass) fileDescriptor.findField("out", true).getOop(null);
+//
+//        ClassObject fileOutputStream = getClassObject("java/io/FileOutputStream");
+//        Method ctor = fileOutputStream.findConstructor("(Ljava/io/FileDescriptor;)V");
+//        OopClass fos = fileOutputStream.newObject();
+//        int[] args = ctor.newArgArray();
+//        args[0] = Heap.allocate(fos);
+//        args[1] = outFd.getAddress();
+//
+//        // FileOutputStream constructor
+//        Utils.executeMethodAndThrow(ctor, args, thread);
+//
+//        ClassObject bufferedOutputStream = getClassObject("java/io/BufferedOutputStream");
+//        OopClass bos = bufferedOutputStream.newObject();
+//        Method bosConstructor = bufferedOutputStream.findConstructor("(Ljava/io/OutputStream;)V");
+//        Utils.executeMethodAndThrow(bosConstructor, new int[]{Heap.allocate(bos), fos.getAddress()}, thread);
+//
+//        ClassObject printStream = getClassObject("java/io/PrintStream");
+//        OopClass ps = printStream.newObject();
+//        Method psConstructor = printStream.findConstructor("(ZLjava/io/OutputStream;)V");
+//        args = psConstructor.newArgArray();
+//        args[0] = Heap.allocate(ps);
+//        args[2] = bos.getAddress();
+//
+//        Utils.executeMethodAndThrow(psConstructor, args, thread);
+//
+//        SystemNatives.SET_OUT_0.execute(new int[]{ps.getAddress()}, null);
+//    }
 
     public ClassObject getClassObject(String className) {
         ClassObject co = classes.get(className);

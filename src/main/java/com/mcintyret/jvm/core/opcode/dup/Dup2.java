@@ -10,7 +10,7 @@ class Dup2 extends OpCode {
     public void execute(OperationContext ctx) {
         VariableStack stack = ctx.getStack();
         long l = stack.popLong();
-        stack.push(l);
+        stack.pushLong(l);
         stack.push(l);
     }
 

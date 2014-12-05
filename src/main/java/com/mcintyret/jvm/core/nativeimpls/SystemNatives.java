@@ -121,8 +121,7 @@ public enum SystemNatives implements NativeImplementation {
         public NativeReturn execute(Variables args, OperationContext ctx) {
             return NativeReturn.forInt(
                 Heap.intern(
-                    System.mapLibraryName
-                        (Utils.toString(args.getOop(0)))));
+                    System.mapLibraryName(Utils.toString(args.<OopClass>getOop(0)))));
         }
     };
 

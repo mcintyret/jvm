@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.ret;
 
-class LReturn extends DoubleWidthReturn {
+import com.mcintyret.jvm.core.opcode.LongTyped;
+
+class LReturn extends DoubleWidthReturn implements LongTyped {
 
     @Override
     public byte getByte() {

@@ -1,16 +1,12 @@
 package com.mcintyret.jvm.core.opcode.ret;
 
-import com.mcintyret.jvm.core.type.SimpleType;
+import com.mcintyret.jvm.core.opcode.FloatTyped;
 
-class FReturn extends SingleWidthReturn {
+class FReturn extends SingleWidthReturn implements FloatTyped {
 
     @Override
     public byte getByte() {
         return (byte) 0xAE;
     }
 
-    @Override
-    protected SimpleType getType() {
-        return SimpleType.FLOAT;
-    }
 }

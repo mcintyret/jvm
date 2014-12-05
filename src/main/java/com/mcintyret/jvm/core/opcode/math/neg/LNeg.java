@@ -7,7 +7,7 @@ public class LNeg extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        ctx.getStack().push(-ctx.getStack().popLong());
+        ctx.getStack().pushLong(-ctx.getStack().popLong());
     }
 
     @Override

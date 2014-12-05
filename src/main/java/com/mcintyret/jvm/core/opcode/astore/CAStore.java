@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.astore;
 
-class CAStore extends SingleWidthAStore {
+import com.mcintyret.jvm.core.opcode.CharTyped;
+
+class CAStore extends SingleWidthAStore implements CharTyped {
 
     @Override
     public byte getByte() {
