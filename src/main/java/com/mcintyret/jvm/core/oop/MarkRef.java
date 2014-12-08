@@ -24,7 +24,7 @@ public class MarkRef {
         return live;
     }
 
-    public void setDead() {
-        live = false;
+    public void setLive(boolean live) {
+        this.live = live;
     }
 }

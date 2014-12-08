@@ -30,7 +30,7 @@ public class AThrow extends OpCode {
 
         ExecutionStackElement elem = ctx.getExecutionStack().peek();
         ExecutionStackElement prev = null;
-        while (elem != null) {
+        do {
             Method m = elem.getMethod();
             ConstantPool cp = m.getClassObject().getConstantPool();
             List<CodeException> exceptions = m.getCode().getCodeExceptions();
@@ -66,7 +66,7 @@ public class AThrow extends OpCode {
             ctx.getExecutionStack().pop();
             prev = elem;
             elem = ctx.getExecutionStack().peek();
-        }
+        } while (elem != null);
 
         // If we're here, the Exception has gone all the way to the top.
         LOG.warn("Did not catch error of type {}. Exiting from method {}", thrown.getClassObject(), prev.getMethod());

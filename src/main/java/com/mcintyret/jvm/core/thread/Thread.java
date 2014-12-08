@@ -39,7 +39,6 @@ public class Thread {
         this.thisThread = thisThread;
         this.executionStack = new ExecutionStack(this);
         this.thread = new ActualThread();
-
     }
 
     // For system threads

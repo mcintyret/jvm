@@ -1,19 +1,30 @@
 package com.mcintyret.jvm.core;
 
-import com.mcintyret.jvm.core.exec.ExecutionStackElement;
-import com.mcintyret.jvm.core.oop.Oop;
-import com.mcintyret.jvm.core.oop.OopArray;
-import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.thread.Thread;
-import com.mcintyret.jvm.core.thread.Threads;
-import com.mcintyret.jvm.core.util.Utils;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Phaser;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.mcintyret.jvm.core.clazz.ClassObject;
+import com.mcintyret.jvm.core.clazz.Field;
+import com.mcintyret.jvm.core.exec.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.Variables;
+import com.mcintyret.jvm.core.oop.Oop;
+import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.thread.Thread;
+import com.mcintyret.jvm.core.thread.Threads;
+import com.mcintyret.jvm.core.type.ArrayType;
+import com.mcintyret.jvm.core.type.SimpleType;
+import com.mcintyret.jvm.core.type.Type;
+import com.mcintyret.jvm.core.util.Utils;
+
 public class Heap {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Heap.class);
 
     private static final int INITIAL_HEAP_SIZE = 32;
 
@@ -73,18 +84,85 @@ public class Heap {
     private static void garbageCollection() {
         // At this point we know that all the threads are awaiting the Phaser (!)
 
+        OOP_TABLE = new GarbageCollector().run();
+    }
+
+    private static class GarbageCollector {
+
+        private static final float MAX_THRESHOLD = 0.85F;
+
         // Optimistically assume we can reclaim enough resources that the existing heap size is big enough
-        int index = 0;
-        int[] newOops = new int[OOP_TABLE.length];
+        private int index = 0;
+        private Oop[] newOops = new Oop[OOP_TABLE.length];
 
-        for (Thread thread : Threads.getAll()) {
-            for (ExecutionStackElement stack : thread.getExecutionStack().getStack()) {
 
+        public Oop[] run() {
+            LOG.warn("Starting GC, initial heap size: {}", OOP_TABLE.length);
+            for (Thread thread : Threads.getAll()) {
+                for (ExecutionStackElement stack : thread.getExecutionStack().getStack()) {
+                    Variables localVariables = stack.getLocalVariables();
+                    for (int i = 0; i < localVariables.length(); i++) {
+                        if (localVariables.getType(i) == SimpleType.REF) {
+                            Oop oop = localVariables.getOop(i);
+                            gcOop(oop);
+                            localVariables.putOop(i, oop); // update the address
+                        }
+                    }
+                }
+            }
+
+            if (index > MAX_THRESHOLD * newOops.length) {
+                expand();
+            }
+
+            LOG.warn("Finished GC, final heap size: {}", newOops.length);
+
+            return newOops;
+        }
+
+        private void gcOop(Oop oop) {
+            if (!oop.getMarkRef().isLive()) {
+                // we haven't visited this one yet!
+                oop.getMarkRef().setLive(true);
+                int[] fieldVals = oop.getFields();
+
+                Type type = oop.getClassObject().getType();
+                if (type.isArray() && !((ArrayType) type).getComponentType().isPrimitive()) {
+                    for (int i = 0; i < fieldVals.length; i++) {
+                        Oop field = Heap.getOop(fieldVals[i]);
+                        gcOop(field);
+                        fieldVals[i] = field.getAddress(); // update the address
+                    }
+                } else if (!type.isArray()) {
+                    Field[] fields = ((ClassObject) oop.getClassObject()).getInstanceFields();
+                    int pos = 0;
+                    for (Field field : fields) {
+                        Type fieldType = field.getType();
+
+                        if (!fieldType.isPrimitive()) {
+                            Oop fieldOop = Heap.getOop(fieldVals[pos]);
+                            gcOop(fieldOop);
+                            fieldVals[pos] = oop.getAddress();
+                        }
+                        pos += fieldType.getWidth();
+                    }
+                }
             }
         }
 
+        private void addOop(Oop oop) {
+            if (index == newOops.length) {
+                expand();
+            }
+            newOops[index] = oop;
+            oop.setAddress(index);
+        }
 
-
+        private void expand() {
+            Oop[] tmp = new Oop[newOops.length * 2];
+            System.arraycopy(newOops, 0, tmp, 0, index);
+            newOops = tmp;
+        }
 
     }
 
