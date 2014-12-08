@@ -1,7 +1,11 @@
 package com.mcintyret.jvm.core.exec;
 
-import org.slf4j.Logger;
+import java.util.concurrent.atomic.AtomicInteger;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.opcode.OpCode;

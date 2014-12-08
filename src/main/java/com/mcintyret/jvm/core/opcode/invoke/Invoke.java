@@ -76,4 +76,12 @@ abstract class Invoke extends OpCode {
         return args;
     }
 
+
+    // Method invocations are a safe point to stop and do GC
+    @Override
+    public boolean isSafePoint() {
+        return true;
+    }
+
+
 }
