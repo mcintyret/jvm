@@ -1,7 +1,8 @@
 package com.mcintyret.jvm.parse;
 
-import com.mcintyret.jvm.parse.attribute.Attributes;
 import java.util.Set;
+
+import com.mcintyret.jvm.parse.attribute.Attributes;
 
 public class MemberInfo {
 

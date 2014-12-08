@@ -1,10 +1,10 @@
 package com.mcintyret.jvm.core.exec;
 
-import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
-import com.mcintyret.jvm.core.thread.Thread;
-
 import java.util.ArrayDeque;
 import java.util.Deque;
+
+import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
+import com.mcintyret.jvm.core.thread.Thread;
 
 public class ExecutionStack {
 

@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.store;
 
-class IStore extends SingleWidthStoreIndexed {
+import com.mcintyret.jvm.core.opcode.IntTyped;
+
+class IStore extends SingleWidthStoreIndexed implements IntTyped {
 
     @Override
     public byte getByte() {

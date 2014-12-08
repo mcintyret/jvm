@@ -1,13 +1,10 @@
 package com.mcintyret.jvm.core.opcode.constant;
 
-import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.exec.OperationContext;
-
-class IConst_3 extends OpCode {
+class IConst_3 extends IConst {
 
     @Override
-    public void execute(OperationContext ctx) {
-        ctx.getStack().push(3);
+    protected int getConst() {
+        return 3;
     }
 
     @Override

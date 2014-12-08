@@ -14,6 +14,8 @@ public interface Type {
 
     boolean isDoubleWidth();
 
+    SimpleType asSimpleType();
+
     default int getWidth() {
         return isDoubleWidth() ? 2 : 1;
     }

@@ -2,9 +2,9 @@ package com.mcintyret.jvm.core.type;
 
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.ImportantClasses;
-import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.oop.OopClassClass;
+import com.mcintyret.jvm.core.util.Utils;
 
 /**
  * User: tommcintyre
@@ -15,6 +15,11 @@ public abstract class ReferenceType implements Type {
     @Override
     public boolean isPrimitive() {
         return false;
+    }
+
+    @Override
+    public SimpleType asSimpleType() {
+        return SimpleType.REF;
     }
 
     @Override

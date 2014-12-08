@@ -1,9 +1,9 @@
 package com.mcintyret.jvm.core.type;
 
-import com.mcintyret.jvm.core.clazz.ArrayClassObject;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 
 public final class ArrayType extends ReferenceType {
 

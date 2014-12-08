@@ -13,7 +13,12 @@ public class Main {
 //        interfaceMethods();
 //        simpleIntArrays();
 //        stringsAndNatives();
-        simpleThreadingTest2();
+//        simpleThreadingTest2();
+        stringLength();
+    }
+
+    private static void stringLength() {
+        print(String.valueOf("foo".length()));
     }
 
     private static void interfaceMethods() {

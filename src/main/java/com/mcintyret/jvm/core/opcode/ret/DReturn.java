@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.ret;
 
-class DReturn extends DoubleWidthReturn {
+import com.mcintyret.jvm.core.opcode.DoubleTyped;
+
+class DReturn extends DoubleWidthReturn implements DoubleTyped {
 
     @Override
     public byte getByte() {

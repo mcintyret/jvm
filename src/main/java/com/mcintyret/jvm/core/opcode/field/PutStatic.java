@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.core.opcode.field;
 
-import com.mcintyret.jvm.core.exec.WordStack;
+import com.mcintyret.jvm.core.exec.VariableStack;
 import com.mcintyret.jvm.core.oop.Oop;
 
 class PutStatic extends Put {
@@ -11,7 +11,7 @@ class PutStatic extends Put {
     }
 
     @Override
-    protected Oop getOop(WordStack stack) {
+    protected Oop getOop(VariableStack stack) {
         return null;
     }
 }

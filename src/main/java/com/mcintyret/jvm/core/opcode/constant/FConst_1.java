@@ -1,13 +1,10 @@
 package com.mcintyret.jvm.core.opcode.constant;
 
-import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.exec.OperationContext;
-
-class FConst_1 extends OpCode {
+class FConst_1 extends FConst {
 
     @Override
-    public void execute(OperationContext ctx) {
-        ctx.getStack().push(1F);
+    protected float getConst() {
+        return 1F;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.ret;
 
-class IReturn extends SingleWidthReturn {
+import com.mcintyret.jvm.core.opcode.IntTyped;
+
+class IReturn extends SingleWidthReturn implements IntTyped {
 
     @Override
     public byte getByte() {

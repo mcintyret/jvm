@@ -1,14 +1,13 @@
 package com.mcintyret.jvm.core.opcode.constant;
 
-import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.opcode.OpCode;
 
 class AConst_Null extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        ctx.getStack().push(Heap.NULL_POINTER);
+        ctx.getStack().pushNull();
     }
 
     @Override

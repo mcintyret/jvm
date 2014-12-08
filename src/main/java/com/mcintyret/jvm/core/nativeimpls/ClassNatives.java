@@ -1,29 +1,30 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.ImportantClasses;
-import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.Variables;
+import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.oop.OopClassClass;
+import com.mcintyret.jvm.core.oop.OopClassMethod;
 import com.mcintyret.jvm.core.type.ArrayType;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.NonArrayType;
 import com.mcintyret.jvm.core.type.ReferenceType;
 import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.type.Type;
-import com.mcintyret.jvm.core.oop.OopArray;
-import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.oop.OopClassClass;
-import com.mcintyret.jvm.core.oop.OopClassMethod;
-import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User: tommcintyre
@@ -32,20 +33,20 @@ import java.util.List;
 public enum ClassNatives implements NativeImplementation {
     REGISTER_NATIVES("registerNatives", "()V") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variables args, OperationContext ctx) {
             return NativeReturn.forVoid();
         }
     },
     DESIRED_ASSERTION_STATUS_0("desiredAssertionStatus0", "(Ljava/lang/Class;)Z") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variables args, OperationContext ctx) {
             return NativeReturn.forInt(0); // false
         }
     },
     GET_COMPONENT_TYPE("getComponentType", "()Ljava/lang/Class;") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
-            Type thisType = ((OopClassClass) Heap.getOop(args[0])).getThisType();
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            Type thisType = getThisType(args);
             if (thisType instanceof ArrayType) {
                 return NativeReturn.forReference(((ArrayType) thisType).getComponentType().getOopClassClass());
             } else {
@@ -55,14 +56,14 @@ public enum ClassNatives implements NativeImplementation {
     },
     GET_CLASSLOADER_0("getClassLoader0", "()Ljava/lang/ClassLoader;") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variables args, OperationContext ctx) {
             return NativeReturn.forNull();
         }
     },
     GET_PRIMITIVE_CLASS("getPrimitiveClass", "(Ljava/lang/String;)Ljava/lang/Class;") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
-            OopClass stringObj = Heap.getOopClass(args[0]);
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            OopClass stringObj = args.getOop(0);
             String arg = Utils.toString(stringObj);
             SimpleType st = SimpleType.valueOf(arg.toUpperCase());
             return NativeReturn.forReference(st.getOopClassClass());
@@ -70,8 +71,8 @@ public enum ClassNatives implements NativeImplementation {
     },
     GET_DECLARED_FIELDS_0("getDeclaredFields0", "(Z)[Ljava/lang/reflect/Field;") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
-            Type thisType = ((OopClassClass) Heap.getOop(args[0])).getThisType();
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            Type thisType = getThisType(args);
             ClassObject fieldClass = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/reflect/Field");
 
             ArrayClassObject fieldArrayType = ArrayClassObject.forType(ArrayType.create(fieldClass.getType(), 1));
@@ -82,7 +83,7 @@ public enum ClassNatives implements NativeImplementation {
 
 
             ClassObject thisClassObject = ((NonArrayType) thisType).getClassObject();
-            boolean publicOnly = args[1] != 0;
+            boolean publicOnly = args.getBoolean(1);
             List<Field> list = new ArrayList<>();
 
             addFields(thisClassObject.getStaticFields(), publicOnly, list);
@@ -94,19 +95,19 @@ public enum ClassNatives implements NativeImplementation {
             Method ctor = fieldClass.findConstructor("(Ljava/lang/Class;Ljava/lang/String;Ljava/lang/Class;IILjava/lang/String;[B)V");
             for (int i = 0; i < list.size(); i++) {
                 Field field = list.get(i);
-                int[] ctorArgs = ctor.newArgArray();
+                Variables ctorArgs = ctor.newArgArray();
 
                 OopClass fieldObj = fieldClass.newObject();
                 array.getFields()[i] = Heap.allocate(fieldObj);
 
-                ctorArgs[0] = fieldObj.getAddress();
-                ctorArgs[1] = thisType.getOopClassClass().getAddress();
-                ctorArgs[2] = Heap.intern(field.getName());
-                ctorArgs[3] = field.getType().getOopClassClass().getAddress();
-                ctorArgs[4] = Modifier.translate(field.getModifiers());
-                ctorArgs[5] = i; // slot, this is my best guess as to what this means...
-                ctorArgs[6] = Heap.NULL_POINTER;
-                ctorArgs[7] = Heap.NULL_POINTER;
+                ctorArgs.putOop(0, fieldObj);
+                ctorArgs.putOop(1, thisType.getOopClassClass());
+                ctorArgs.put(2, SimpleType.REF, Heap.intern(field.getName()));
+                ctorArgs.putOop(3, field.getType().getOopClassClass());
+                ctorArgs.putInt(4, Modifier.translate(field.getModifiers()));
+                ctorArgs.putInt(5, i); // slot, this is my best guess as to what this means...
+                ctorArgs.putNull(6);
+                ctorArgs.putNull(7);
 
                 Utils.executeMethodAndThrow(ctor, ctorArgs, ctx.getThread());
             }
@@ -124,16 +125,16 @@ public enum ClassNatives implements NativeImplementation {
     },
     GET_NAME_0("getName0", "()Ljava/lang/String;") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
-            Type thisType = ((OopClassClass) Heap.getOop(args[0])).getThisType();
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            Type thisType = getThisType(args);
 
             return NativeReturn.forInt(Heap.intern(thisType.toString()));
         }
     },
     FOR_NAME_0("forName0", "(Ljava/lang/String;ZLjava/lang/ClassLoader;)Ljava/lang/Class;") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
-            String className = Utils.toString(Heap.getOopClass(args[0]));
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            String className = Utils.toString(args.<OopClass>getOop(0));
             className = className.replaceAll("\\.", "/");
 
             try {
@@ -146,17 +147,17 @@ public enum ClassNatives implements NativeImplementation {
     },
     IS_INTERFACE("isInterface", "()Z") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
-            Type thisType = ((OopClassClass) Heap.getOop(args[0])).getThisType();
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            Type thisType = getThisType(args);
 
             return NativeReturn.forBool(thisType.isInterface());
         }
     },
     IS_ASSIGNABLE_FROM("isAssignableFrom", "(Ljava/lang/Class;)Z") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
-            OopClassClass thisClass = (OopClassClass) Heap.getOop(args[0]);
-            OopClassClass thatClass = (OopClassClass) Heap.getOop(args[1]);
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            OopClassClass thisClass = args.getOop(0);
+            OopClassClass thatClass = args.getOop(1);
 
             if (thisClass == thatClass) {
                 return NativeReturn.forBool(true); // This takes care of all primitive classes
@@ -179,9 +180,9 @@ public enum ClassNatives implements NativeImplementation {
     },
     GET_DECLARED_CONSTRUCTORS_0("getDeclaredConstructors0", "(Z)[Ljava/lang/reflect/Constructor;") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variables args, OperationContext ctx) {
             // TODO: good god caching!
-            OopClassClass clazz = (OopClassClass) Heap.getOop(args[0]);
+            OopClassClass clazz = args.getOop(0);
             Type thisType = clazz.getThisType();
 
             ClassObject ctorClass = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/reflect/Constructor");
@@ -193,7 +194,7 @@ public enum ClassNatives implements NativeImplementation {
             } else {
                 ClassObject thisClassObj = ((NonArrayType) thisType).getClassObject();
 
-                boolean publicOnly = args[1] > 0;
+                boolean publicOnly = args.getBoolean(1);
 
                 List<Method> ctors = new ArrayList<>();
 
@@ -217,10 +218,10 @@ public enum ClassNatives implements NativeImplementation {
                 for (int i = 0; i < ctors.size(); i++) {
                     Method ctor = ctors.get(i);
                     OopClass ctorObj = ctorClass.newObject((thisClazz, fields) -> new OopClassMethod(thisClazz, fields, ctor));
-                    int[] ctorArgs = ctorCtor.newArgArray();
+                    Variables ctorArgs = ctorCtor.newArgArray();
 
-                    ctorArgs[0] = Heap.allocate(ctorObj);
-                    ctorArgs[1] = clazz.getAddress(); // declaring class
+                    ctorArgs.put(0, SimpleType.REF, Heap.allocate(ctorObj));
+                    ctorArgs.putOop(1, clazz); // declaring class
 
                     OopArray paramTypes = classArray.newArray(ctor.getSignature().getArgTypes().size());
                     int j = 0;
@@ -228,14 +229,14 @@ public enum ClassNatives implements NativeImplementation {
                         paramTypes.getFields()[j++] = type.getOopClassClass().getAddress();
                     }
 
-                    ctorArgs[2] = Heap.allocate(paramTypes);
+                    ctorArgs.put(2, SimpleType.REF, Heap.allocate(paramTypes));
                     // TODO
-                    ctorArgs[3] = Heap.NULL_POINTER; // checkedExceptions
-                    ctorArgs[4] = Modifier.translate(ctor.getModifiers());
-                    ctorArgs[5] = i; //slot - ??
-                    ctorArgs[6] = Heap.intern(ctor.getSignature().toString());
-                    ctorArgs[7] = Heap.NULL_POINTER; // annotations
-                    ctorArgs[8] = Heap.NULL_POINTER; // parameter annotations
+                    ctorArgs.putNull(3); // checkedExceptions
+                    ctorArgs.putInt(4, Modifier.translate(ctor.getModifiers()));
+                    ctorArgs.putInt(5, i); //slot - ??
+                    ctorArgs.put(6, SimpleType.REF, Heap.intern(ctor.getSignature().toString()));
+                    ctorArgs.putNull(7); // annotations
+                    ctorArgs.putNull(8); // parameter annotations
 
                     Utils.executeMethodAndThrow(ctorCtor, ctorArgs, ctx.getThread());
 
@@ -248,15 +249,15 @@ public enum ClassNatives implements NativeImplementation {
     },
     GET_MODIFIERS("getModifiers", "()I") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variables args, OperationContext ctx) {
             // TODO: cache?
-            return NativeReturn.forInt(Modifier.translate(((OopClassClass) Heap.getOop(args[0])).getThisType().getOopClassClass().getClassObject().getModifiers()));
+            return NativeReturn.forInt(Modifier.translate(args.<OopClassClass>getOop(0).getThisType().getOopClassClass().getClassObject().getModifiers()));
         }
     },
     GET_SUPERCLASS("getSuperclass", "()Ljava/lang/Class;") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
-            Type thisType = ((OopClassClass) Heap.getOop(args[0])).getThisType();
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            Type thisType = getThisType(args);
             if (thisType.isPrimitive()) {
                 return NativeReturn.forNull();
             } else {
@@ -276,18 +277,23 @@ public enum ClassNatives implements NativeImplementation {
     },
     IS_ARRAY("isArray", "()Z") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
-            Type thisType = ((OopClassClass) Heap.getOop(args[0])).getThisType();
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            Type thisType = getThisType(args);
             return NativeReturn.forBool(thisType.isArray());
         }
     },
     IS_PRIMITIVE("isPrimitive", "()Z") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
-            Type thisType = ((OopClassClass) Heap.getOop(args[0])).getThisType();
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            Type thisType = getThisType(args);
             return NativeReturn.forBool(thisType.isPrimitive());
         }
     };
+
+    private static Type getThisType(Variables args) {
+        OopClassClass thisClass = args.getOop(0);
+        return thisClass.getThisType();
+    }
 
     private final MethodSignature methodSignature;
 

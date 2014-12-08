@@ -2,11 +2,12 @@ package com.mcintyret.jvm.core.opcode.ret;
 
 import com.mcintyret.jvm.core.exec.ExecutionStack;
 import com.mcintyret.jvm.core.exec.ExecutionStackElement;
-import com.mcintyret.jvm.core.exec.WordStack;
-import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.VariableStack;
+import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
+import com.mcintyret.jvm.core.opcode.Typed;
 
-abstract class BaseValueReturn extends BaseReturn {
+abstract class BaseValueReturn extends BaseReturn implements Typed {
 
     protected final void returnValue(OperationContext ctx) {
         ExecutionStack executionStack = ctx.getExecutionStack();
@@ -18,7 +19,7 @@ abstract class BaseValueReturn extends BaseReturn {
         }
     }
 
-    protected abstract NativeReturn finalReturn(WordStack stack);
+    protected abstract NativeReturn finalReturn(VariableStack stack);
 
-    protected abstract void pushReturnVal(WordStack lower, WordStack upper);
+    protected abstract void pushReturnVal(VariableStack lower, VariableStack upper);
 }

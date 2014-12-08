@@ -1,17 +1,17 @@
 package com.mcintyret.jvm.core.opcode.ret;
 
-import com.mcintyret.jvm.core.exec.WordStack;
+import com.mcintyret.jvm.core.exec.VariableStack;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 
 abstract class SingleWidthReturn extends BaseValueReturn {
 
     @Override
-    protected final NativeReturn finalReturn(WordStack stack) {
-        return NativeReturn.forInt(stack.pop());
+    protected final NativeReturn finalReturn(VariableStack stack) {
+        return NativeReturn.forInt(stack.popInt());
     }
 
     @Override
-    protected final void pushReturnVal(WordStack lower, WordStack upper) {
-        lower.push(upper.pop());
+    protected final void pushReturnVal(VariableStack lower, VariableStack upper) {
+        lower.pushSingleWidth(upper.popSingleWidth(getType()), getType());
     }
 }

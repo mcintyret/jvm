@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.store;
 
-class FStore_3 extends SingleWidthStore_3 {
+import com.mcintyret.jvm.core.opcode.FloatTyped;
+
+class FStore_3 extends SingleWidthStore_3 implements FloatTyped {
 
     @Override
     public byte getByte() {

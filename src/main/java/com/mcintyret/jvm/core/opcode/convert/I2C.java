@@ -1,15 +1,15 @@
 package com.mcintyret.jvm.core.opcode.convert;
 
-import com.mcintyret.jvm.core.exec.WordStack;
-import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.VariableStack;
+import com.mcintyret.jvm.core.opcode.OpCode;
 
 class I2C extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        WordStack stack = ctx.getStack();
-        stack.push((char) stack.pop());
+        VariableStack stack = ctx.getStack();
+        stack.pushInt((char) stack.popInt());
     }
 
     @Override

@@ -1,21 +1,24 @@
 package com.mcintyret.jvm.core.opcode.dup;
 
-import com.mcintyret.jvm.core.exec.WordStack;
-import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.VariableStack;
+import com.mcintyret.jvm.core.exec.WideVariable;
+import com.mcintyret.jvm.core.opcode.OpCode;
 
 class Dup2_X2 extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        WordStack stack = ctx.getStack();
-        long one = stack.popLong();
-        long two = stack.popLong();
-        long three = stack.popLong();
-        stack.push(one);
-        stack.push(three);
-        stack.push(two);
-        stack.push(one);
+        VariableStack stack = ctx.getStack();
+
+        WideVariable one = stack.popWide();
+        WideVariable two = stack.popWide();
+        WideVariable three = stack.popWide();
+
+        stack.pushWide(one);
+        stack.pushWide(three);
+        stack.pushWide(two);
+        stack.pushWide(one);
     }
 
     @Override

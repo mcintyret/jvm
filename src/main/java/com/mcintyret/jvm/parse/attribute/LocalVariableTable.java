@@ -1,5 +1,7 @@
 package com.mcintyret.jvm.parse.attribute;
 
+import static java.util.Collections.unmodifiableList;
+
 import java.util.List;
 
 public class LocalVariableTable extends Attribute {
@@ -8,6 +10,10 @@ public class LocalVariableTable extends Attribute {
 
     protected LocalVariableTable(List<LocalVariable> localVariables) {
         super(AttributeType.LOCAL_VARIABLE_TABLE);
-        this.localVariables = localVariables;
+        this.localVariables = unmodifiableList(localVariables);
+    }
+
+    public List<LocalVariable> getLocalVariables() {
+        return localVariables;
     }
 }

@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.load;
 
-class ALoad_0 extends SingleWidthLoad_0 {
+import com.mcintyret.jvm.core.opcode.RefTyped;
+
+class ALoad_0 extends SingleWidthLoad_0 implements RefTyped {
 
     @Override
     public byte getByte() {

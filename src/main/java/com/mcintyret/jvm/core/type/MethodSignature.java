@@ -12,6 +12,8 @@ public class MethodSignature {
 
     private final Type returnType;
 
+    private final int totalWidth;
+
     public static MethodSignature parse(String name, String descriptor) {
         CharIterator it = new CharIterator(descriptor);
         if (it.next() != '(') {
@@ -34,6 +36,7 @@ public class MethodSignature {
         this.name = name;
         this.argTypes = argTypes;
         this.returnType = returnType;
+        this.totalWidth = argTypes.stream().mapToInt(Type::getWidth).sum();
     }
 
     @Override
@@ -70,8 +73,8 @@ public class MethodSignature {
         return returnType;
     }
 
-    public int getLength() {
-        return argTypes.stream().mapToInt(Type::getWidth).sum();
+    public int getTotalWidth() {
+        return totalWidth;
     }
 
     @Override

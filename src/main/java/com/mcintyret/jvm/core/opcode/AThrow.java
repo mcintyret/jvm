@@ -2,18 +2,17 @@ package com.mcintyret.jvm.core.opcode;
 
 import java.util.List;
 
-import com.mcintyret.jvm.core.exec.OperationContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mcintyret.jvm.core.util.ByteIterator;
-import com.mcintyret.jvm.core.exec.ExecutionStackElement;
-import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
+import com.mcintyret.jvm.core.exec.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.util.ByteIterator;
 import com.mcintyret.jvm.parse.attribute.CodeException;
 
 /**
@@ -26,7 +25,7 @@ public class AThrow extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        OopClass thrown = Heap.getOopClass(ctx.getStack().pop());
+        OopClass thrown = ctx.getStack().popOop();
         LOG.warn("Throwing exception of type {} from method {}", thrown.getClassObject(), ctx.getMethod());
 
         ExecutionStackElement elem = ctx.getExecutionStack().peek();
@@ -58,7 +57,7 @@ public class AThrow extends OpCode {
                         bi.setPos(exception.getHandlerPc());
 
                         elem.getStack().clear();
-                        elem.getStack().push(thrown.getAddress());
+                        elem.getStack().pushOop(thrown);
                         return;
                     }
                 }

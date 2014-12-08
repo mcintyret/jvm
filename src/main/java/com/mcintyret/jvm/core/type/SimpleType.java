@@ -1,14 +1,14 @@
 package com.mcintyret.jvm.core.type;
 
-import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.ImportantClasses;
-import com.mcintyret.jvm.core.oop.OopClassClass;
+import static com.mcintyret.jvm.core.util.Utils.getClassObject;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.mcintyret.jvm.core.util.Utils.getClassObject;
+import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.ImportantClasses;
+import com.mcintyret.jvm.core.oop.OopClassClass;
 
 public enum SimpleType implements Type {
     BOOLEAN("Z", 4),
@@ -56,6 +56,11 @@ public enum SimpleType implements Type {
     @Override
     public String toString() {
         return str;
+    }
+
+    @Override
+    public SimpleType asSimpleType() {
+        return this;
     }
 
     @Override

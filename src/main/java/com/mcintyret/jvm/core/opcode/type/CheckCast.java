@@ -1,20 +1,22 @@
 package com.mcintyret.jvm.core.opcode.type;
 
-import com.mcintyret.jvm.core.exec.WordStack;
+import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.exec.VariableStack;
+import com.mcintyret.jvm.core.type.SimpleType;
 
 class CheckCast extends TypeOp {
 
     @Override
-    protected void handleType(boolean instanceOf, WordStack stack, int address) {
+    protected void handleType(boolean instanceOf, VariableStack stack, int address) {
         if (!instanceOf) {
             throw new ClassCastException();
         }
-        stack.push(address);
+        stack.pushSingleWidth(address, SimpleType.REF);
     }
 
     @Override
-    protected void handleNull(WordStack stack, int address) {
-        stack.push(address);
+    protected void handleNull(VariableStack stack) {
+        stack.pushSingleWidth(Heap.NULL_POINTER, SimpleType.REF);
     }
 
     @Override

@@ -2,9 +2,9 @@ package com.mcintyret.jvm.core.clazz;
 
 import java.util.Set;
 
-import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.Oop;
+import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.parse.Modifier;
 import com.mcintyret.jvm.parse.attribute.AttributeType;
 import com.mcintyret.jvm.parse.attribute.Attributes;
@@ -34,19 +34,20 @@ public class Method extends Member {
         return getClassObject().getClassName() + "." + signature;
     }
 
-    // what about primitive args??
-    public int[] newArgArray(Oop... args) {
+
+    // TODO: what about primitive args??
+    public Variables newArgArray(Oop... args) {
         Code code = getCode();
         int maxLocals = code == null ? 0 : code.getMaxLocals();
 
-        int argCount = getSignature().getLength();
-        int[] argArray = new int[Math.max(argCount + (isStatic() ? 0 : 1), maxLocals)];
+        int argWidth = getSignature().getTotalWidth();
+        int offset = (isStatic() ? 0 : 1);
+        Variables argArray = new Variables(Math.max(argWidth + offset, maxLocals));
 
         for (int i = 0; i < args.length; i++) {
-            argArray[i] = args[i] == null ? Heap.NULL_POINTER : args[i].getAddress();
+            argArray.putOop(i, args[i]);
         }
 
         return argArray;
     }
-
 }

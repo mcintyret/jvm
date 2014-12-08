@@ -1,12 +1,12 @@
 package com.mcintyret.jvm.core.opcode.push;
 
-import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.opcode.OpCode;
 
 class BIPush extends OpCode {
     @Override
     public void execute(OperationContext ctx) {
-        ctx.getStack().push(ctx.getByteIterator().nextByte());
+        ctx.getStack().pushByte(ctx.getByteIterator().nextByte());
     }
 
     @Override

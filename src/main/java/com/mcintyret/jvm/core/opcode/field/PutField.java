@@ -1,7 +1,6 @@
 package com.mcintyret.jvm.core.opcode.field;
 
-import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.exec.WordStack;
+import com.mcintyret.jvm.core.exec.VariableStack;
 import com.mcintyret.jvm.core.oop.Oop;
 
 class PutField extends Put {
@@ -12,7 +11,7 @@ class PutField extends Put {
     }
 
     @Override
-    protected Oop getOop(WordStack stack) {
-        return Heap.getOop(stack.pop());
+    protected Oop getOop(VariableStack stack) {
+        return stack.popOop();
     }
 }

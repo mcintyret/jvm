@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.core.opcode.branch;
 
-class IfEq extends UnaryCondition {
+class IfEq extends IntUnaryCondition {
 
     @Override
     public byte getByte() {

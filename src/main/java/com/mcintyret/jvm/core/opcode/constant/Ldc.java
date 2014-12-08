@@ -1,15 +1,13 @@
 package com.mcintyret.jvm.core.opcode.constant;
 
-import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.opcode.OpCode;
 
 class Ldc extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        int i = ctx.getConstantPool().getSingleWidth(ctx.getByteIterator().nextByteUnsigned());
-
-        ctx.getStack().push(i);
+        ctx.getConstantPool().getConstant(ctx.getByteIterator().nextByteUnsigned(), ctx.getStack());
     }
 
     @Override

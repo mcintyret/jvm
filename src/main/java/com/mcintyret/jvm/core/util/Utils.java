@@ -1,24 +1,25 @@
 package com.mcintyret.jvm.core.util;
 
+import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.ValueReceiver;
-import com.mcintyret.jvm.core.type.ArrayType;
-import com.mcintyret.jvm.core.type.SimpleType;
-import com.mcintyret.jvm.core.type.Type;
 import com.mcintyret.jvm.core.exec.ExecutionStack;
 import com.mcintyret.jvm.core.exec.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.thread.Thread;
-
-import java.util.concurrent.atomic.AtomicInteger;
-
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
+import com.mcintyret.jvm.core.type.ArrayType;
+import com.mcintyret.jvm.core.type.SimpleType;
+import com.mcintyret.jvm.core.type.Type;
 
 public class Utils {
 
@@ -27,8 +28,20 @@ public class Utils {
         return new OopArray(aco, new int[size * type.getWidth()]);
     }
 
+    public static long toLong(double d) {
+        return Double.doubleToLongBits(d);
+    }
+
     public static long toLong(int l, int r) {
         return (long) l << 32 | r & 0xFFFFFFFFL;
+    }
+
+    public static int toInt(boolean b) {
+        return b ? 1 : 0;
+    }
+
+    public static int toInt(float f) {
+        return Float.floatToIntBits(f);
     }
 
     public static String toString(OopClass stringOop) {
@@ -49,13 +62,16 @@ public class Utils {
         return new String(chars);
     }
 
-    public static String toString(int oopAddress) {
-        Oop oop = Heap.getOop(oopAddress);
+    public static String toString(Oop oop) {
         if (oop instanceof OopArray) {
             return toString((OopArray) oop);
         } else {
             return toString((OopClass) oop);
         }
+    }
+
+    public static String toString(int oopAddress) {
+        return toString(Heap.getOop(oopAddress));
     }
 
     public static OopClass toOopString(String string) {
@@ -81,7 +97,7 @@ public class Utils {
         return stringOop;
     }
 
-    public static NativeReturn executeMethodAndThrow(Method method, int[] args, Thread thread) {
+    public static NativeReturn executeMethodAndThrow(Method method, Variables args, Thread thread) {
         ExecutionStack stack = new ExecutionStack(thread);
 
         stack.push(new ExecutionStackElement(method, args,
@@ -95,13 +111,14 @@ public class Utils {
         if (ret.isThrowable()) {
             AtomicInteger address = new AtomicInteger();
             ret.applyValue(new ValueReceiver() {
+
                 @Override
-                public void receiveInt(int i) {
+                public void receiveSingleWidth(int i, SimpleType type) {
                     address.set(i);
                 }
 
                 @Override
-                public void receiveLong(long l) {
+                public void receiveDoubleWidth(long l, SimpleType type) {
                     throw new UnsupportedOperationException();
                 }
             });

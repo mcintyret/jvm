@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.astore;
 
-class LAStore extends DoubleWidthAStore {
+import com.mcintyret.jvm.core.opcode.LongTyped;
+
+class LAStore extends DoubleWidthAStore implements LongTyped {
 
     @Override
     public byte getByte() {
