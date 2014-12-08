@@ -1,9 +1,5 @@
 package com.mcintyret.jvm.core.util;
 
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
-
-import java.util.concurrent.atomic.AtomicInteger;
-
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
@@ -11,15 +7,19 @@ import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.ValueReceiver;
 import com.mcintyret.jvm.core.exec.ExecutionStack;
 import com.mcintyret.jvm.core.exec.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.Thread;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.exec.Thread;
 import com.mcintyret.jvm.core.type.ArrayType;
 import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.type.Type;
+
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 
 public class Utils {
 
@@ -98,7 +98,7 @@ public class Utils {
     }
 
     public static NativeReturn executeMethodAndThrow(Method method, Variables args, Thread thread) {
-        ExecutionStack stack = new ExecutionStack(thread);
+        ExecutionStack stack = thread.getExecutionStack();
 
         stack.push(new ExecutionStackElement(method, args,
             method.getClassObject().getConstantPool(), stack));

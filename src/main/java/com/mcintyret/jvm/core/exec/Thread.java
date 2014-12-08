@@ -1,7 +1,5 @@
 package com.mcintyret.jvm.core.exec;
 
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
-
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
@@ -9,6 +7,8 @@ import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.util.Utils;
+
+import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 
 /**
  * User: tommcintyre
@@ -26,23 +26,24 @@ public class Thread {
 
     private final OopClass thisThread;
 
-    private java.lang.Thread thread;
+    private final java.lang.Thread thread;
 
     private volatile boolean interrupted;
 
     private final ExecutionStack executionStack;
 
+
     public Thread(OopClass thisThread) {
-        this.thisThread = thisThread;
         this.executionStack = new ExecutionStack(this);
+        this.thisThread = thisThread;
         this.thread = new ActualThread();
     }
 
     // For system threads
     public Thread(OopClass thisThread, java.lang.Thread thread) {
         Heap.register();
+        this.executionStack = new ExecutionStack(this);
         this.thisThread = thisThread;
-        this.executionStack = null;
         this.thread = thread;
     }
 

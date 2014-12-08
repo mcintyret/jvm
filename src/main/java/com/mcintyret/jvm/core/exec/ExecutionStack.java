@@ -1,9 +1,9 @@
 package com.mcintyret.jvm.core.exec;
 
+import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
+
 import java.util.ArrayDeque;
 import java.util.Deque;
-
-import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 
 public class ExecutionStack {
 
@@ -13,7 +13,7 @@ public class ExecutionStack {
 
     private NativeReturn finalReturn;
 
-    public ExecutionStack(Thread thread) {
+    ExecutionStack(Thread thread) {
         this.thread = thread;
     }
 
