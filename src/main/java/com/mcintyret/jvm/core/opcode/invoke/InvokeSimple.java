@@ -15,7 +15,7 @@ abstract class InvokeSimple extends Invoke {
 
     @Override
     protected final void doInvoke(Method method, OperationContext ctx) {
-        Variables args = getValues(ctx, method);
+        Variables args = getMethodArgs(ctx, method);
 
         if (method.hasModifier(Modifier.NATIVE)) {
             invokeNativeMethod((NativeMethod) method, args, ctx);
@@ -25,21 +25,4 @@ abstract class InvokeSimple extends Invoke {
         }
     }
 
-    private Variables getValues(OperationContext ctx, Method method) {
-        boolean isStatic = method.isStatic();
-
-        int shift = isStatic ? 0 : 1;
-
-        Variables args = method.newArgArray();
-        int argCount = method.getSignature().getLength();
-
-        for (int i = argCount - (1 - shift); i >= shift; i--) {
-            args.put(i, ctx.getStack().pop());
-        }
-
-        if (!isStatic) {
-            args.putOop(0, ctx.getStack().popOop());
-        }
-        return args;
-    }
 }

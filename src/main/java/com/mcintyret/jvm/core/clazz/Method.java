@@ -42,9 +42,9 @@ public class Method extends Member {
         Code code = getCode();
         int maxLocals = code == null ? 0 : code.getMaxLocals();
 
-        int argCount = getSignature().getLength();
+        int argWidth = getSignature().getTotalWidth();
         int offset = (isStatic() ? 0 : 1);
-        Variables argArray = new Variables(Math.max(argCount + offset, maxLocals));
+        Variables argArray = new Variables(Math.max(argWidth + offset, maxLocals));
 
         for (Type type : getSignature().getArgTypes()) {
             for (int w = 0; w < type.getWidth(); w++) {

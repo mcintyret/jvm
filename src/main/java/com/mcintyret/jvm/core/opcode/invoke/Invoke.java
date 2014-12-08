@@ -1,5 +1,8 @@
 package com.mcintyret.jvm.core.opcode.invoke;
 
+import java.util.List;
+import java.util.ListIterator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +14,8 @@ import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.opcode.AThrow;
 import com.mcintyret.jvm.core.opcode.OpCode;
+import com.mcintyret.jvm.core.type.SimpleType;
+import com.mcintyret.jvm.core.type.Type;
 
 abstract class Invoke extends OpCode {
 
@@ -36,6 +41,39 @@ abstract class Invoke extends OpCode {
         if (nr.isThrowable()) {
             new AThrow().execute(ctx);
         }
+    }
+
+    protected Variables getMethodArgs(OperationContext ctx, Method method) {
+        boolean isStatic = method.isStatic();
+
+        int shift = isStatic ? 0 : 1;
+
+        Variables args = method.newArgArray();
+
+        List<Type> argTypes = method.getSignature().getArgTypes();
+        int argCount = argTypes.size();
+        ListIterator<Type> it = argTypes.listIterator(argCount);
+
+        int pos = method.getSignature().getTotalWidth();
+        while (it.hasPrevious()) {
+            Type argType = it.previous();
+            SimpleType simpleType = argType.asSimpleType();
+            pos -= argType.getWidth();
+
+            // +1 because 0 is this if non-static
+            // TODO: this needs to be better
+            if (argType.isDoubleWidth()) {
+                args.putWide(pos + shift, simpleType, ctx.getStack().popDoubleWidth(simpleType));
+            } else {
+                args.put(pos + shift, simpleType, ctx.getStack().popSingleWidth(simpleType));
+            }
+        }
+
+        if (!isStatic) {
+            args.putOop(0, ctx.getStack().popOop());
+        }
+
+        return args;
     }
 
 }
