@@ -34,8 +34,8 @@ import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.thread.Thread;
-import com.mcintyret.jvm.core.thread.Threads;
+import com.mcintyret.jvm.core.exec.Thread;
+import com.mcintyret.jvm.core.exec.Threads;
 import com.mcintyret.jvm.core.type.ArrayType;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.NonArrayType;
@@ -124,7 +124,7 @@ public class ClassLoader {
 
     private void setSystemProperties() {
         // SystemNatives.initProperties takes care of the rest
-        com.mcintyret.jvm.core.thread.Thread thread = Runner.MAIN_THREAD;
+        Thread thread = Runner.MAIN_THREAD;
 
         ClassObject system = getClassObject("java/lang/System");
         Method setProperties = system.findMethod("setProperties", true);

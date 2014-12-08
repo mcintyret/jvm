@@ -1,4 +1,4 @@
-package com.mcintyret.jvm.core.thread;
+package com.mcintyret.jvm.core.exec;
 
 import com.mcintyret.jvm.core.oop.OopClass;
 

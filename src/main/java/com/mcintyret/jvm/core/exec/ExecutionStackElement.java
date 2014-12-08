@@ -10,7 +10,6 @@ import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OpCodes;
-import com.mcintyret.jvm.core.thread.Thread;
 import com.mcintyret.jvm.core.util.ByteBufferIterator;
 import com.mcintyret.jvm.core.util.ByteIterator;
 

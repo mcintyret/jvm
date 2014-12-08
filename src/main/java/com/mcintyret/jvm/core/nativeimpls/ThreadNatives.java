@@ -3,8 +3,8 @@ package com.mcintyret.jvm.core.nativeimpls;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.thread.Thread;
-import com.mcintyret.jvm.core.thread.Threads;
+import com.mcintyret.jvm.core.exec.Thread;
+import com.mcintyret.jvm.core.exec.Threads;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.util.Utils;
 
