@@ -16,7 +16,7 @@ abstract class InvokeIndirect extends Invoke {
         Variables args = method.newArgArray();
         int argCount = method.getSignature().getLength();
         for (int i = argCount; i >= 1; i--) {
-            SimpleType type = method.getSignature().getArgTypes().get(i).asSimpleType();
+            SimpleType type = method.getSignature().getArgTypes().get(i - 1).asSimpleType();
             args.put(i, type, ctx.getStack().popSingleWidth(type));
         }
         Oop oop = ctx.getStack().popOop();
