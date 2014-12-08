@@ -1,13 +1,5 @@
 package com.mcintyret.jvm.core;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Phaser;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.exec.ExecutionStackElement;
@@ -21,6 +13,13 @@ import com.mcintyret.jvm.core.type.ArrayType;
 import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.type.Type;
 import com.mcintyret.jvm.core.util.Utils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.Phaser;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class Heap {
 
@@ -111,6 +110,13 @@ public class Heap {
                 }
             }
 
+            for (Oop oop : newOops) {
+                if (oop == null) {
+                    break;
+                }
+                oop.getMarkRef().setLive(false); // reset for the next GC
+            }
+
             if (index > MAX_THRESHOLD * newOops.length) {
                 expand();
             }
@@ -124,6 +130,10 @@ public class Heap {
             if (!oop.getMarkRef().isLive()) {
                 // we haven't visited this one yet!
                 oop.getMarkRef().setLive(true);
+
+                // Actually keep the added Oop for the next cycle
+                addOop(oop);
+
                 int[] fieldVals = oop.getFields();
 
                 Type type = oop.getClassObject().getType();
