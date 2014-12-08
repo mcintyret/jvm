@@ -14,9 +14,12 @@ abstract class Put extends FieldOp {
         SimpleType type = field.getType().asSimpleType();
 
         if (field.getType().isDoubleWidth()) {
-            field.set(getOop(stack), stack.popDoubleWidth(type));
+            int two = stack.popSingleWidth(type);
+            int one = stack.popSingleWidth(type);
+            field.set(getOop(stack), one, two);
         } else {
-            field.set(getOop(stack), stack.popSingleWidth(type));
+            int val = stack.popSingleWidth(type);
+            field.set(getOop(stack), val);
         }
     }
 
