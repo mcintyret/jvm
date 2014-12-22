@@ -2,13 +2,13 @@ package com.mcintyret.jvm.core.opcode;
 
 import java.util.List;
 
+import com.mcintyret.jvm.core.exec.Execution;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
-import com.mcintyret.jvm.core.exec.ExecutionStackElement;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.OopClass;
@@ -28,8 +28,8 @@ public class AThrow extends OpCode {
         OopClass thrown = ctx.getStack().popOop();
         LOG.warn("Throwing exception of type {} from method {}", thrown.getClassObject(), ctx.getMethod());
 
-        ExecutionStackElement elem = ctx.getExecutionStack().peek();
-        ExecutionStackElement prev = null;
+        Execution elem = ctx.getExecutionStack().peek();
+        Execution prev = null;
         do {
             Method m = elem.getMethod();
             ConstantPool cp = m.getClassObject().getConstantPool();

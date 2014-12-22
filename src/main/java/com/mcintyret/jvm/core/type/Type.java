@@ -6,7 +6,11 @@ public interface Type {
 
     boolean isPrimitive();
 
-    OopClassClass getOopClassClass();
+    OopClassClass getOopClassClass(boolean gc);
+
+    default OopClassClass getOopClassClass() {
+        return getOopClassClass(false);
+    }
 
     boolean isArray();
 

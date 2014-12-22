@@ -1,31 +1,31 @@
 package com.mcintyret.jvm.load;
 
-import java.io.IOException;
-
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.exec.Thread;
+import com.mcintyret.jvm.core.exec.Threads;
 import com.mcintyret.jvm.core.exec.VariableStack;
 import com.mcintyret.jvm.core.exec.VariableStackImpl;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.exec.Thread;
-import com.mcintyret.jvm.core.exec.Threads;
 import com.mcintyret.jvm.core.type.ArrayType;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.NonArrayType;
 import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.util.Utils;
 
+import java.io.IOException;
+
 public class Runner {
 
     private static final MethodSignature MAIN_METHOD_SIGNATURE = MethodSignature.parse("main", "([Ljava/lang/String;)V");
 
-    public static Thread MAIN_THREAD;
+    public static Thread MAIN_THREAD = new Thread(null, null); // Just for bootstrap!
 
     public void run(ClassPath classPath, String mainClassName, String... args) throws IOException {
         ClassLoader loader = ClassLoader.getDefaultClassLoader();
@@ -34,6 +34,7 @@ public class Runner {
 
         // This happens early!
         MAIN_THREAD = createMainThread();
+        Heap.register();
 
         loader.afterInitialLoad(); // Sets System.out. Can I do this anywhere else??
 
@@ -89,7 +90,7 @@ public class Runner {
         Variables args = systemThreadGroupCtor.newArgArray();
         args.put(0, SimpleType.REF, Heap.allocate(systemThreadGroup));
 
-        Utils.executeMethodAndThrow(systemThreadGroupCtor, args, null);
+        Utils.executeMethodAndThrow(systemThreadGroupCtor, args, MAIN_THREAD);
 
         // Cool, now we need the 'main' threadgroup...
         Method mainThreadGroupCtor =
@@ -104,7 +105,7 @@ public class Runner {
         args.put(2, SimpleType.REF, systemThreadGroup.getAddress()); // parent
         args.put(3, SimpleType.REF, mainString.getAddress()); // name
 
-        Utils.executeMethodAndThrow(mainThreadGroupCtor, args, null);
+        Utils.executeMethodAndThrow(mainThreadGroupCtor, args, MAIN_THREAD);
 
         // OK, now we can create the main thread
         OopClass mainThread = threadClass.newObject();

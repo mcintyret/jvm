@@ -2,17 +2,18 @@ package com.mcintyret.jvm.core;
 
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
-import com.mcintyret.jvm.core.exec.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.Execution;
+import com.mcintyret.jvm.core.exec.Thread;
+import com.mcintyret.jvm.core.exec.Threads;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.exec.Thread;
-import com.mcintyret.jvm.core.exec.Threads;
 import com.mcintyret.jvm.core.type.ArrayType;
 import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.type.Type;
 import com.mcintyret.jvm.core.util.Utils;
+import com.mcintyret.jvm.load.ClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,17 +98,20 @@ public class Heap {
 
         public Oop[] run() {
             LOG.warn("Starting GC, initial heap size: {}", OOP_TABLE.length);
+            // All the execution stacks in all the live threads
             for (Thread thread : Threads.getAll()) {
-                for (ExecutionStackElement stack : thread.getExecutionStack().getStack()) {
-                    Variables localVariables = stack.getLocalVariables();
-                    for (int i = 0; i < localVariables.length(); i++) {
-                        if (localVariables.getType(i) == SimpleType.REF) {
-                            Oop oop = localVariables.getOop(i);
-                            gcOop(oop);
-                            localVariables.putOop(i, oop); // update the address
-                        }
-                    }
+                for (Execution stack : thread.getExecutions()) {
+                    gcVariables(stack.getLocalVariables());
+                    gcVariables(stack.getStack().asVariables());
                 }
+                gcOop(thread.getThisThread()); // Remember the thread itself
+            }
+
+            // finally look at static objects
+            for (ClassObject classObject : ClassLoader.getDefaultClassLoader().getLoadedClasses()) {
+                gcOop(classObject.getOop(true)); // this will keep any reflection data.
+
+                gcFields(classObject.getStaticFieldValues(), classObject.getStaticFields());
             }
 
             for (Oop oop : newOops) {
@@ -121,13 +125,25 @@ public class Heap {
                 expand();
             }
 
-            LOG.warn("Finished GC, final heap size: {}", newOops.length);
+            LOG.warn("Finished GC, final heap size: {}", index);
+
+            heapAllocationPointer.set(index - 1);
 
             return newOops;
         }
 
+        private void gcVariables(Variables variables) {
+            for (int i = 0; i < variables.length(); i++) {
+                if (variables.getType(i) == SimpleType.REF) {
+                    Oop oop = variables.getOop(i);
+                    gcOop(oop);
+                    variables.putOop(i, oop); // update the address
+                }
+            }
+        }
+
         private void gcOop(Oop oop) {
-            if (!oop.getMarkRef().isLive()) {
+            if (oop != null && !oop.getMarkRef().isLive()) {
                 // we haven't visited this one yet!
                 oop.getMarkRef().setLive(true);
 
@@ -141,20 +157,26 @@ public class Heap {
                     for (int i = 0; i < fieldVals.length; i++) {
                         Oop field = Heap.getOop(fieldVals[i]);
                         gcOop(field);
-                        fieldVals[i] = field.getAddress(); // update the address
+                        if (field != null) {
+                            fieldVals[i] = field.getAddress(); // update the address
+                        }
                     }
                 } else if (!type.isArray()) {
                     Field[] fields = ((ClassObject) oop.getClassObject()).getInstanceFields();
-                    int pos = 0;
-                    for (Field field : fields) {
-                        Type fieldType = field.getType();
+                    gcFields(fieldVals, fields);
+                }
+            }
+        }
 
-                        if (!fieldType.isPrimitive()) {
-                            Oop fieldOop = Heap.getOop(fieldVals[pos]);
-                            gcOop(fieldOop);
-                            fieldVals[pos] = oop.getAddress();
-                        }
-                        pos += fieldType.getWidth();
+        private void gcFields(int[] fieldVals, Field[] fields) {
+            for (Field field : fields) {
+                Type fieldType = field.getType();
+
+                if (!fieldType.isPrimitive()) {
+                    Oop fieldOop = Heap.getOop(fieldVals[field.getOffset()]);
+                    gcOop(fieldOop);
+                    if (fieldOop != null) {
+                        fieldVals[field.getOffset()] = fieldOop.getAddress(); // update the address
                     }
                 }
             }
@@ -166,6 +188,7 @@ public class Heap {
             }
             newOops[index] = oop;
             oop.setAddress(index);
+            index++;
         }
 
         private void expand() {
@@ -180,12 +203,15 @@ public class Heap {
         int heapPointer = heapAllocationPointer.incrementAndGet();
 
         if (heapPointer >= OOP_TABLE.length) {
-            // need to do some GCing!
-            GC_PHASER.arriveAndAwaitAdvance();
-
             if (heapPointer >= MAX_HEAP_SIZE) {
                 throw new OutOfMemoryError("No more heap space! Should probably do some kind of GC...");
             }
+
+            // need to do some GCing!
+            GC_PHASER.arriveAndAwaitAdvance();
+
+            // try again
+            return allocate(oop);
         }
 
         OOP_TABLE[heapPointer] = oop;

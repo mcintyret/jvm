@@ -1,6 +1,4 @@
-import java.io.IOException;
-
-import com.mcintyret.jvm.core.exec.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.Execution;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationAdapter;
@@ -12,6 +10,8 @@ import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassPath;
 import com.mcintyret.jvm.load.DirectoryClassPath;
 import com.mcintyret.jvm.load.Runner;
+
+import java.io.IOException;
 
 public class GiveItAllAGo {
 
@@ -33,8 +33,8 @@ public class GiveItAllAGo {
         } catch (Throwable t) {
             t.printStackTrace();
         } finally {
-            System.out.println("Total operations: " + ExecutionStackElement.TOTAL_OPCODES_EXECUTED.get());
-            System.out.println("Current method: " + ExecutionStackElement.current.getMethod());
+            System.out.println("Total operations: " + Execution.TOTAL_OPCODES_EXECUTED.get());
+            System.out.println("Current method: " + Execution.current.getMethod());
         }
     }
 }

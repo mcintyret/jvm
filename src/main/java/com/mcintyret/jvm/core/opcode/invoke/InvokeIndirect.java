@@ -2,7 +2,7 @@ package com.mcintyret.jvm.core.opcode.invoke;
 
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.NativeMethod;
-import com.mcintyret.jvm.core.exec.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.Execution;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.Oop;
@@ -29,7 +29,7 @@ abstract class InvokeIndirect extends Invoke {
             }
 
             ctx.getExecutionStack().push(
-                new ExecutionStackElement(implementation, args, implementation.getClassObject().getConstantPool(), ctx.getExecutionStack()));
+                new Execution(implementation, args, implementation.getClassObject().getConstantPool(), ctx.getThread()));
         }
 
         afterInvoke(ctx);

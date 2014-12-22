@@ -7,7 +7,7 @@ import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
-import com.mcintyret.jvm.core.exec.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.Execution;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.Oop;
@@ -28,7 +28,7 @@ public enum ThrowableNatives implements NativeImplementation {
     FILL_IN_STACK_TRACE("fillInStackTrace", "(I)Ljava/lang/Throwable;") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            Deque<ExecutionStackElement> stack = ctx.getExecutionStack().getStack();
+            Deque<Execution> stack = ctx.getExecutionStack().getStack();
 
             ClassObject stackTraceElemCo = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/StackTraceElement");
             OopArray stes = ArrayClassObject.forType(ArrayType.create(stackTraceElemCo.getType(), 1)).newArray(stack.size());
@@ -39,7 +39,7 @@ public enum ThrowableNatives implements NativeImplementation {
 
             int i = 0;
             Method ctor = stackTraceElemCo.findConstructor("(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V");
-            for (ExecutionStackElement ese : stack) {
+            for (Execution ese : stack) {
                 OopClass ste = makeStackTraceElement(stackTraceElemCo, ctor, ese, ctx.getThread());
 
                 stes.getFields()[i++] = ste.getAddress();
@@ -60,7 +60,7 @@ public enum ThrowableNatives implements NativeImplementation {
         public NativeReturn execute(Variables args, OperationContext ctx) {
             ClassObject stackTraceElemCo = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/StackTraceElement");
             Method ctor = stackTraceElemCo.findConstructor("(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V");
-            ExecutionStackElement elem = Iterables.get(ctx.getExecutionStack().getStack(), args.getInt(1));
+            Execution elem = Iterables.get(ctx.getExecutionStack().getStack(), args.getInt(1));
 
             OopClass ste = makeStackTraceElement(stackTraceElemCo, ctor, elem, ctx.getThread());
 
@@ -68,7 +68,7 @@ public enum ThrowableNatives implements NativeImplementation {
         }
     };
 
-    private static OopClass makeStackTraceElement(ClassObject stackTraceElemCo, Method ctor, ExecutionStackElement ese, Thread thread) {
+    private static OopClass makeStackTraceElement(ClassObject stackTraceElemCo, Method ctor, Execution ese, Thread thread) {
         Variables ctorArgs = ctor.newArgArray();
         OopClass ste = stackTraceElemCo.newObject();
 

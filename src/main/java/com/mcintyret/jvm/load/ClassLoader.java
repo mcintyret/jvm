@@ -1,24 +1,5 @@
 package com.mcintyret.jvm.load;
 
-import static com.mcintyret.jvm.core.util.Assert.assertNotNull;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
@@ -28,14 +9,14 @@ import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.NativeMethod;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.Thread;
+import com.mcintyret.jvm.core.exec.Threads;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.exec.Thread;
-import com.mcintyret.jvm.core.exec.Threads;
 import com.mcintyret.jvm.core.type.ArrayType;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.NonArrayType;
@@ -55,6 +36,26 @@ import com.mcintyret.jvm.parse.cp.CpLong;
 import com.mcintyret.jvm.parse.cp.CpMethodReference;
 import com.mcintyret.jvm.parse.cp.CpReference;
 import com.mcintyret.jvm.parse.cp.NameAndType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+
+import static com.mcintyret.jvm.core.util.Assert.assertNotNull;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 
 public class ClassLoader {
 
@@ -184,6 +185,10 @@ public class ClassLoader {
             LOG.debug("Done Loading: {}", className);
         }
         return co;
+    }
+
+    public Collection<ClassObject> getLoadedClasses() {
+        return Collections.unmodifiableCollection(classes.values());
     }
 
     // Superclasses and interfaces are recursively loaded

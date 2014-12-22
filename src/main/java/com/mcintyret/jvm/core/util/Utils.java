@@ -5,8 +5,6 @@ import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.ValueReceiver;
-import com.mcintyret.jvm.core.exec.ExecutionStack;
-import com.mcintyret.jvm.core.exec.ExecutionStackElement;
 import com.mcintyret.jvm.core.exec.Thread;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
@@ -98,15 +96,8 @@ public class Utils {
     }
 
     public static NativeReturn executeMethodAndThrow(Method method, Variables args, Thread thread) {
-        ExecutionStack stack = thread.getExecutionStack();
-
-        stack.push(new ExecutionStackElement(method, args,
-            method.getClassObject().getConstantPool(), stack));
-
-        stack.execute();
-
         // TODO: make less shit
-        NativeReturn ret = stack.getFinalReturn();
+        NativeReturn ret = thread.execute(method, args);
         String message;
         if (ret.isThrowable()) {
             AtomicInteger address = new AtomicInteger();

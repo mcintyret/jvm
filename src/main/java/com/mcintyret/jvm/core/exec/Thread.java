@@ -1,12 +1,14 @@
 package com.mcintyret.jvm.core.exec;
 
+import com.google.common.collect.Iterables;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ClassObject;
-import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
-import com.mcintyret.jvm.core.oop.Oop;
+import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.util.Utils;
+
+import java.util.ArrayDeque;
+import java.util.Deque;
 
 import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 
@@ -16,33 +18,23 @@ import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
  */
 public class Thread {
 
-    private static final ClassObject THREAD_CLASS = getDefaultClassLoader().getClassObject("java/lang/Thread");
-
-    private static final Field NAME_FIELD = THREAD_CLASS.findField("name", false);
-
-    private static final Field ID_FIELD = THREAD_CLASS.findField("tid", false);
-
-    private static final Method THREAD_RUN = THREAD_CLASS.findMethod("run", "()V", false);
-
     private final OopClass thisThread;
 
     private final java.lang.Thread thread;
 
     private volatile boolean interrupted;
 
-    private final ExecutionStack executionStack;
+    private final Deque<ExecutionStack> executionStacks = new ArrayDeque<>();
 
+    private ExecutionStack currentStack;
 
     public Thread(OopClass thisThread) {
-        this.executionStack = new ExecutionStack(this);
         this.thisThread = thisThread;
         this.thread = new ActualThread();
     }
 
-    // For system threads
+    // For system threads. Note these must call Heap.register manually!
     public Thread(OopClass thisThread, java.lang.Thread thread) {
-        Heap.register();
-        this.executionStack = new ExecutionStack(this);
         this.thisThread = thisThread;
         this.thread = thread;
     }
@@ -86,21 +78,43 @@ public class Thread {
         return thread;
     }
 
-    public ExecutionStack getExecutionStack() {
-        return executionStack;
+    public ExecutionStack getCurrentStack() {
+        return currentStack;
     }
 
-    private static String getThreadName(Oop thread) {
-        return Utils.toString(Heap.getOopArray(thread.getFields()[NAME_FIELD.getOffset()]));
+    public NativeReturn execute(Method method, Variables args) {
+        if (thread != null && java.lang.Thread.currentThread() != thread) {
+            throw new IllegalStateException();
+        }
+
+        currentStack = new ExecutionStack();
+        executionStacks.push(currentStack);
+        currentStack.push(makeExecution(method, args));
+
+        NativeReturn ret = currentStack.execute();
+
+        if (currentStack != executionStacks.pop()) {
+            throw new IllegalStateException();
+        }
+
+        currentStack = executionStacks.peek();
+
+        return ret;
     }
 
-    static long getThreadId(Oop thread) {
-        int offset = ID_FIELD.getOffset();
-        int[] fields = thread.getFields();
-        return Utils.toLong(fields[offset], fields[offset + 1]);
+    public Iterable<Execution> getExecutions() {
+        return Iterables.concat(executionStacks);
+    }
+
+    private Execution makeExecution(Method method, Variables args) {
+        return new Execution(method, args, method.getClassObject().getConstantPool(), this);
     }
 
     private class ActualThread extends java.lang.Thread {
+
+        private final ClassObject THREAD_CLASS = getDefaultClassLoader().getClassObject("java/lang/Thread");
+
+        private final Method THREAD_RUN = THREAD_CLASS.findMethod("run", "()V", false);
 
         @Override
         public void run() {
@@ -108,8 +122,9 @@ public class Thread {
             try {
                 Variables args = THREAD_RUN.newArgArray();
                 args.putOop(0, thisThread);
-                executionStack.push(new ExecutionStackElement(THREAD_RUN, args, THREAD_CLASS.getConstantPool(), executionStack));
-                executionStack.execute();
+
+                execute(THREAD_RUN, args);
+
             } finally {
                 Threads.deregister(Thread.this);
                 Heap.deregister();

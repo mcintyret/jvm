@@ -4,21 +4,18 @@ import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Iterator;
 
-public class ExecutionStack {
+import static com.google.common.base.Preconditions.checkNotNull;
 
-    private final Deque<ExecutionStackElement> stack = new ArrayDeque<>();
+public class ExecutionStack implements Iterable<Execution> {
 
-    private final Thread thread;
+    private final Deque<Execution> stack = new ArrayDeque<>();
 
     private NativeReturn finalReturn;
 
-    ExecutionStack(Thread thread) {
-        this.thread = thread;
-    }
-
-    public void execute() {
-        ExecutionStackElement current;
+    public NativeReturn execute() {
+        Execution current;
         while(true) {
             current = stack.peek();
             if (current == null) {
@@ -28,9 +25,10 @@ public class ExecutionStack {
                 current.executeNextInstruction();
             }
         }
+        return checkNotNull(finalReturn);
     }
 
-    public void push(ExecutionStackElement element) {
+    public void push(Execution element) {
         stack.push(element);
     }
 
@@ -38,12 +36,8 @@ public class ExecutionStack {
         stack.pop();
     }
 
-    public ExecutionStackElement peek() {
+    public Execution peek() {
         return stack.peek();
-    }
-
-    public NativeReturn getFinalReturn() {
-        return finalReturn;
     }
 
     public void setFinalReturn(NativeReturn finalReturn) {
@@ -51,12 +45,13 @@ public class ExecutionStack {
     }
 
     // TODO: don't like having to expose this
-    public Deque<ExecutionStackElement> getStack() {
+    public Deque<Execution> getStack() {
         return stack;
     }
 
-    public Thread getThread() {
-        return thread;
+    @Override
+    public Iterator<Execution> iterator() {
+        return stack.iterator();
     }
 }
 

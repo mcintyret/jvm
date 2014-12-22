@@ -1,10 +1,5 @@
 package com.mcintyret.jvm.core.exec;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
@@ -12,14 +7,18 @@ import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OpCodes;
 import com.mcintyret.jvm.core.util.ByteBufferIterator;
 import com.mcintyret.jvm.core.util.ByteIterator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ExecutionStackElement implements OperationContext {
+import java.util.concurrent.atomic.AtomicInteger;
 
-    private static final Logger LOG = LoggerFactory.getLogger(ExecutionStackElement.class);
+public class Execution implements OperationContext {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Execution.class);
 
     public final static AtomicInteger TOTAL_OPCODES_EXECUTED = new AtomicInteger();
 
-    public static ExecutionStackElement current;
+    public static Execution current;
 
     private final Method method;
 
@@ -29,16 +28,16 @@ public class ExecutionStackElement implements OperationContext {
 
     private final ConstantPool constantPool;
 
-    private final ExecutionStack executionStack;
+    private final Thread thread;
 
     private final VariableStack stack = new VariableStackImpl();
 
-    public ExecutionStackElement(Method method, Variables localVariables, ConstantPool constantPool, ExecutionStack executionStack) {
+    public Execution(Method method, Variables localVariables, ConstantPool constantPool, Thread thread) {
         this.method = method;
         this.byteIterator = method.getCode() == null ? null : new ByteBufferIterator(method.getCode().getCode());
         this.localVariables = localVariables;
         this.constantPool = constantPool;
-        this.executionStack = executionStack;
+        this.thread = thread;
     }
 
     public void executeNextInstruction() {
@@ -77,12 +76,12 @@ public class ExecutionStackElement implements OperationContext {
 
     @Override
     public ExecutionStack getExecutionStack() {
-        return executionStack;
+        return thread.getCurrentStack();
     }
 
     @Override
     public Thread getThread() {
-        return executionStack.getThread();
+        return thread;
     }
 
     @Override

@@ -1,14 +1,14 @@
 package com.mcintyret.jvm.core.type;
 
-import static com.mcintyret.jvm.core.util.Utils.getClassObject;
+import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.ImportantClasses;
+import com.mcintyret.jvm.core.oop.OopClassClass;
 
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.ImportantClasses;
-import com.mcintyret.jvm.core.oop.OopClassClass;
+import static com.mcintyret.jvm.core.util.Utils.getClassObject;
 
 public enum SimpleType implements Type {
     BOOLEAN("Z", 4),
@@ -97,10 +97,15 @@ public enum SimpleType implements Type {
     }
 
     @Override
-    public OopClassClass getOopClassClass() {
-        return classOop == null ? (classOop = Heap.allocateAndGet(
-            getClassObject(ImportantClasses.JAVA_LANG_CLASS).newObject((clazz, fields) ->
-                new OopClassClass(clazz, fields, SimpleType.this)))) : classOop;
+    public OopClassClass getOopClassClass(boolean gc) {
+        if (classOop == null) {
+            if (!gc) {
+                classOop = Heap.allocateAndGet(
+                    getClassObject(ImportantClasses.JAVA_LANG_CLASS).newObject((clazz, fields) ->
+                        new OopClassClass(clazz, fields, SimpleType.this)));
+            }
+        }
+        return classOop;
     }
 
     @Override

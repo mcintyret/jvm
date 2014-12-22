@@ -67,5 +67,5 @@ public interface VariableStack extends ValueReceiver {
     }
 
 
-
+    Variables asVariables();
 }
