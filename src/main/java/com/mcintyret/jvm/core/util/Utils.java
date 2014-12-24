@@ -2,7 +2,9 @@ package com.mcintyret.jvm.core.util;
 
 import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 
+import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
@@ -179,6 +181,14 @@ public class Utils {
 
     public static ClassObject getClassObject(String className) {
         return getDefaultClassLoader().getClassObject(className);
+    }
+
+    public static <S, T> T[] transformArray(S[] source, Function<S, T> func, Class<T> targetClass) {
+        T[] target = (T[]) Array.newInstance(targetClass, source.length);
+        for (int i = 0; i < source.length; i++) {
+            target[i] = func.apply(source[i]) ;
+        }
+        return target;
     }
 
 

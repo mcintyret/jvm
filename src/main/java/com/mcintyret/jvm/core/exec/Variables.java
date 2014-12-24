@@ -1,5 +1,7 @@
 package com.mcintyret.jvm.core.exec;
 
+import java.util.Arrays;
+
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.type.SimpleType;
@@ -10,16 +12,19 @@ public class Variables {
     // TODO: can be smarter about this - ie only from non-library code, only the first time it is executed etc.
     private static boolean checking = false;
 
-    private final int[] values;
-    private final SimpleType[] types;
+    private final Variable[] variables;
 
     public Variables(int size) {
-        this.values = new int[size];
-        this.types = new SimpleType[size];
+        this.variables = new Variable[size];
+    }
+
+    // Copy constructor
+    private Variables(Variable[] variables) {
+        this.variables = variables;
     }
 
     public boolean isEmpty(int i) {
-        return types[i] == null;
+        return variables[i] == null;
     }
 
     public <O extends Oop> O getOop(int i) {
@@ -47,7 +52,7 @@ public class Variables {
     }
 
     public void putOop(int i, Oop val) {
-        put(i, SimpleType.REF, val.getAddress());
+        variables[i] = Variable.forOop(val);
     }
 
     public void putNull(int i) {
@@ -63,8 +68,7 @@ public class Variables {
     }
 
     public void put(int i, SimpleType type, int value) {
-        types[i] = checkType(i, type);
-        values[i] = value;
+        variables[i] = Variable.forType(type, value);
     }
 
     public void putWide(int i, SimpleType type, long value) {
@@ -81,7 +85,7 @@ public class Variables {
     }
 
     private SimpleType checkType(int i, SimpleType type) {
-        SimpleType currentType = types[i];
+        SimpleType currentType = variables[i].getType();
         if (currentType != null && currentType != type) {
 //            throw new IllegalStateException("Expected value of type " + type + " but was of type " + types[i]); // this may be completely invalid!
         }
@@ -96,46 +100,55 @@ public class Variables {
     }
 
     public int getCheckedValue(int i, SimpleType type) {
+        Variable v = variables[i];
         if (checking) {
             // This condition will probably need to be made smarter to deal with automatic widening conversions, which are allowed
-            if (types[i] != type) {
-                throw new IllegalStateException("Expected value of type " + type + " but was of type " + types[i]);
+            if (v.getType() != type) {
+                throw new IllegalStateException("Expected value of type " + type + " but was of type " + v.getType());
             }
         }
-        return values[i];
+        return v.getValue();
     }
 
     public int getRawValue(int i) {
-        return values[i];
+        return variables[i].getValue();
     }
 
     public int[] getRawValues() {
-        return values;
+        int[] vals = new int[variables.length];
+        for (int i = 0; i < vals.length; i++) {
+            vals[i] = variables[i].getValue();
+        }
+        return vals;
     }
 
     public SimpleType[] getTypes() {
-        return types;
+        return Utils.transformArray(variables, Variable::getType, SimpleType.class);
     }
 
     public SimpleType getType(int i) {
-        return types[i];
+        return variables[i].getType();
     }
 
     public int length() {
-        return values.length;
+        return variables.length;
     }
 
     public Variable get(int i) {
-        return Variable.forType(types[i], values[i]);
+        return variables[i];
     }
 
     public WideVariable getWide(int i) {
-        return new WideVariable(types[i], Utils.toLong(values[i], values[i + 1]));
+        Variable v1 = variables[i];
+        Variable v2 = variables[i + 1];
+        return new WideVariable(v1.getType(), Utils.toLong(v1.getValue(), v2.getValue()));
     }
 
     void clear(int i) {
-        types[i] = null;
-        values[i] = 0;
+        variables[i] = null;
     }
 
+    public Variables copy(int newSize) {
+        return new Variables(Arrays.copyOf(variables, newSize));
+    }
 }

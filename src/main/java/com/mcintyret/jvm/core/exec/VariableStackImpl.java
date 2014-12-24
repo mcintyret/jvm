@@ -205,12 +205,6 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
     }
 
     private void makeNewStack(int newSize, boolean copy) {
-        Variables newStack = new Variables(newSize);
-        if (copy) {
-            int lim = Math.min(newSize, stack.length());
-            System.arraycopy(stack.getRawValues(), 0, newStack.getRawValues(), 0, lim);
-            System.arraycopy(stack.getTypes(), 0, newStack.getTypes(), 0, lim);
-        }
-        stack = newStack;
+        stack = copy ? stack.copy(newSize) : new Variables(newSize);
     }
 }
