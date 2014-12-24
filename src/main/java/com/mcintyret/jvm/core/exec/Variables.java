@@ -126,7 +126,7 @@ public class Variables {
     }
 
     public Variable get(int i) {
-        return new Variable(types[i], values[i]);
+        return Variable.forType(types[i], values[i]);
     }
 
     public WideVariable getWide(int i) {

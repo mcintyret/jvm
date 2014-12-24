@@ -74,25 +74,25 @@ public class ConstantPool {
         } else {
             switch (constant.getClass().getSimpleName().toLowerCase()) {
                 case "boolean":
-                    constantPool[i] = new Variable(SimpleType.BOOLEAN, Utils.toInt((Boolean) constant));
+                    constantPool[i] = Variable.forType(SimpleType.BOOLEAN, Utils.toInt((Boolean) constant));
                     break;
                 case "byte":
-                    constantPool[i] = new Variable(SimpleType.BYTE, (Byte) constant);
+                    constantPool[i] = Variable.forType(SimpleType.BYTE, (Byte) constant);
                     break;
                 case "short":
-                    constantPool[i] = new Variable(SimpleType.SHORT, (Short) constant);
+                    constantPool[i] = Variable.forType(SimpleType.SHORT, (Short) constant);
                     break;
                 case "character":
-                    constantPool[i] = new Variable(SimpleType.CHAR, (Character) constant);
+                    constantPool[i] = Variable.forType(SimpleType.CHAR, (Character) constant);
                     break;
                 case "integer":
-                    constantPool[i] = new Variable(SimpleType.INT, (Integer) constant);
+                    constantPool[i] = Variable.forType(SimpleType.INT, (Integer) constant);
                     break;
                 case "long":
                     constantPool[i] = new WideVariable(SimpleType.LONG, (Long) constant);
                     break;
                 case "float":
-                    constantPool[i] = new Variable(SimpleType.FLOAT, Utils.toInt((Float) constant));
+                    constantPool[i] = Variable.forType(SimpleType.FLOAT, Utils.toInt((Float) constant));
                     break;
                 case "double":
                     constantPool[i] = new WideVariable(SimpleType.DOUBLE, Utils.toLong((Double) constant));
@@ -101,7 +101,7 @@ public class ConstantPool {
                     if (constant instanceof CpString) {
                         int index = ((CpString) constant).getStringIndex();
                         String string = (String) constantPool[index];
-                        constantPool[i] = new Variable(SimpleType.REF, Heap.intern(string));
+                        constantPool[i] = Variable.forType(SimpleType.REF, Heap.intern(string));
                     } else if (constantPool[i] instanceof CpClass) {
                         constantPool[i] = translateClassObject(i);
                     } else {
