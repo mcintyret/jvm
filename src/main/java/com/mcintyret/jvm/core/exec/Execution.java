@@ -3,14 +3,17 @@ package com.mcintyret.jvm.core.exec;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
+import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OpCodes;
 import com.mcintyret.jvm.core.util.ByteBufferIterator;
 import com.mcintyret.jvm.core.util.ByteIterator;
+import com.mcintyret.jvm.parse.Modifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
 
 public class Execution implements OperationContext {
 
@@ -30,12 +33,25 @@ public class Execution implements OperationContext {
 
     private final VariableStack stack = new VariableStackImpl();
 
-    public Execution(Method method, Variables localVariables, ConstantPool constantPool, Thread thread) {
+    private final Lock lock;
+
+    public Execution(Method method, Variables localVariables, Thread thread) {
         this.method = method;
         this.byteIterator = method.getCode() == null ? null : new ByteBufferIterator(method.getCode().getCode());
         this.localVariables = localVariables;
-        this.constantPool = constantPool;
+        this.constantPool = method.getClassObject().getConstantPool();
         this.thread = thread;
+
+        if (method.hasModifier(Modifier.SYNCHRONIZED)) {
+            Oop target = method.isStatic() ?
+                method.getClassObject().getOop() :
+                localVariables.getOop(0);
+
+            lock = target.getMarkRef().getMonitor();
+            lock.lock();
+        } else {
+            lock = null;
+        }
     }
 
     public void executeNextInstruction() {
@@ -84,5 +100,12 @@ public class Execution implements OperationContext {
     @Override
     public Method getMethod() {
         return method;
+    }
+
+    @Override
+    public void onComplete() {
+        if (lock != null) {
+            lock.unlock();
+        }
     }
 }

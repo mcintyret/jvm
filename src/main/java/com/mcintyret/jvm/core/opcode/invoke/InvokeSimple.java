@@ -14,14 +14,12 @@ import com.mcintyret.jvm.parse.Modifier;
 abstract class InvokeSimple extends Invoke {
 
     @Override
-    protected final void doInvoke(Method method, OperationContext ctx) {
-        Variables args = getMethodArgs(ctx, method);
-
+    protected final void doInvoke(Method method, Variables args, OperationContext ctx) {
         if (method.hasModifier(Modifier.NATIVE)) {
             invokeNativeMethod((NativeMethod) method, args, ctx);
         } else {
             ctx.getExecutionStack().push(
-                new Execution(method, args, method.getClassObject().getConstantPool(), ctx.getThread()));
+                new Execution(method, args, ctx.getThread()));
         }
     }
 

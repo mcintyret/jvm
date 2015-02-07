@@ -1,13 +1,8 @@
 package com.mcintyret.jvm.core.opcode.invoke;
 
-import java.util.List;
-import java.util.ListIterator;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.NativeMethod;
+import com.mcintyret.jvm.core.exec.Execution;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
@@ -16,6 +11,11 @@ import com.mcintyret.jvm.core.opcode.AThrow;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.type.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.ListIterator;
 
 abstract class Invoke extends OpCode {
 
@@ -26,24 +26,29 @@ abstract class Invoke extends OpCode {
         Method method = ctx.getConstantPool().getMethod(ctx.getByteIterator().nextShortUnsigned());
         LOG.info("Invoking {}.{}", method.getClassObject().getClassName(), method.getSignature());
 
-        doInvoke(method, ctx);
+        Variables args = getMethodArgs(ctx, method);
+        doInvoke(method, args, ctx);
     }
 
-    protected abstract void doInvoke(Method method, OperationContext ctx);
+    protected abstract void doInvoke(Method method, Variables args, OperationContext ctx);
 
     protected void invokeNativeMethod(NativeMethod nativeMethod, Variables args, OperationContext ctx) {
+        Execution nativeExecution = new Execution(nativeMethod, args, ctx.getThread());
+
         NativeImplementation nativeImplementation = nativeMethod.getNativeImplementation();
         if (nativeImplementation == null) {
             throw new IllegalStateException("No Native implementation for " + nativeMethod.getClassObject().getClassName() + "." + nativeMethod.getSignature());
         }
-        NativeReturn nr = nativeImplementation.execute(args, ctx);
+        NativeReturn nr = nativeImplementation.execute(args, nativeExecution);
+        nativeExecution.onComplete(); // Releases lock if this method was synchronized
+
         nr.applyValue(ctx.getStack());
         if (nr.isThrowable()) {
             new AThrow().execute(ctx);
         }
     }
 
-    protected Variables getMethodArgs(OperationContext ctx, Method method) {
+    private Variables getMethodArgs(OperationContext ctx, Method method) {
         boolean isStatic = method.isStatic();
 
         int shift = isStatic ? 0 : 1;

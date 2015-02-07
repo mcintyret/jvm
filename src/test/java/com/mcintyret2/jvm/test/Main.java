@@ -13,17 +13,25 @@ public class Main {
 //        interfaceMethods();
 //        simpleIntArrays();
 //        stringsAndNatives();
-//        threadingTests();
-        threadingTestSynchronizedStaticMethodThrowingException();
+        threadingTests();
 //        stringLength();
     }
 
     private static void threadingTests() {
         threadingTestAtomicInteger();
+
         threadingTestSynchronizedBlock();
         threadingTestSynchronizedStaticMethod();
         threadingTestSynchronizedInstanceMethod();
+
         threadingTestSynchronizedBlockThrowingException();
+        threadingTestSynchronizedStaticMethodThrowingException();
+        threadingTestSynchronizedInstanceMethodThrowingException();
+
+        threadingTestSynchronizedNativeStaticMethod();
+        threadingTestSynchronizedNativeInstanceMethod();
+        threadingTestSynchronizedNativeStaticMethodThrowingException();
+        threadingTestSynchronizedNativeInstanceMethodThrowingException();
     }
 
     private static void stringLength() {
@@ -186,6 +194,98 @@ public class Main {
         System.out.println("Should be " + (num / 2) + ": " + a[1]);
     }
 
+    // Test threading using a synchronized instance method and throwing an exception
+    private static void threadingTestSynchronizedInstanceMethodThrowingException() {
+        final int[] a = new int[2];
+        int num = 40;
+
+        class Sync {
+            synchronized void incrementException(int[] a) {
+                incrementExceptionNotSynchronized(a);
+            }
+        }
+
+        Sync sync = new Sync();
+
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                sync.incrementException(a);
+            }
+        });
+
+        System.out.println("Should be " + num + ": " + a[0]);
+        System.out.println("Should be " + (num / 2) + ": " + a[1]);
+    }
+
+    // Test threading using a synchronized static native method
+    private static void threadingTestSynchronizedNativeStaticMethod() {
+        final int[] a = new int[1];
+        int num = 40;
+
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                incrementNativeStatic(a);
+            }
+        });
+
+        System.out.println("Should be " + num + ": " + a[0]);
+    }
+
+
+    // Test threading using a synchronized instance native method
+    private static void threadingTestSynchronizedNativeInstanceMethod() {
+        final int[] a = new int[1];
+        int num = 40;
+
+        Main main = new Main();
+
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                main.incrementNativeInstance(a);
+            }
+        });
+
+        System.out.println("Should be " + num + ": " + a[0]);
+    }
+
+    // Test threading using a synchronized native static method and throwing an exception
+    private static void threadingTestSynchronizedNativeStaticMethodThrowingException() {
+        final int[] a = new int[2];
+        int num = 40;
+
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                incrementNativeStaticException(a);
+            }
+        });
+
+        System.out.println("Should be " + num + ": " + a[0]);
+        System.out.println("Should be " + (num / 2) + ": " + a[1]);
+    }
+
+    // Test threading using a synchronized native instance method and throwing an exception
+    private static void threadingTestSynchronizedNativeInstanceMethodThrowingException() {
+        final int[] a = new int[2];
+        int num = 40;
+
+        Main main = new Main();
+
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                main.incrementNativeInstanceException(a);
+            }
+        });
+
+        System.out.println("Should be " + num + ": " + a[0]);
+        System.out.println("Should be " + (num / 2) + ": " + a[1]);
+    }
+
+
     private static synchronized void incrementStatic(int[] a) {
         a[0]++;
     }
@@ -234,4 +334,12 @@ public class Main {
     public static class FooBarException extends Exception {
 
     }
+
+    private synchronized native void incrementNativeInstance(int[] a);
+
+    private static synchronized native void incrementNativeStatic(int[] a);
+
+    private synchronized native void incrementNativeInstanceException(int[] a);
+
+    private static synchronized native void incrementNativeStaticException(int[] a);
 }

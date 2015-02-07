@@ -124,7 +124,7 @@ public class Thread {
     }
 
     private Execution makeExecution(Method method, Variables args) {
-        return new Execution(method, args, method.getClassObject().getConstantPool(), this);
+        return new Execution(method, args, this);
     }
 
     public class ActualThread extends java.lang.Thread {

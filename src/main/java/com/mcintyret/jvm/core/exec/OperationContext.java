@@ -20,4 +20,5 @@ public interface OperationContext {
 
     Method getMethod();
 
+    void onComplete();
 }

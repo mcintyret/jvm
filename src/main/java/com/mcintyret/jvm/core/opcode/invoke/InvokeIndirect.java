@@ -11,13 +11,11 @@ import com.mcintyret.jvm.parse.Modifier;
 abstract class InvokeIndirect extends Invoke {
 
     @Override
-    protected final void doInvoke(Method method, OperationContext ctx) {
-        Variables args = getMethodArgs(ctx, method);
-
+    protected final void doInvoke(Method method, Variables args, OperationContext ctx) {
         Method implementation = getImplementationMethod(method, args.getOop(0));
 
         if (implementation.hasModifier(Modifier.NATIVE)) {
-            invokeNativeMethod((NativeMethod) method, args, ctx);
+            invokeNativeMethod((NativeMethod) implementation, args, ctx);
         } else {
             int maxLocalVars = implementation.getCode().getMaxLocals();
             if (maxLocalVars > args.length()) {
@@ -29,7 +27,7 @@ abstract class InvokeIndirect extends Invoke {
             }
 
             ctx.getExecutionStack().push(
-                new Execution(implementation, args, implementation.getClassObject().getConstantPool(), ctx.getThread()));
+                new Execution(implementation, args, ctx.getThread()));
         }
 
         afterInvoke(ctx);
