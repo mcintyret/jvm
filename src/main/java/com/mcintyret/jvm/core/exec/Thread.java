@@ -83,6 +83,23 @@ public class Thread {
     }
 
     public NativeReturn execute(Method method, Variables args) {
+        try {
+            return doExecute(method, args);
+        } catch (Throwable t) {
+            String threadName = thread == null ? "main" : thread.getName();
+            System.out.println("ERROR on thread '" + threadName + "': " + t.getMessage());
+            System.out.println("Caused By:");
+            executionStacks.descendingIterator().forEachRemaining(stack -> {
+                stack.getStack().descendingIterator().forEachRemaining(exec -> {
+                    System.out.println(exec.getMethod());
+                });
+            });
+
+            throw t;
+        }
+    }
+
+    private NativeReturn doExecute(Method method, Variables args) {
         if (thread != null && java.lang.Thread.currentThread() != thread) {
             throw new IllegalStateException();
         }
