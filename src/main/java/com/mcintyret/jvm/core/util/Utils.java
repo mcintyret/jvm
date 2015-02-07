@@ -14,6 +14,7 @@ import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.type.ArrayType;
 import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.type.Type;
+import com.mcintyret.jvm.load.Runner;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -170,6 +171,17 @@ public class Utils {
 
     public static ClassObject getClassObject(String className) {
         return getDefaultClassLoader().getClassObject(className);
+    }
+
+    public static Thread currentThread() {
+        java.lang.Thread javaThread = java.lang.Thread.currentThread();
+        if (javaThread instanceof Thread.ActualThread) {
+            return ((Thread.ActualThread) javaThread).getThread();
+        } else if (javaThread.getName().equals("main")) {
+            return Runner.MAIN_THREAD;
+        } else {
+            throw new IllegalStateException("Unknown current thread: " + javaThread);
+        }
     }
 
 

@@ -127,7 +127,7 @@ public class Thread {
         return new Execution(method, args, method.getClassObject().getConstantPool(), this);
     }
 
-    private class ActualThread extends java.lang.Thread {
+    public class ActualThread extends java.lang.Thread {
 
         private final ClassObject THREAD_CLASS = getDefaultClassLoader().getClassObject("java/lang/Thread");
 
@@ -146,6 +146,10 @@ public class Thread {
                 Threads.deregister(Thread.this);
                 Heap.deregister();
             }
+        }
+
+        public Thread getThread() {
+            return Thread.this;
         }
     }
 }
