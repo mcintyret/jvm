@@ -47,8 +47,8 @@ public class Runner {
         for (int i = 0; i < args.length; i++) {
             array.getFields()[i] = Heap.intern(args[i]);
         }
-        Variables actualArgs = new Variables(1);
-        actualArgs.put(0, SimpleType.REF, Heap.allocate(array));
+
+        Variables actualArgs = mainMethod.newArgArray(array);
 
         NativeReturn ret = Utils.executeMethodAndThrow(mainMethod, actualArgs, MAIN_THREAD);
 
