@@ -309,7 +309,7 @@ public class ClassLoader {
         return co;
     }
 
-    private void doFancyThreadInitMethodStuff(ClassObject co) {
+    private static void doFancyThreadInitMethodStuff(ClassObject co) {
         Method[] methods = co.getInstanceMethods();
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
@@ -348,7 +348,7 @@ public class ClassLoader {
         }
     }
 
-    private void registerInterfaceImplementations(ClassObject co) {
+    private static void registerInterfaceImplementations(ClassObject co) {
         ClassObject obj = co;
         String className = co.getClassName();
         Set<ClassObject> allInterfaces = new HashSet<>();
@@ -372,14 +372,14 @@ public class ClassLoader {
         }
     }
 
-    private void addInterfaces(ClassObject classObject, Set<ClassObject> interfaces) {
+    private static void addInterfaces(ClassObject classObject, Set<ClassObject> interfaces) {
         for (ClassObject iface : classObject.getInterfaces()) {
             interfaces.add(iface);
             addInterfaces(iface, interfaces);
         }
     }
 
-    private void executeStaticInitMethod(ClassObject co) {
+    private static void executeStaticInitMethod(ClassObject co) {
         Method staticInit = co.findMethod("<clinit>", "()V", true);
         if (staticInit != null) {
             Utils.executeMethodAndThrow(staticInit, new Variables(staticInit.getCode().getMaxLocals()), Utils.currentThread());
@@ -422,7 +422,7 @@ public class ClassLoader {
     }
 
 
-    private void translateSimpleConstantPool(Object[] constantPool) {
+    private static void translateSimpleConstantPool(Object[] constantPool) {
         for (int i = 1; i < constantPool.length; i++) {
             Object obj = constantPool[i];
             if (obj instanceof CpInt) {
