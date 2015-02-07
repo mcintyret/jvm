@@ -23,3 +23,7 @@ Runtime exceptions
 - DivideBy0
 - ArrayIndex
 - ClassCast
+
+Bugs:
+- System.out.println newline often missing
+- apparently synchronized METHODS don't create the monitor enter/exit opcodes, must be done manually (as opposed to blocks, which do).
