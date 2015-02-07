@@ -18,8 +18,6 @@ public class Execution implements OperationContext {
 
     public final static AtomicInteger TOTAL_OPCODES_EXECUTED = new AtomicInteger();
 
-    public static Execution current;
-
     private final Method method;
 
     private final ByteIterator byteIterator;
@@ -41,7 +39,6 @@ public class Execution implements OperationContext {
     }
 
     public void executeNextInstruction() {
-        current = this;
         int pos = byteIterator.getPos();
         OpCode opCode = OpCodes.getOpcode(byteIterator.nextByte());
         LOG.debug(String.format("%4d: %s", pos, opCode));

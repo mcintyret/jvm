@@ -34,7 +34,6 @@ public class GiveItAllAGo {
             t.printStackTrace();
         } finally {
             System.out.println("Total operations: " + Execution.TOTAL_OPCODES_EXECUTED.get());
-            System.out.println("Current method: " + Execution.current.getMethod());
         }
     }
 }
