@@ -10,10 +10,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Main {
 
     public static void main(String[] args) {
-//        interfaceMethods();
-//        simpleIntArrays();
-//        stringsAndNatives();
-//        simpleThreadingTest2();
+        interfaceMethods();
+        simpleIntArrays();
+        stringsAndNatives();
+        simpleThreadingTest2();
+        simpleThreadingTest();
         stringLength();
     }
 
