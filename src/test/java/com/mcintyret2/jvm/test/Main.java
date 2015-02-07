@@ -14,15 +14,16 @@ public class Main {
 //        simpleIntArrays();
 //        stringsAndNatives();
 //        threadingTests();
-        simpleThreadingTest5();
+        threadingTestSynchronizedStaticMethodThrowingException();
 //        stringLength();
     }
 
     private static void threadingTests() {
-        simpleThreadingTest();
-        simpleThreadingTest2();
-        simpleThreadingTest3();
-        simpleThreadingTest4();
+        threadingTestAtomicInteger();
+        threadingTestSynchronizedBlock();
+        threadingTestSynchronizedStaticMethod();
+        threadingTestSynchronizedInstanceMethod();
+        threadingTestSynchronizedBlockThrowingException();
     }
 
     private static void stringLength() {
@@ -83,7 +84,7 @@ public class Main {
     }
 
     // Test threading using an AtomicInteger
-    private static void simpleThreadingTest() {
+    private static void threadingTestAtomicInteger() {
         int num = 40;
         AtomicInteger ai = new AtomicInteger();
         doSimpleThreadingTest(num, new Runnable() {
@@ -96,7 +97,7 @@ public class Main {
     }
 
     // Test threading using a synchronized block
-    private static void simpleThreadingTest2() {
+    private static void threadingTestSynchronizedBlock() {
         final int[] a = new int[1];
         int num = 40;
 
@@ -113,14 +114,14 @@ public class Main {
     }
 
     // Test threading using a synchronized static method
-    private static void simpleThreadingTest3() {
+    private static void threadingTestSynchronizedStaticMethod() {
         final int[] a = new int[1];
         int num = 40;
 
         doSimpleThreadingTest(num, new Runnable() {
             @Override
             public void run() {
-                incrementFirstStatic(a);
+                incrementStatic(a);
             }
         });
 
@@ -128,8 +129,8 @@ public class Main {
     }
 
 
-        // Test threading using a synchronized instance method
-    private static void simpleThreadingTest4() {
+    // Test threading using a synchronized instance method
+    private static void threadingTestSynchronizedInstanceMethod() {
         final int[] a = new int[1];
         int num = 40;
 
@@ -152,7 +153,7 @@ public class Main {
     }
 
     // Test threading using a synchronized block and throwing an exception
-    private static void simpleThreadingTest5() {
+    private static void threadingTestSynchronizedBlockThrowingException() {
         final int[] a = new int[2];
         int num = 40;
 
@@ -160,11 +161,7 @@ public class Main {
             @Override
             public void run() {
                 synchronized (a) {
-                    if (a[0]++ % 2 == 0) {
-                        // Testing whether we give up the lock on exiting via an exception
-                        throw new RuntimeException();
-                    }
-                    a[1]++;
+                    incrementExceptionNotSynchronized(a);
                 }
             }
         });
@@ -173,8 +170,36 @@ public class Main {
         System.out.println("Should be " + (num / 2) + ": " + a[1]);
     }
 
-    private static synchronized void incrementFirstStatic(int[] a) {
+    // Test threading using a synchronized static method and throwing an exception
+    private static void threadingTestSynchronizedStaticMethodThrowingException() {
+        final int[] a = new int[2];
+        int num = 40;
+
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                incrementStaticException(a);
+            }
+        });
+
+        System.out.println("Should be " + num + ": " + a[0]);
+        System.out.println("Should be " + (num / 2) + ": " + a[1]);
+    }
+
+    private static synchronized void incrementStatic(int[] a) {
         a[0]++;
+    }
+
+    private static synchronized void incrementStaticException(int[] a) {
+        incrementExceptionNotSynchronized(a);
+    }
+
+    private static void incrementExceptionNotSynchronized(int[] a) {
+        if (a[0]++ % 2 == 0) {
+            // Testing whether we give up the lock on exiting via an exception
+            throw new RuntimeException();
+        }
+        a[1]++;
     }
 
     private static void isAssignableFrom() {
