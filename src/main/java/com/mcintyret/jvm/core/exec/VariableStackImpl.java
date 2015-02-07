@@ -201,6 +201,11 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
     }
 
     @Override
+    public SimpleType peekType() {
+        return stack.getType(head - 1);
+    }
+
+    @Override
     public Variables asVariables() {
         return stack;
     }
