@@ -6,6 +6,10 @@ import java.util.Iterator;
 
 public interface ClassPath extends Iterable<ClassFileResource> {
 
+    public static ClassPath emptyClasspath() {
+        return Iterators::emptyIterator;
+    }
+
     default Iterator<ClassFileResource> classFileFilteringIterator(Iterator<ClassFileResource> it) {
         return Iterators.filter(it, classFileResource -> classFileResource.getName().endsWith(".class"));
     }
