@@ -11,7 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.testng.AssertJUnit.assertEquals;
 
 @Test
-public class ThreadTestWithAtomicIntTest extends BaseJvmTest {
+public class AtomicIntTest extends BaseJvmTest {
 
     private static final int NUM_THREADS = 40;
 
