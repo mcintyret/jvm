@@ -13,7 +13,7 @@ public class Jvm {
 
     public static void main(String[] args) throws IOException {
         if (args.length < 1) {
-            System.out.println("No Main class given");
+            throw new IllegalArgumentException("No Main class given");
         }
         String mainClass = args[0];
         String[] theArgs = new String[args.length - 1];
