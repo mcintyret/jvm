@@ -56,6 +56,8 @@ public interface VariableStack extends ValueReceiver {
 
     void clear(); // Required when exceptions are thrown
 
+    SimpleType peekType();
+
     @Override
     default void receiveSingleWidth(int i, SimpleType type) {
         pushSingleWidth(i, type);
@@ -67,5 +69,5 @@ public interface VariableStack extends ValueReceiver {
     }
 
 
-
+    Variables asVariables();
 }

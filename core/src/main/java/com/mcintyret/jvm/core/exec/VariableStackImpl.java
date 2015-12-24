@@ -200,6 +200,16 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
         makeNewStack(stack.length(), false);
     }
 
+    @Override
+    public SimpleType peekType() {
+        return stack.getType(head - 1);
+    }
+
+    @Override
+    public Variables asVariables() {
+        return stack;
+    }
+
     private void resize() {
         makeNewStack(stack.length() * 2, true);
     }

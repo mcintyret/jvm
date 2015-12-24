@@ -1,13 +1,13 @@
 package com.mcintyret.jvm.core.clazz;
 
-import static com.mcintyret.jvm.core.util.Utils.getClassObject;
-
-import java.util.Set;
-
 import com.mcintyret.jvm.core.ImportantClasses;
 import com.mcintyret.jvm.core.oop.OopClassClass;
 import com.mcintyret.jvm.core.type.ReferenceType;
 import com.mcintyret.jvm.parse.Modifier;
+
+import java.util.Set;
+
+import static com.mcintyret.jvm.core.util.Utils.getClassObject;
 
 public abstract class AbstractClassObject {
 
@@ -100,6 +100,10 @@ public abstract class AbstractClassObject {
     }
 
     public OopClassClass getOop() {
-        return getType().getOopClassClass();
+        return getOop(false);
+    }
+
+    public OopClassClass getOop(boolean gc) {
+        return getType().getOopClassClass(gc);
     }
 }

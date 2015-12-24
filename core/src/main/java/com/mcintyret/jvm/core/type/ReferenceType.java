@@ -32,10 +32,16 @@ public abstract class ReferenceType implements Type {
     private OopClassClass oopClassClass;
 
     @Override
-    public OopClassClass getOopClassClass() {
-        return oopClassClass == null ? (oopClassClass = Heap.allocateAndGet(
-            Utils.getClassObject(ImportantClasses.JAVA_LANG_CLASS).newObject((clazz, fields) ->
-                new OopClassClass(clazz, fields, this)))) : oopClassClass;
+    public OopClassClass getOopClassClass(boolean gc) {
+        if (oopClassClass == null) {
+            if (!gc) {
+                oopClassClass = Heap.allocateAndGet(
+                    Utils.getClassObject(ImportantClasses.JAVA_LANG_CLASS).newObject((clazz, fields) ->
+                        new OopClassClass(clazz, fields, this)));
+
+            }
+        }
+        return oopClassClass;
     }
 
 }

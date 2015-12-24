@@ -1,7 +1,7 @@
 package com.mcintyret.jvm.core.opcode.ret;
 
+import com.mcintyret.jvm.core.exec.Execution;
 import com.mcintyret.jvm.core.exec.ExecutionStack;
-import com.mcintyret.jvm.core.exec.ExecutionStackElement;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.VariableStack;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
@@ -11,7 +11,7 @@ abstract class BaseValueReturn extends BaseReturn implements Typed {
 
     protected final void returnValue(OperationContext ctx) {
         ExecutionStack executionStack = ctx.getExecutionStack();
-        ExecutionStackElement next = executionStack.peek();
+        Execution next = executionStack.peek();
         if (next == null) {
             executionStack.setFinalReturn(finalReturn(ctx.getStack()));
         } else {

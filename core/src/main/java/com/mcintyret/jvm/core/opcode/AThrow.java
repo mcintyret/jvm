@@ -1,19 +1,18 @@
 package com.mcintyret.jvm.core.opcode;
 
-import java.util.List;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
-import com.mcintyret.jvm.core.exec.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.Execution;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.util.ByteIterator;
 import com.mcintyret.jvm.parse.attribute.CodeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * User: tommcintyre
@@ -28,9 +27,9 @@ public class AThrow extends OpCode {
         OopClass thrown = ctx.getStack().popOop();
         LOG.warn("Throwing exception of type {} from method {}", thrown.getClassObject(), ctx.getMethod());
 
-        ExecutionStackElement elem = ctx.getExecutionStack().peek();
-        ExecutionStackElement prev = null;
-        while (elem != null) {
+        Execution elem = ctx.getExecutionStack().peek();
+        Execution prev;
+        do {
             Method m = elem.getMethod();
             ConstantPool cp = m.getClassObject().getConstantPool();
             List<CodeException> exceptions = m.getCode().getCodeExceptions();
@@ -65,8 +64,9 @@ public class AThrow extends OpCode {
 
             ctx.getExecutionStack().pop();
             prev = elem;
+            prev.onComplete(); // releases lock if this method was synchronized
             elem = ctx.getExecutionStack().peek();
-        }
+        } while (elem != null);
 
         // If we're here, the Exception has gone all the way to the top.
         LOG.warn("Did not catch error of type {}. Exiting from method {}", thrown.getClassObject(), prev.getMethod());

@@ -10,11 +10,32 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Main {
 
     public static void main(String[] args) {
-        interfaceMethods();
-        simpleIntArrays();
-        stringsAndNatives();
-        simpleThreadingTest();
-        simpleThreadingTest2();
+//        interfaceMethods();
+//        simpleIntArrays();
+//        stringsAndNatives();
+        threadingTests();
+//        stringLength();
+    }
+
+    private static void threadingTests() {
+        threadingTestAtomicInteger();
+
+        threadingTestSynchronizedBlock();
+        threadingTestSynchronizedStaticMethod();
+        threadingTestSynchronizedInstanceMethod();
+
+        threadingTestSynchronizedBlockThrowingException();
+        threadingTestSynchronizedStaticMethodThrowingException();
+        threadingTestSynchronizedInstanceMethodThrowingException();
+
+        threadingTestSynchronizedNativeStaticMethod();
+        threadingTestSynchronizedNativeInstanceMethod();
+        threadingTestSynchronizedNativeStaticMethodThrowingException();
+        threadingTestSynchronizedNativeInstanceMethodThrowingException();
+    }
+
+    private static void stringLength() {
+        print(String.valueOf("foo".length()));
     }
 
     private static void interfaceMethods() {
@@ -42,9 +63,7 @@ public class Main {
         isAssignableFrom();
     }
 
-    private static void simpleThreadingTest() {
-        AtomicInteger ai = new AtomicInteger();
-        int num = 40;
+    private static void doSimpleThreadingTest(int num, Runnable action) {
         final Random random = new Random();
         final CountDownLatch latch = new CountDownLatch(num);
         for (int i = 0; i < num; i++) {
@@ -56,8 +75,11 @@ public class Main {
                     } catch (InterruptedException e) {
                         throw new AssertionError(e);
                     }
-                    ai.getAndIncrement();
-                    latch.countDown();
+                    try {
+                        action.run();
+                    } finally {
+                        latch.countDown();
+                    }
                 }
             }).start();
         }
@@ -67,39 +89,217 @@ public class Main {
         } catch (InterruptedException e) {
             throw new AssertionError(e);
         }
+    }
 
+    // Test threading using an AtomicInteger
+    private static void threadingTestAtomicInteger() {
+        int num = 40;
+        AtomicInteger ai = new AtomicInteger();
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                ai.incrementAndGet();
+            }
+        });
         System.out.println("Should be " + num + ": " + ai);
     }
 
-    private static void simpleThreadingTest2() {
+    // Test threading using a synchronized block
+    private static void threadingTestSynchronizedBlock() {
         final int[] a = new int[1];
         int num = 40;
-        final Random random = new Random();
-        final CountDownLatch latch = new CountDownLatch(num);
-        for (int i = 0; i < num; i++) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(100 + random.nextInt(50));
-                    } catch (InterruptedException e) {
-                        throw new AssertionError(e);
-                    }
-                    synchronized (a) {
-                        a[0]++;
-                    }
-                    latch.countDown();
-                }
-            }).start();
-        }
 
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            throw new AssertionError(e);
-        }
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                synchronized (a) {
+                    a[0]++;
+                }
+            }
+        });
 
         System.out.println("Should be " + num + ": " + a[0]);
+    }
+
+    // Test threading using a synchronized static method
+    private static void threadingTestSynchronizedStaticMethod() {
+        final int[] a = new int[1];
+        int num = 40;
+
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                incrementStatic(a);
+            }
+        });
+
+        System.out.println("Should be " + num + ": " + a[0]);
+    }
+
+
+    // Test threading using a synchronized instance method
+    private static void threadingTestSynchronizedInstanceMethod() {
+        final int[] a = new int[1];
+        int num = 40;
+
+        class Sync {
+            synchronized void incrementFirst(int[] a) {
+                a[0]++;
+            }
+        }
+
+        Sync sync = new Sync();
+
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                sync.incrementFirst(a);
+            }
+        });
+
+        System.out.println("Should be " + num + ": " + a[0]);
+    }
+
+    // Test threading using a synchronized block and throwing an exception
+    private static void threadingTestSynchronizedBlockThrowingException() {
+        final int[] a = new int[2];
+        int num = 40;
+
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                synchronized (a) {
+                    incrementExceptionNotSynchronized(a);
+                }
+            }
+        });
+
+        System.out.println("Should be " + num + ": " + a[0]);
+        System.out.println("Should be " + (num / 2) + ": " + a[1]);
+    }
+
+    // Test threading using a synchronized static method and throwing an exception
+    private static void threadingTestSynchronizedStaticMethodThrowingException() {
+        final int[] a = new int[2];
+        int num = 40;
+
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                incrementStaticException(a);
+            }
+        });
+
+        System.out.println("Should be " + num + ": " + a[0]);
+        System.out.println("Should be " + (num / 2) + ": " + a[1]);
+    }
+
+    // Test threading using a synchronized instance method and throwing an exception
+    private static void threadingTestSynchronizedInstanceMethodThrowingException() {
+        final int[] a = new int[2];
+        int num = 40;
+
+        class Sync {
+            synchronized void incrementException(int[] a) {
+                incrementExceptionNotSynchronized(a);
+            }
+        }
+
+        Sync sync = new Sync();
+
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                sync.incrementException(a);
+            }
+        });
+
+        System.out.println("Should be " + num + ": " + a[0]);
+        System.out.println("Should be " + (num / 2) + ": " + a[1]);
+    }
+
+    // Test threading using a synchronized static native method
+    private static void threadingTestSynchronizedNativeStaticMethod() {
+        final int[] a = new int[1];
+        int num = 40;
+
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                incrementNativeStatic(a);
+            }
+        });
+
+        System.out.println("Should be " + num + ": " + a[0]);
+    }
+
+
+    // Test threading using a synchronized instance native method
+    private static void threadingTestSynchronizedNativeInstanceMethod() {
+        final int[] a = new int[1];
+        int num = 40;
+
+        Main main = new Main();
+
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                main.incrementNativeInstance(a);
+            }
+        });
+
+        System.out.println("Should be " + num + ": " + a[0]);
+    }
+
+    // Test threading using a synchronized native static method and throwing an exception
+    private static void threadingTestSynchronizedNativeStaticMethodThrowingException() {
+        final int[] a = new int[2];
+        int num = 40;
+
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                incrementNativeStaticException(a);
+            }
+        });
+
+        System.out.println("Should be " + num + ": " + a[0]);
+        System.out.println("Should be " + (num / 2) + ": " + a[1]);
+    }
+
+    // Test threading using a synchronized native instance method and throwing an exception
+    private static void threadingTestSynchronizedNativeInstanceMethodThrowingException() {
+        final int[] a = new int[2];
+        int num = 40;
+
+        Main main = new Main();
+
+        doSimpleThreadingTest(num, new Runnable() {
+            @Override
+            public void run() {
+                main.incrementNativeInstanceException(a);
+            }
+        });
+
+        System.out.println("Should be " + num + ": " + a[0]);
+        System.out.println("Should be " + (num / 2) + ": " + a[1]);
+    }
+
+
+    private static synchronized void incrementStatic(int[] a) {
+        a[0]++;
+    }
+
+    private static synchronized void incrementStaticException(int[] a) {
+        incrementExceptionNotSynchronized(a);
+    }
+
+    private static void incrementExceptionNotSynchronized(int[] a) {
+        if (a[0]++ % 2 == 0) {
+            // Testing whether we give up the lock on exiting via an exception
+            throw new RuntimeException();
+        }
+        a[1]++;
     }
 
     private static void isAssignableFrom() {
@@ -134,4 +334,12 @@ public class Main {
     public static class FooBarException extends Exception {
 
     }
+
+    private synchronized native void incrementNativeInstance(int[] a);
+
+    private static synchronized native void incrementNativeStatic(int[] a);
+
+    private synchronized native void incrementNativeInstanceException(int[] a);
+
+    private static synchronized native void incrementNativeStaticException(int[] a);
 }

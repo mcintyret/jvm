@@ -1,24 +1,5 @@
 package com.mcintyret.jvm.load;
 
-import static com.mcintyret.jvm.core.util.Assert.assertNotNull;
-import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.Map;
-import java.util.Set;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
@@ -28,14 +9,14 @@ import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.NativeMethod;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.Thread;
+import com.mcintyret.jvm.core.exec.Threads;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.nativeimpls.ObjectNatives;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.thread.Thread;
-import com.mcintyret.jvm.core.thread.Threads;
 import com.mcintyret.jvm.core.type.ArrayType;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.NonArrayType;
@@ -55,6 +36,26 @@ import com.mcintyret.jvm.parse.cp.CpLong;
 import com.mcintyret.jvm.parse.cp.CpMethodReference;
 import com.mcintyret.jvm.parse.cp.CpReference;
 import com.mcintyret.jvm.parse.cp.NameAndType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptySet;
 
 public class ClassLoader {
 
@@ -81,11 +82,11 @@ public class ClassLoader {
 
     private final Map<String, ClassFile> classFiles = new HashMap<>();
 
-    private final Map<FieldKey, Field> fields = new HashMap<>();
+    private final Map<FieldKey, Field> fields = new ConcurrentHashMap<>();
 
-    private final Map<MethodKey, Method> methods = new HashMap<>();
+    private final Map<MethodKey, Method> methods = new ConcurrentHashMap<>();
 
-    private final Map<String, ClassObject> classes = new HashMap<>();
+    private final Map<String, ClassObject> classes = new ConcurrentHashMap<>();
 
     protected ClassLoader() {
 
@@ -122,68 +123,53 @@ public class ClassLoader {
         }
     }
 
-    private void setSystemProperties() {
-        // SystemNatives.initProperties takes care of the rest
-        com.mcintyret.jvm.core.thread.Thread thread = Runner.MAIN_THREAD;
-
-        ClassObject system = getClassObject("java/lang/System");
-        Method setProperties = system.findMethod("setProperties", true);
-
-        Utils.executeMethodAndThrow(setProperties, setProperties.newArgArray(), thread);
-    }
-
-//    private void setSystemOut() {
-//        com.mcintyret.jvm.core.thread.Thread thread = Runner.MAIN_THREAD;
-//
-//        ClassObject fileDescriptor = getClassObject("java/io/FileDescriptor");
-//        OopClass outFd = (OopClass) fileDescriptor.findField("out", true).getOop(null);
-//
-//        ClassObject fileOutputStream = getClassObject("java/io/FileOutputStream");
-//        Method ctor = fileOutputStream.findConstructor("(Ljava/io/FileDescriptor;)V");
-//        OopClass fos = fileOutputStream.newObject();
-//        int[] args = ctor.newArgArray();
-//        args[0] = Heap.allocate(fos);
-//        args[1] = outFd.getAddress();
-//
-//        // FileOutputStream constructor
-//        Utils.executeMethodAndThrow(ctor, args, thread);
-//
-//        ClassObject bufferedOutputStream = getClassObject("java/io/BufferedOutputStream");
-//        OopClass bos = bufferedOutputStream.newObject();
-//        Method bosConstructor = bufferedOutputStream.findConstructor("(Ljava/io/OutputStream;)V");
-//        Utils.executeMethodAndThrow(bosConstructor, new int[]{Heap.allocate(bos), fos.getAddress()}, thread);
-//
-//        ClassObject printStream = getClassObject("java/io/PrintStream");
-//        OopClass ps = printStream.newObject();
-//        Method psConstructor = printStream.findConstructor("(ZLjava/io/OutputStream;)V");
-//        args = psConstructor.newArgArray();
-//        args[0] = Heap.allocate(ps);
-//        args[2] = bos.getAddress();
-//
-//        Utils.executeMethodAndThrow(psConstructor, args, thread);
-//
-//        SystemNatives.SET_OUT_0.execute(new int[]{ps.getAddress()}, null);
-//    }
-
     public ClassObject getClassObject(String className) {
         ClassObject co = classes.get(className);
         if (co == null) {
-            LOG.debug("Loading: {}", className);
-            ClassFile file = assertNotNull(classFiles.remove(className), "No class file for " + className);
+            ClassFile file = classFiles.get(className);
 
-            ClassObject parent = null;
-            int parentIndex = file.getSuperClass();
-            if (parentIndex != 0) {
-                String parentClass = getClassName(parentIndex, file.getConstantPool());
-                parent = getClassObject(parentClass);
+            if (file == null) {
+                /*
+                    Could be null for 2 reasons:
+                    1) Another thread got here first and initialized this class, which which case we can take the ClassObject
+                    2) The provided className is invalid
+                 */
+
+                co = classes.get(className);
+
+                if (co == null) {
+                    throw new IllegalArgumentException("No class file for " + className);
+                }
+            } else {
+                synchronized (file) {
+                    // double-check locking
+                    co = classes.get(className);
+
+                    if (co == null) {
+                        // we're the first - do the load
+                        LOG.debug("Loading: {}", className);
+
+                        ClassObject parent = null;
+                        int parentIndex = file.getSuperClass();
+                        if (parentIndex != 0) {
+                            String parentClass = getClassName(parentIndex, file.getConstantPool());
+                            parent = getClassObject(parentClass);
+                        }
+
+                        co = makeClassObject(className, file, parent);
+                        classes.put(className, co);
+                        classFiles.remove(className);
+                        executeStaticInitMethod(co);
+                        LOG.debug("Done Loading: {}", className);
+                    }
+                }
             }
-
-            co = makeClassObject(className, file, parent);
-            classes.put(className, co);
-            executeStaticInitMethod(co);
-            LOG.debug("Done Loading: {}", className);
         }
         return co;
+    }
+
+    public Collection<ClassObject> getLoadedClasses() {
+        return Collections.unmodifiableCollection(classes.values());
     }
 
     // Superclasses and interfaces are recursively loaded
@@ -323,7 +309,7 @@ public class ClassLoader {
         return co;
     }
 
-    private void doFancyThreadInitMethodStuff(ClassObject co) {
+    private static void doFancyThreadInitMethodStuff(ClassObject co) {
         Method[] methods = co.getInstanceMethods();
         for (int i = 0; i < methods.length; i++) {
             Method method = methods[i];
@@ -362,7 +348,7 @@ public class ClassLoader {
         }
     }
 
-    private void registerInterfaceImplementations(ClassObject co) {
+    private static void registerInterfaceImplementations(ClassObject co) {
         ClassObject obj = co;
         String className = co.getClassName();
         Set<ClassObject> allInterfaces = new HashSet<>();
@@ -386,17 +372,17 @@ public class ClassLoader {
         }
     }
 
-    private void addInterfaces(ClassObject classObject, Set<ClassObject> interfaces) {
+    private static void addInterfaces(ClassObject classObject, Set<ClassObject> interfaces) {
         for (ClassObject iface : classObject.getInterfaces()) {
             interfaces.add(iface);
             addInterfaces(iface, interfaces);
         }
     }
 
-    private void executeStaticInitMethod(ClassObject co) {
+    private static void executeStaticInitMethod(ClassObject co) {
         Method staticInit = co.findMethod("<clinit>", "()V", true);
         if (staticInit != null) {
-            Utils.executeMethodAndThrow(staticInit, new Variables(staticInit.getCode().getMaxLocals()), Runner.MAIN_THREAD);
+            Utils.executeMethodAndThrow(staticInit, new Variables(staticInit.getCode().getMaxLocals()), Utils.currentThread());
         }
     }
 
@@ -436,7 +422,7 @@ public class ClassLoader {
     }
 
 
-    private void translateSimpleConstantPool(Object[] constantPool) {
+    private static void translateSimpleConstantPool(Object[] constantPool) {
         for (int i = 1; i < constantPool.length; i++) {
             Object obj = constantPool[i];
             if (obj instanceof CpInt) {

@@ -10,11 +10,21 @@ public class MarkRef {
 
     private final Condition monitorCondition = monitor.newCondition();
 
+    private boolean live = false; // Only used during GC - meaningless otherwise
+
     public Lock getMonitor() {
         return monitor;
     }
 
     public Condition getMonitorCondition() {
         return monitorCondition;
+    }
+
+    public boolean isLive() {
+        return live;
+    }
+
+    public void setLive(boolean live) {
+        this.live = live;
     }
 }

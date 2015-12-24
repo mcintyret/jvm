@@ -1,25 +1,25 @@
 package com.mcintyret.jvm.core.exec;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
+import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.constantpool.ConstantPool;
+import com.mcintyret.jvm.core.oop.Oop;
+import com.mcintyret.jvm.core.opcode.OpCode;
+import com.mcintyret.jvm.core.opcode.OpCodes;
+import com.mcintyret.jvm.core.util.ByteBufferIterator;
+import com.mcintyret.jvm.core.util.ByteIterator;
+import com.mcintyret.jvm.parse.Modifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mcintyret.jvm.core.clazz.Method;
-import com.mcintyret.jvm.core.constantpool.ConstantPool;
-import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.opcode.OpCodes;
-import com.mcintyret.jvm.core.thread.Thread;
-import com.mcintyret.jvm.core.util.ByteBufferIterator;
-import com.mcintyret.jvm.core.util.ByteIterator;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.Lock;
 
-public class ExecutionStackElement implements OperationContext {
+public class Execution implements OperationContext {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ExecutionStackElement.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Execution.class);
 
     public final static AtomicInteger TOTAL_OPCODES_EXECUTED = new AtomicInteger();
-
-    public static ExecutionStackElement current;
 
     private final Method method;
 
@@ -29,23 +29,40 @@ public class ExecutionStackElement implements OperationContext {
 
     private final ConstantPool constantPool;
 
-    private final ExecutionStack executionStack;
+    private final Thread thread;
 
     private final VariableStack stack = new VariableStackImpl();
 
-    public ExecutionStackElement(Method method, Variables localVariables, ConstantPool constantPool, ExecutionStack executionStack) {
+    private final Lock lock;
+
+    public Execution(Method method, Variables localVariables, Thread thread) {
         this.method = method;
         this.byteIterator = method.getCode() == null ? null : new ByteBufferIterator(method.getCode().getCode());
         this.localVariables = localVariables;
-        this.constantPool = constantPool;
-        this.executionStack = executionStack;
+        this.constantPool = method.getClassObject().getConstantPool();
+        this.thread = thread;
+
+        if (method.hasModifier(Modifier.SYNCHRONIZED)) {
+            Oop target = method.isStatic() ?
+                method.getClassObject().getOop() :
+                localVariables.getOop(0);
+
+            lock = target.getMarkRef().getMonitor();
+            lock.lock();
+        } else {
+            lock = null;
+        }
     }
 
     public void executeNextInstruction() {
-        current = this;
         int pos = byteIterator.getPos();
         OpCode opCode = OpCodes.getOpcode(byteIterator.nextByte());
         LOG.debug(String.format("%4d: %s", pos, opCode));
+
+        if (opCode.isSafePoint()) {
+            Heap.atSafePoint();
+        }
+
         opCode.execute(this);
         TOTAL_OPCODES_EXECUTED.incrementAndGet();
     }
@@ -72,16 +89,23 @@ public class ExecutionStackElement implements OperationContext {
 
     @Override
     public ExecutionStack getExecutionStack() {
-        return executionStack;
+        return thread.getCurrentStack();
     }
 
     @Override
     public Thread getThread() {
-        return executionStack.getThread();
+        return thread;
     }
 
     @Override
     public Method getMethod() {
         return method;
+    }
+
+    @Override
+    public void onComplete() {
+        if (lock != null) {
+            lock.unlock();
+        }
     }
 }
