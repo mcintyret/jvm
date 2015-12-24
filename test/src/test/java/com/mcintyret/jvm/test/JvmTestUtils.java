@@ -36,21 +36,21 @@ class JvmTestUtils {
     }
 
 
-    static String runTest(String test) {
+    static TestOutput runTest(String test) {
         String mainClass = ROOT_PACKAGE + "." + test + "$Test";
         String classPath = TEST_MODULE_TARGET_DIR + "test-classes/" + ROOT_PACKAGE_DIR;
         return runTestClass(mainClass, classPath);
     }
 
-    static String runTestClass(String mainClass) {
+    static TestOutput runTestClass(String mainClass) {
         return runTestClass(mainClass, null, EMPTY_ARGS);
     }
 
-    static String runTestClass(String mainClass, String classPath) {
+    static TestOutput runTestClass(String mainClass, String classPath) {
         return runTestClass(mainClass, classPath, EMPTY_ARGS);
     }
 
-    static String runTestClass(String mainClass, String classPath, String[] args) {
+    static TestOutput runTestClass(String mainClass, String classPath, String[] args) {
 
         boolean debug = false;
 
@@ -95,8 +95,8 @@ class JvmTestUtils {
         String output;
         String errorOutput;
         try {
-            output = IOUtils.toString(jvm.getInputStream());
-            errorOutput = IOUtils.toString(jvm.getErrorStream());
+            output = IOUtils.toString(jvm.getInputStream()).trim();
+            errorOutput = IOUtils.toString(jvm.getErrorStream()).trim();
         } catch (IOException e) {
             throw new AssertionError("Error reading JVM output", e);
         }
@@ -107,7 +107,7 @@ class JvmTestUtils {
             throw new AssertionError("JVM exited with error value: " + exitValue + ", output: " + output + ", error: " + errorOutput);
         }
 
-        return output;
+        return new TestOutput(output, errorOutput);
     }
 
 }

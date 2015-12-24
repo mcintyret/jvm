@@ -14,9 +14,9 @@ public class ThreadTestWithAtomicIntTest {
     private static final int NUM_THREADS = 40;
 
     public void runTest() {
-        String output = JvmTestUtils.runTest("ThreadTestWithAtomicIntTest").trim();
+        String output = JvmTestUtils.runTest("ThreadTestWithAtomicIntTest").getStdOut();
 
-        assertEquals(output, String.valueOf(NUM_THREADS));
+        assertEquals(String.valueOf(NUM_THREADS), output);
     }
 
     public static class Test {
