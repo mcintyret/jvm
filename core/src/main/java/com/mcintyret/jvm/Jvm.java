@@ -3,6 +3,7 @@ package com.mcintyret.jvm;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.exec.ExecutionStackElement;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationAdapter;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
@@ -55,7 +56,18 @@ public class Jvm {
 
         installNativePrintMethod(mainClass);
 
-        new Runner().run(classPath, mainClass);
+        boolean error = false;
+        try {
+            new Runner().run(classPath, mainClass);
+        } catch (Throwable t) {
+            error = true;
+            throw t;
+        } finally {
+            if (error) {
+                System.err.println("Total operations: " + ExecutionStackElement.TOTAL_OPCODES_EXECUTED.get());
+                System.err.println("Current method: " + ExecutionStackElement.current.getMethod());
+            }
+        }
     }
 
     private static void setLogLevel() {
