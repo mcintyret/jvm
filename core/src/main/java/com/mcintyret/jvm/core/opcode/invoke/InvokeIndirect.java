@@ -6,24 +6,15 @@ import com.mcintyret.jvm.core.exec.ExecutionStackElement;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.Oop;
-import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.parse.Modifier;
 
 abstract class InvokeIndirect extends Invoke {
 
     @Override
     protected final void doInvoke(Method method, OperationContext ctx) {
-        Variables args = method.newArgArray();
-        int argCount = method.getSignature().getLength();
-        for (int i = argCount; i >= 1; i--) {
-            SimpleType type = method.getSignature().getArgTypes().get(i).asSimpleType();
-            args.put(i, type, ctx.getStack().popSingleWidth(type));
-        }
-        Oop oop = ctx.getStack().popOop();
+        Variables args = getMethodArgs(ctx, method);
 
-        args.putOop(0, oop);
-
-        Method implementation = getImplementationMethod(method, oop);
+        Method implementation = getImplementationMethod(method, args.getOop(0));
 
         if (implementation.hasModifier(Modifier.NATIVE)) {
             invokeNativeMethod((NativeMethod) method, args, ctx);

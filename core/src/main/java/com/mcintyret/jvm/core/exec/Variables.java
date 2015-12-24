@@ -67,6 +67,10 @@ public class Variables {
         values[i] = value;
     }
 
+    public void putWide(int i, SimpleType type, long value) {
+        putWide(i, new WideVariable(type, value));
+    }
+
     public void put(int i, Variable v) {
         put(i, v.getType(), v.getValue());
     }

@@ -102,6 +102,8 @@ public class ConstantPool {
                         int index = ((CpString) constant).getStringIndex();
                         String string = (String) constantPool[index];
                         constantPool[i] = new Variable(SimpleType.REF, Heap.intern(string));
+                    } else if (constantPool[i] instanceof CpClass) {
+                        constantPool[i] = translateClassObject(i);
                     } else {
                         throw new AssertionError("Can i get here??"); // TODO: less silly!
                     }

@@ -2,11 +2,9 @@ package com.mcintyret.jvm.core.clazz;
 
 import java.util.Set;
 
-import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.type.MethodSignature;
-import com.mcintyret.jvm.core.type.Type;
 import com.mcintyret.jvm.parse.Modifier;
 import com.mcintyret.jvm.parse.attribute.AttributeType;
 import com.mcintyret.jvm.parse.attribute.Attributes;
@@ -42,15 +40,12 @@ public class Method extends Member {
         Code code = getCode();
         int maxLocals = code == null ? 0 : code.getMaxLocals();
 
-        int argCount = getSignature().getLength();
+        int argWidth = getSignature().getTotalWidth();
         int offset = (isStatic() ? 0 : 1);
-        Variables argArray = new Variables(Math.max(argCount + offset, maxLocals));
+        Variables argArray = new Variables(Math.max(argWidth + offset, maxLocals));
 
-        for (Type type : getSignature().getArgTypes()) {
-            for (int w = 0; w < type.getWidth(); w++) {
-                int val = args.length > w ? args[w].getAddress() : Heap.NULL_POINTER;
-                argArray.put(w, type.asSimpleType(), val);
-            }
+        for (int i = 0; i < args.length; i++) {
+            argArray.putOop(i, args[i]);
         }
 
         return argArray;
