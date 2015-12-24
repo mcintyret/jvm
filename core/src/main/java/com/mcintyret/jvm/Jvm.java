@@ -2,7 +2,7 @@ package com.mcintyret.jvm;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
-import com.mcintyret.jvm.core.exec.ExecutionStackElement;
+import com.mcintyret.jvm.core.exec.Execution;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationAdapter;
@@ -66,8 +66,7 @@ public class Jvm {
         } finally {
             if (error != null) {
                 System.err.println(error);
-                System.err.println("Total operations: " + ExecutionStackElement.TOTAL_OPCODES_EXECUTED.get());
-                System.err.println("Current method: " + ExecutionStackElement.current.getMethod());
+                System.err.println("Total operations: " + Execution.TOTAL_OPCODES_EXECUTED.get());
             }
         }
     }

@@ -1,11 +1,5 @@
 package com.mcintyret.jvm.core.util;
 
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
-
-import java.lang.reflect.Array;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Function;
-
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
@@ -22,7 +16,9 @@ import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.type.Type;
 import com.mcintyret.jvm.load.Runner;
 
+import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
 
 import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 

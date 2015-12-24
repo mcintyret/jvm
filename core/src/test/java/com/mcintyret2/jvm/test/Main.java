@@ -12,8 +12,8 @@ public class Main {
     public static void main(String[] args) {
 //        interfaceMethods();
 //        simpleIntArrays();
-//        stringsAndNatives();
-        threadingTests();
+        stringsAndNatives();
+//        threadingTests();
 //        stringLength();
     }
 
