@@ -1,10 +1,10 @@
 package com.mcintyret.jvm.load;
 
-import com.google.common.collect.Iterables;
+import static java.util.Arrays.asList;
 
 import java.util.Iterator;
 
-import static java.util.Arrays.asList;
+import com.google.common.collect.Iterables;
 
 /**
  * User: tommcintyre

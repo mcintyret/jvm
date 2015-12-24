@@ -1,11 +1,11 @@
 package com.mcintyret.jvm.core.type;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public final class NonArrayType extends ReferenceType {
 

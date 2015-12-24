@@ -1,11 +1,11 @@
 package com.mcintyret.jvm.core.opcode.branch;
 
-import com.mcintyret.jvm.core.util.ByteIterator;
-import com.mcintyret.jvm.core.opcode.OpCode;
-import com.mcintyret.jvm.core.exec.OperationContext;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.opcode.OpCode;
+import com.mcintyret.jvm.core.util.ByteIterator;
 
 /**
  * User: tommcintyre
@@ -31,7 +31,7 @@ class LookupSwitch extends OpCode {
             lookupMap.put(bi.nextInt(), bi.nextInt());
         }
 
-        Integer res = lookupMap.get(ctx.getStack().pop());
+        Integer res = lookupMap.get(ctx.getStack().popRaw());
 
         int offset = res == null ? defaultOffset : res;
 

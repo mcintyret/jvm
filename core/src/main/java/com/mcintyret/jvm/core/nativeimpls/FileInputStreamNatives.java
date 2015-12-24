@@ -1,12 +1,13 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.Variables;
+import com.mcintyret.jvm.core.type.MethodSignature;
 
 public enum FileInputStreamNatives implements NativeImplementation {
     INIT_IDS("initIDs", "()V") {
         @Override
-        public NativeReturn execute(int[] args, OperationContext ctx) {
+        public NativeReturn execute(Variables args, OperationContext ctx) {
             // Do nothing??
             return NativeReturn.forVoid();
         }

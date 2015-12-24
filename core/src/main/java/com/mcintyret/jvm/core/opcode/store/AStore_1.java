@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.store;
 
-class AStore_1 extends SingleWidthStore_1 {
+import com.mcintyret.jvm.core.opcode.RefTyped;
+
+class AStore_1 extends SingleWidthStore_1 implements RefTyped {
 
     @Override
     public byte getByte() {

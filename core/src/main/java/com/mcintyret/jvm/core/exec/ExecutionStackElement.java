@@ -1,16 +1,17 @@
 package com.mcintyret.jvm.core.exec;
 
-import com.mcintyret.jvm.core.util.ByteBufferIterator;
-import com.mcintyret.jvm.core.util.ByteIterator;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.OpCodes;
 import com.mcintyret.jvm.core.thread.Thread;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.atomic.AtomicInteger;
+import com.mcintyret.jvm.core.util.ByteBufferIterator;
+import com.mcintyret.jvm.core.util.ByteIterator;
 
 public class ExecutionStackElement implements OperationContext {
 
@@ -24,18 +25,18 @@ public class ExecutionStackElement implements OperationContext {
 
     private final ByteIterator byteIterator;
 
-    private final int[] localVars;
+    private final Variables localVariables;
 
     private final ConstantPool constantPool;
 
     private final ExecutionStack executionStack;
 
-    private final WordStack stack = new WordStack();
+    private final VariableStack stack = new VariableStackImpl();
 
-    public ExecutionStackElement(Method method, int[] localVars, ConstantPool constantPool, ExecutionStack executionStack) {
+    public ExecutionStackElement(Method method, Variables localVariables, ConstantPool constantPool, ExecutionStack executionStack) {
         this.method = method;
         this.byteIterator = method.getCode() == null ? null : new ByteBufferIterator(method.getCode().getCode());
-        this.localVars = localVars;
+        this.localVariables = localVariables;
         this.constantPool = constantPool;
         this.executionStack = executionStack;
     }
@@ -55,8 +56,8 @@ public class ExecutionStackElement implements OperationContext {
     }
 
     @Override
-    public int[] getLocalVars() {
-        return localVars;
+    public Variables getLocalVariables() {
+        return localVariables;
     }
 
     @Override
@@ -65,7 +66,7 @@ public class ExecutionStackElement implements OperationContext {
     }
 
     @Override
-    public WordStack getStack() {
+    public VariableStack getStack() {
         return stack;
     }
 

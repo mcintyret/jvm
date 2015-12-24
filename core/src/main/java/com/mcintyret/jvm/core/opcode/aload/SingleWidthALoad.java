@@ -1,22 +1,22 @@
 package com.mcintyret.jvm.core.opcode.aload;
 
-import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.oop.OopArray;
-import com.mcintyret.jvm.core.exec.WordStack;
-import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.VariableStack;
+import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.core.opcode.OpCode;
+import com.mcintyret.jvm.core.opcode.Typed;
 
-abstract class SingleWidthALoad extends OpCode {
+abstract class SingleWidthALoad extends OpCode implements Typed {
 
     @Override
     public final void execute(OperationContext ctx) {
-        WordStack stack = ctx.getStack();
+        VariableStack stack = ctx.getStack();
 
-        int index = stack.pop();
+        int index = stack.popInt();
 
-        OopArray array = (OopArray) Heap.getOop(stack.pop());
+        OopArray array = stack.popOop();
 
-        stack.push(array.getFields()[index]);
+        stack.pushSingleWidth(array.getFields()[index], getType());
     }
 
 }

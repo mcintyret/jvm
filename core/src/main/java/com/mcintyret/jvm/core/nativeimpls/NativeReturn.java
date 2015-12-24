@@ -3,6 +3,7 @@ package com.mcintyret.jvm.core.nativeimpls;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ValueReceiver;
 import com.mcintyret.jvm.core.oop.Oop;
+import com.mcintyret.jvm.core.type.SimpleType;
 
 /**
  * User: tommcintyre
@@ -17,17 +18,26 @@ public abstract class NativeReturn {
         }
     };
 
-    private static final NativeReturn FOR_NULL = forInt(Heap.NULL_POINTER);
+    private static final NativeReturn FOR_NULL = forReference(Heap.NULL_POINTER);
 
-    private static final NativeReturn FOR_TRUE = forInt(1);
+    private static final NativeReturn FOR_TRUE = forBoolean(true);
 
-    private static final NativeReturn FOR_FALSE = forInt(0);
+    private static final NativeReturn FOR_FALSE = forBoolean(false);
 
     public static NativeReturn forInt(int i) {
         return new NativeReturn() {
             @Override
             public void applyValue(ValueReceiver vr) {
-                vr.receiveInt(i);
+                vr.receiveSingleWidth(i, SimpleType.INT);
+            }
+        };
+    }
+
+    public static NativeReturn forBoolean(boolean b) {
+        return new NativeReturn() {
+            @Override
+            public void applyValue(ValueReceiver vr) {
+                vr.receiveSingleWidth(b ? 1 : 0, SimpleType.BOOLEAN);
             }
         };
     }
@@ -36,7 +46,16 @@ public abstract class NativeReturn {
         if (oop.getAddress() == Oop.UNALLOCATED_ADDRESS) {
             Heap.allocate(oop);
         }
-        return forInt(oop.getAddress());
+        return forReference(oop.getAddress());
+    }
+
+    public static NativeReturn forReference(int address) {
+        return new NativeReturn() {
+            @Override
+            public void applyValue(ValueReceiver vr) {
+                vr.receiveSingleWidth(address, SimpleType.REF);
+            }
+        };
     }
 
     public static NativeReturn forLong(long l) {
@@ -44,7 +63,17 @@ public abstract class NativeReturn {
 
             @Override
             public void applyValue(ValueReceiver vr) {
-                vr.receiveLong(l);
+                vr.receiveDoubleWidth(l, SimpleType.LONG);
+            }
+        };
+    }
+
+    public static NativeReturn forDouble(double d) {
+        return new NativeReturn() {
+
+            @Override
+            public void applyValue(ValueReceiver vr) {
+                vr.receiveDoubleWidth(Double.doubleToLongBits(d), SimpleType.DOUBLE);
             }
         };
     }
@@ -56,7 +85,7 @@ public abstract class NativeReturn {
         return new NativeReturn() {
             @Override
             public void applyValue(ValueReceiver vr) {
-                vr.receiveInt(throwable.getAddress());
+                vr.receiveSingleWidth(throwable.getAddress(), SimpleType.REF);
             }
 
             @Override

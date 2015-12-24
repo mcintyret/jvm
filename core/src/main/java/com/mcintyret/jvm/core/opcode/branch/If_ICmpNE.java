@@ -1,6 +1,6 @@
 package com.mcintyret.jvm.core.opcode.branch;
 
-class If_ICmpNE extends BinaryCondition {
+class If_ICmpNE extends IntBinaryCondition {
 
     @Override
     protected boolean conditionMet(int a, int b) {

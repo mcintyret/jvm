@@ -1,8 +1,8 @@
 package com.mcintyret.jvm.parse.attribute;
 
-import java.util.List;
-
 import static java.util.Collections.unmodifiableList;
+
+import java.util.List;
 
 public class LocalVariableTable extends Attribute {
 

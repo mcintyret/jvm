@@ -1,21 +1,21 @@
 package com.mcintyret.jvm.core.opcode.cmp;
 
-import com.mcintyret.jvm.core.exec.WordStack;
-import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.VariableStack;
+import com.mcintyret.jvm.core.opcode.OpCode;
 
 abstract class FCmp extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        WordStack stack = ctx.getStack();
+        VariableStack stack = ctx.getStack();
         float b = stack.popFloat();
         float a = stack.popFloat();
 
         if (Float.isNaN(a) || Float.isNaN(b)) {
-            stack.push(nanResult());
+            stack.pushInt(nanResult());
         } else {
-            stack.push(Float.compare(a, b));
+            stack.pushInt(Float.compare(a, b));
         }
     }
 

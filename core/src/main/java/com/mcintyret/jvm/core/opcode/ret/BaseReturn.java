@@ -3,8 +3,8 @@ package com.mcintyret.jvm.core.opcode.ret;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.opcode.OpCode;
 
 /**
  * User: tommcintyre

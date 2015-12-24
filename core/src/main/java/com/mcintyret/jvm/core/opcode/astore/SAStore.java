@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.astore;
 
-class SAStore extends SingleWidthAStore {
+import com.mcintyret.jvm.core.opcode.ShortTyped;
+
+class SAStore extends SingleWidthAStore implements ShortTyped {
 
     @Override
     public byte getByte() {

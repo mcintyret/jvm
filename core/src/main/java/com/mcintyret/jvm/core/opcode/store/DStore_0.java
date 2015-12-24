@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.store;
 
-class DStore_0 extends DoubleWidthStore_0 {
+import com.mcintyret.jvm.core.opcode.DoubleTyped;
+
+class DStore_0 extends DoubleWidthStore_0 implements DoubleTyped {
 
     @Override
     public byte getByte() {

@@ -1,8 +1,9 @@
 package com.mcintyret.jvm.parse;
 
-import com.mcintyret.jvm.parse.attribute.Attributes;
 import java.util.List;
 import java.util.Set;
+
+import com.mcintyret.jvm.parse.attribute.Attributes;
 
 public class ClassFile {
 

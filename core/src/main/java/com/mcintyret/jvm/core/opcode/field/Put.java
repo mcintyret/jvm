@@ -1,25 +1,24 @@
 package com.mcintyret.jvm.core.opcode.field;
 
-import com.mcintyret.jvm.core.exec.WordStack;
 import com.mcintyret.jvm.core.clazz.Field;
-import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.VariableStack;
+import com.mcintyret.jvm.core.oop.Oop;
+import com.mcintyret.jvm.core.type.SimpleType;
 
 abstract class Put extends FieldOp {
 
     @Override
     public final void doExecute(Field field, OperationContext ctx) {
-        WordStack stack = ctx.getStack();
+        VariableStack stack = ctx.getStack();
+        SimpleType type = field.getType().asSimpleType();
 
         if (field.getType().isDoubleWidth()) {
-            int two = stack.pop();
-            int one = stack.pop();
-            field.set(getOop(stack), one, two);
+            field.set(getOop(stack), stack.popDoubleWidth(type));
         } else {
-            int val = stack.pop();
-            field.set(getOop(stack), val);
+            field.set(getOop(stack), stack.popSingleWidth(type));
         }
     }
 
-    protected abstract Oop getOop(WordStack stack);
+    protected abstract Oop getOop(VariableStack stack);
 }

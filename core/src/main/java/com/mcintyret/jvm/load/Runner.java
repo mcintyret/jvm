@@ -5,7 +5,6 @@ import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
-import com.mcintyret.jvm.core.exec.WordStack;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
@@ -14,7 +13,9 @@ import com.mcintyret.jvm.core.thread.Threads;
 import com.mcintyret.jvm.core.type.ArrayType;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.NonArrayType;
+import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.util.Utils;
+import com.sun.org.apache.xpath.internal.VariableStack;
 
 import java.io.IOException;
 
@@ -43,17 +44,16 @@ public class Runner {
         for (int i = 0; i < args.length; i++) {
             array.getFields()[i] = Heap.intern(args[i]);
         }
-        int[] actualArgs = new int[mainMethod.getCode().getMaxLocals()];
-        actualArgs[0] = Heap.allocate(array);
+        Variables actualArgs = new Variables(mainMethod.getCode().getMaxLocals());
+        actualArgs.put(0, SimpleType.REF, Heap.allocate(array));
 
         NativeReturn ret = Utils.executeMethodAndThrow(mainMethod, actualArgs, MAIN_THREAD);
 
         if (ret != null) {
-            WordStack stack = new WordStack();
+            VariableStack stack = new VariableStackImpl();
             ret.applyValue(stack);
             try {
-                int i = stack.pop();
-                OopClass obj = Heap.getOopClass(i);
+                OopClass obj = stack.popOop();
                 if (obj.getClassObject().isInstanceOf(loader.getClassObject("java/lang/Throwable"))) {
                     System.out.println("Died with Exception of type: " + obj.getClassObject().getClassName());
                 }
@@ -62,6 +62,7 @@ public class Runner {
                 // ignore
             }
         }
+
     }
 
 
@@ -82,8 +83,8 @@ public class Runner {
         Method systemThreadGroupCtor = threadGroupClass.getDefaultConstructor();
         OopClass systemThreadGroup = threadGroupClass.newObject();
 
-        int[] args = systemThreadGroupCtor.newArgArray();
-        args[0] = Heap.allocate(systemThreadGroup);
+        Variables args = systemThreadGroupCtor.newArgArray();
+        args.put(0, SimpleType.REF, Heap.allocate(systemThreadGroup));
 
         Utils.executeMethodAndThrow(systemThreadGroupCtor, args, null);
 
@@ -95,10 +96,10 @@ public class Runner {
         OopClass mainString = Heap.getOopClass(Heap.intern("main"));
 
         args = mainThreadGroupCtor.newArgArray();
-        args[0] = Heap.allocate(mainThreadGroup);
-        args[1] = Heap.NULL_POINTER;
-        args[2] = systemThreadGroup.getAddress(); // parent
-        args[3] = mainString.getAddress(); // name
+        args.put(0, SimpleType.REF, Heap.allocate(mainThreadGroup));
+        args.put(1, SimpleType.REF, Heap.NULL_POINTER);
+        args.put(2, SimpleType.REF, systemThreadGroup.getAddress()); // parent
+        args.put(3, SimpleType.REF, mainString.getAddress()); // name
 
         Utils.executeMethodAndThrow(mainThreadGroupCtor, args, null);
 

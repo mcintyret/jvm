@@ -1,16 +1,16 @@
 package com.mcintyret.jvm.core.clazz;
 
-import com.mcintyret.jvm.core.ImportantClasses;
-import com.mcintyret.jvm.core.type.ArrayType;
-import com.mcintyret.jvm.core.oop.OopArray;
-import com.mcintyret.jvm.parse.Modifier;
+import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
+import com.mcintyret.jvm.core.ImportantClasses;
+import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.core.type.ArrayType;
+import com.mcintyret.jvm.parse.Modifier;
 
 public class ArrayClassObject extends AbstractClassObject {
 

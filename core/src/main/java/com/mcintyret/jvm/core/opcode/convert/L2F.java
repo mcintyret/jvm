@@ -1,15 +1,15 @@
 package com.mcintyret.jvm.core.opcode.convert;
 
-import com.mcintyret.jvm.core.exec.WordStack;
-import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.VariableStack;
+import com.mcintyret.jvm.core.opcode.OpCode;
 
 class L2F extends OpCode {
 
     @Override
     public void execute(OperationContext ctx) {
-        WordStack stack = ctx.getStack();
-        stack.push((float) stack.popLong());
+        VariableStack stack = ctx.getStack();
+        stack.pushFloat((float) stack.popLong());
     }
 
     @Override

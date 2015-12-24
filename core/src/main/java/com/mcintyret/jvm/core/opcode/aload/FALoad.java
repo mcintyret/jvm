@@ -1,6 +1,8 @@
 package com.mcintyret.jvm.core.opcode.aload;
 
-class FALoad extends SingleWidthALoad {
+import com.mcintyret.jvm.core.opcode.FloatTyped;
+
+class FALoad extends SingleWidthALoad implements FloatTyped {
 
     @Override
     public byte getByte() {

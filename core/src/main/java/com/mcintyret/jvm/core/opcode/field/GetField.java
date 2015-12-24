@@ -1,8 +1,7 @@
 package com.mcintyret.jvm.core.opcode.field;
 
-import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.oop.Oop;
 
 class GetField extends Get {
 
@@ -13,6 +12,6 @@ class GetField extends Get {
 
     @Override
     protected Oop getOop(OperationContext ctx) {
-        return Heap.getOop(ctx.getStack().pop());
+        return ctx.getStack().popOop();
     }
 }

@@ -1,9 +1,9 @@
 package com.mcintyret.jvm.load;
 
+import java.util.Iterator;
+
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
-
-import java.util.Iterator;
 
 /**
  * User: tommcintyre

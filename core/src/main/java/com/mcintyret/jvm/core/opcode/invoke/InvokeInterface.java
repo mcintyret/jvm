@@ -2,9 +2,9 @@ package com.mcintyret.jvm.core.opcode.invoke;
 
 import com.mcintyret.jvm.core.clazz.InterfaceMethod;
 import com.mcintyret.jvm.core.clazz.Method;
+import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.exec.OperationContext;
 
 class InvokeInterface extends InvokeIndirect {
 

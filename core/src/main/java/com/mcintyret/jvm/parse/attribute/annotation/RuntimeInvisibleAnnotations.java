@@ -1,7 +1,8 @@
 package com.mcintyret.jvm.parse.attribute.annotation;
 
-import com.mcintyret.jvm.parse.attribute.AttributeType;
 import java.util.List;
+
+import com.mcintyret.jvm.parse.attribute.AttributeType;
 
 public class RuntimeInvisibleAnnotations extends Annotations {
 

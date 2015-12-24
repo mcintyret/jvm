@@ -1,8 +1,8 @@
 package com.mcintyret.jvm.load;
 
-import com.google.common.collect.Iterators;
-
 import java.util.Iterator;
+
+import com.google.common.collect.Iterators;
 
 public interface ClassPath extends Iterable<ClassFileResource> {
 
