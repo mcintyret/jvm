@@ -56,14 +56,15 @@ public class Jvm {
 
         installNativePrintMethod(mainClass);
 
-        boolean error = false;
+        Throwable error = null;
         try {
             new Runner().run(classPath, mainClass);
         } catch (Throwable t) {
-            error = true;
+            error = t;
             throw t;
         } finally {
-            if (error) {
+            if (error != null) {
+                System.err.println(error);
                 System.err.println("Total operations: " + ExecutionStackElement.TOTAL_OPCODES_EXECUTED.get());
                 System.err.println("Current method: " + ExecutionStackElement.current.getMethod());
             }
