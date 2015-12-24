@@ -62,8 +62,6 @@ public class Runner {
                 // ignore
             }
         }
-
-        System.out.println("DONE!!!");
     }
 
 
