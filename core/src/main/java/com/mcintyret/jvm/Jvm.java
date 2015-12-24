@@ -1,5 +1,7 @@
 package com.mcintyret.jvm;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationAdapter;
@@ -11,6 +13,7 @@ import com.mcintyret.jvm.load.AggregatingClassPath;
 import com.mcintyret.jvm.load.ClassPath;
 import com.mcintyret.jvm.load.DirectoryClassPath;
 import com.mcintyret.jvm.load.Runner;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,6 +22,9 @@ import java.util.List;
 public class Jvm {
 
     public static void main(String[] args) throws IOException {
+
+        setLogLevel();
+
         if (args.length < 1) {
             throw new IllegalArgumentException("No Main class given");
         }
@@ -50,6 +56,12 @@ public class Jvm {
         installNativePrintMethod(mainClass);
 
         new Runner().run(classPath, mainClass);
+    }
+
+    private static void setLogLevel() {
+        Logger rootLogger = (Logger) LoggerFactory.getLogger("ROOT");
+        String level = System.getProperty("jvm.logLevel", "OFF");
+        rootLogger.setLevel(Level.toLevel(level));
     }
 
     private static void installNativePrintMethod(String mainClass) {
