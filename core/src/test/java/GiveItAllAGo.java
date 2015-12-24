@@ -15,7 +15,7 @@ import java.io.IOException;
 public class GiveItAllAGo {
 
     public static void main(String[] args) throws IOException {
-        ClassPath classPath = new DirectoryClassPath(System.getProperty("user.dir") + "/target/test-classes/com/mcintyret2/jvm");
+        ClassPath classPath = new DirectoryClassPath(System.getProperty("user.dir") + "/core/target/test-classes/com/mcintyret2/jvm");
 
         String mainClass = "com/mcintyret2/jvm/test/Main";
 
