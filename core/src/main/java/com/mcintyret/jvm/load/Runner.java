@@ -1,22 +1,22 @@
 package com.mcintyret.jvm.load;
 
-import java.io.IOException;
-
 import com.mcintyret.jvm.core.Heap;
-import com.mcintyret.jvm.core.util.Utils;
-import com.mcintyret.jvm.core.exec.WordStack;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
-import com.mcintyret.jvm.core.type.ArrayType;
-import com.mcintyret.jvm.core.type.MethodSignature;
-import com.mcintyret.jvm.core.type.NonArrayType;
+import com.mcintyret.jvm.core.exec.WordStack;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.thread.Thread;
 import com.mcintyret.jvm.core.thread.Threads;
+import com.mcintyret.jvm.core.type.ArrayType;
+import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.type.NonArrayType;
+import com.mcintyret.jvm.core.util.Utils;
+
+import java.io.IOException;
 
 public class Runner {
 
@@ -43,7 +43,8 @@ public class Runner {
         for (int i = 0; i < args.length; i++) {
             array.getFields()[i] = Heap.intern(args[i]);
         }
-        int[] actualArgs = new int[]{Heap.allocate(array)};
+        int[] actualArgs = new int[mainMethod.getCode().getMaxLocals()];
+        actualArgs[0] = Heap.allocate(array);
 
         NativeReturn ret = Utils.executeMethodAndThrow(mainMethod, actualArgs, MAIN_THREAD);
 
@@ -66,7 +67,7 @@ public class Runner {
     }
 
 
-    private Method findMainMethod(ClassObject mainClass) {
+    private static Method findMainMethod(ClassObject mainClass) {
         for (Method method : mainClass.getStaticMethods()) {
             if (method.getSignature().equals(MAIN_METHOD_SIGNATURE)) {
                 return method;
