@@ -99,6 +99,13 @@ public class Heap {
 
         public Oop[] run() {
             LOG.warn("Starting GC, initial heap size: {}", OOP_TABLE.length);
+
+            // The String Pool
+            // TODO: some kind of PERM_GEN so we don't have to do this every time
+            for (Oop oop : STRING_POOL.lookupMap.values()) {
+                gcOop(oop);
+            }
+
             // All the execution stacks in all the live threads
             for (Thread thread : Threads.getAll()) {
                 for (Execution stack : thread.getExecutions()) {
@@ -244,5 +251,6 @@ public class Heap {
             }
             return stringOop.getAddress();
         }
+
     }
 }
