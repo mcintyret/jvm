@@ -1,10 +1,5 @@
 package com.mcintyret.jvm.load;
 
-import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Iterators;
-
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
@@ -45,8 +40,11 @@ public class DirectoryClassPath implements ClassPath {
     }
 
     public DirectoryClassPath(Path path, boolean recursive) {
+        if (!Files.exists(path)) {
+            throw new IllegalArgumentException("No such file: " + path);
+        }
         if (!Files.isDirectory(path)) {
-            throw new IllegalArgumentException("Should be a Directory!");
+            throw new IllegalArgumentException("Should be a Directory: " + path);
         }
         this.path = path;
         this.recursive = recursive;
