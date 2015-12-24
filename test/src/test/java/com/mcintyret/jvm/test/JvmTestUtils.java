@@ -20,10 +20,6 @@ class JvmTestUtils {
 
     private static final String JAR_LOCATION = PROJECT_BASE_DIR + "target/javaJvm.jar";
 
-    private static final String ROOT_PACKAGE = "com.mcintyret.jvm.test";
-
-    private static final String ROOT_PACKAGE_DIR = ROOT_PACKAGE.replaceAll("\\.", "/");
-
     private static String getProjectBaseDir() {
         String projectBaseDir = System.getProperty("user.dir");
         if (projectBaseDir.endsWith("test")) {
@@ -36,11 +32,12 @@ class JvmTestUtils {
     }
 
 
-    static TestOutput runTest(String test) {
-        String mainClass = ROOT_PACKAGE + "." + test + "$Test";
-        String classPath = TEST_MODULE_TARGET_DIR + "test-classes/" + ROOT_PACKAGE_DIR;
+    static TestOutput runTest(Class<?> testClass) {
+        String mainClass = testClass.getName() + "$Test";
+        String classPath = TEST_MODULE_TARGET_DIR + "test-classes/" + testClass.getPackage().getName().replaceAll("\\.", "/");
         return runTestClass(mainClass, classPath);
     }
+
 
     static TestOutput runTestClass(String mainClass) {
         return runTestClass(mainClass, null, EMPTY_ARGS);

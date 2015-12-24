@@ -1,5 +1,7 @@
-package com.mcintyret.jvm.test;
+package com.mcintyret.jvm.test.atomicInt;
 
+import com.mcintyret.jvm.test.BaseJvmTest;
+import com.mcintyret.jvm.test.TestOutput;
 import org.testng.annotations.Test;
 
 import java.util.Random;
@@ -9,14 +11,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.testng.AssertJUnit.assertEquals;
 
 @Test
-public class ThreadTestWithAtomicIntTest {
+public class ThreadTestWithAtomicIntTest extends BaseJvmTest {
 
     private static final int NUM_THREADS = 40;
 
-    public void runTest() {
-        String output = JvmTestUtils.runTest("ThreadTestWithAtomicIntTest").getStdOut();
-
-        assertEquals(String.valueOf(NUM_THREADS), output);
+    @Override
+    protected void verifyResults(TestOutput output) {
+        assertEquals(String.valueOf(NUM_THREADS), output.getStdOut());
     }
 
     public static class Test {
