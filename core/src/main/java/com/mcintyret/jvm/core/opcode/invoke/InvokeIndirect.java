@@ -21,11 +21,7 @@ abstract class InvokeIndirect extends Invoke {
         } else {
             int maxLocalVars = implementation.getCode().getMaxLocals();
             if (maxLocalVars > args.length()) {
-                // TODO: refactor with similar code in VariableStackImpl
-                Variables tmp = new Variables(maxLocalVars);
-                System.arraycopy(args.getRawValues(), 0, tmp.getRawValues(), 0, args.length());
-                System.arraycopy(args.getTypes(), 0, tmp.getTypes(), 0, args.length());
-                args = tmp;
+                args = args.copy(maxLocalVars);
             }
 
             ctx.getExecutionStack().push(
