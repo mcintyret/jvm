@@ -1,12 +1,12 @@
 package com.mcintyret.jvm.core.exec;
 
-import java.util.NoSuchElementException;
-
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ValueReceiver;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.util.Utils;
+
+import java.util.NoSuchElementException;
 
 public class VariableStackImpl implements ValueReceiver, VariableStack {
 
@@ -191,8 +191,8 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
             resize();
         }
 
-        stack.putWide(++head, v);
-        head++;
+        stack.putWide(head, v);
+        head += 2;
     }
 
     @Override
