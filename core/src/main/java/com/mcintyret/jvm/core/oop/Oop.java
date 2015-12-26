@@ -1,6 +1,7 @@
 package com.mcintyret.jvm.core.oop;
 
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
+import com.mcintyret.jvm.core.exec.Variables;
 
 public abstract class Oop {
 
@@ -8,11 +9,11 @@ public abstract class Oop {
 
     private final MarkRef markRef = new MarkRef();
 
-    private final int[] fields;
+    private final Variables fields;
 
     private int address = UNALLOCATED_ADDRESS;
 
-    public Oop(int[] fields) {
+    public Oop(Variables fields) {
         this.fields = fields;
     }
 
@@ -22,7 +23,7 @@ public abstract class Oop {
         return markRef;
     }
 
-    public int[] getFields() {
+    public Variables getFields() {
         return fields;
     }
 

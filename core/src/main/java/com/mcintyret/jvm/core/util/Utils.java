@@ -26,7 +26,7 @@ public class Utils {
 
     public static OopArray newArray(Type type, int size) {
         ArrayClassObject aco = ArrayClassObject.forType(ArrayType.create(type, 1));
-        return new OopArray(aco, new int[size * type.getWidth()]);
+        return new OopArray(aco, new Variables(size * type.getWidth()));
     }
 
     public static long toLong(double d) {
@@ -49,7 +49,7 @@ public class Utils {
         if (stringOop == null) {
             return null;
         }
-        return toString((OopArray) Heap.getOop(stringOop.getFields()[0]));
+        return toString((OopArray) stringOop.getFields().getOop(0));
     }
 
     public static String toString(OopArray charArrayOop) {
@@ -58,7 +58,7 @@ public class Utils {
         }
         char[] chars = new char[charArrayOop.getLength()];
         for (int i = 0; i < chars.length; i++) {
-            chars[i] = (char) charArrayOop.getFields()[i];
+            chars[i] = (char) charArrayOop.getFields().getRawValue(i);
         }
         return new String(chars);
     }
@@ -84,15 +84,14 @@ public class Utils {
         OopClass stringOop = stringClass.newObject();
         Heap.allocate(stringOop);
 
-        int[] chars = new int[string.length()];
+        Variables chars = new Variables(string.length());
         for (int i = 0; i < string.length(); i++) {
-            chars[i] = string.charAt(i);
+            chars.put(i, SimpleType.CHAR, string.charAt(i));
         }
         ArrayClassObject co = ArrayClassObject.forType(ArrayType.create(SimpleType.CHAR, 1));
         OopArray charArrayOop = new OopArray(co, chars);
-        int charArrayAddress = Heap.allocate(charArrayOop);
 
-        stringOop.getFields()[0] = charArrayAddress;
+        stringOop.getFields().put(0, SimpleType.REF, Heap.allocate(charArrayOop));
         // The only other field, hash, is initially 0 and so doesn't need changing
 
         return stringOop;

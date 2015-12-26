@@ -16,7 +16,7 @@ abstract class SingleWidthAStore extends OpCode implements Typed {
         int index = stack.popInt();
         OopArray array = stack.popOop();
 
-        array.getFields()[index] = val;
+        array.getFields().put(index, getType(), val);
     }
 
 }

@@ -1,24 +1,23 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import java.lang.reflect.Field;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.Threads;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.oop.OopClassClass;
-import com.mcintyret.jvm.core.exec.Threads;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.NonArrayType;
 import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
-
 import sun.misc.Unsafe;
+
+import java.lang.reflect.Field;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 public enum UnsafeNatives implements NativeImplementation {
     REGISTER_NATIVES("registerNatives", "()V") {
@@ -81,7 +80,7 @@ public enum UnsafeNatives implements NativeImplementation {
             int expect = args.getInt(4);
             int update = args.getInt(5);
 
-            boolean ret = THE_UNSAFE.compareAndSwapInt(oop.getFields(), byteOffset(offset), expect, update);
+            boolean ret = THE_UNSAFE.compareAndSwapInt(oop.getFields().getRawValues(), byteOffset(offset), expect, update);
             return NativeReturn.forBool(ret);
         }
     },
@@ -98,7 +97,7 @@ public enum UnsafeNatives implements NativeImplementation {
             long expect = Utils.toLong(args.getCheckedValue(5, SimpleType.LONG), args.getCheckedValue(4, SimpleType.LONG));
             long update = Utils.toLong(args.getCheckedValue(7, SimpleType.LONG), args.getCheckedValue(6, SimpleType.LONG));
 
-            boolean ret = THE_UNSAFE.compareAndSwapLong(oop.getFields(), byteOffset(offset), expect, update);
+            boolean ret = THE_UNSAFE.compareAndSwapLong(oop.getFields().getRawValues(), byteOffset(offset), expect, update);
             return NativeReturn.forBool(ret);
         }
     },
@@ -125,7 +124,7 @@ public enum UnsafeNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
             long offset = args.getLong(2);
-            int[] fields = args.getOop(1).getFields();
+            int[] fields = args.getOop(1).getFields().getRawValues();
             return NativeReturn.forInt(THE_UNSAFE.getInt(fields, byteOffset(offset)));
         }
     },
@@ -133,7 +132,7 @@ public enum UnsafeNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
             long offset = args.getLong(2);
-            int[] fields = args.getOop(1).getFields();
+            int[] fields = args.getOop(1).getFields().getRawValues();
             return NativeReturn.forInt(THE_UNSAFE.getIntVolatile(fields, byteOffset(offset)));
         }
     },
@@ -153,7 +152,7 @@ public enum UnsafeNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
             long offset = args.getLong(2);
-            int[] fields = args.getOop(1).getFields();
+            int[] fields = args.getOop(1).getFields().getRawValues();
 
             THE_UNSAFE.putInt(fields, byteOffset(offset), args.getInt(4));
             return NativeReturn.forVoid();
@@ -163,7 +162,7 @@ public enum UnsafeNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
             long offset = args.getLong(2);
-            int[] fields = args.getOop(1).getFields();
+            int[] fields = args.getOop(1).getFields().getRawValues();
 
             THE_UNSAFE.putIntVolatile(fields, byteOffset(offset), args.getInt(4));
             return NativeReturn.forVoid();
@@ -173,7 +172,7 @@ public enum UnsafeNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
             long offset = args.getLong(2);
-            int[] fields = args.getOop(1).getFields();
+            int[] fields = args.getOop(1).getFields().getRawValues();
 
             THE_UNSAFE.putOrderedInt(fields, byteOffset(offset), args.getInt(4));
             return NativeReturn.forVoid();

@@ -45,7 +45,7 @@ public class Runner {
         ArrayClassObject aco = ArrayClassObject.forType(ArrayType.create(NonArrayType.forClass("java/lang/String"), 1));
         OopArray array = aco.newArray(args.length);
         for (int i = 0; i < args.length; i++) {
-            array.getFields()[i] = Heap.intern(args[i]);
+            array.getFields().put(i, SimpleType.REF, Heap.intern(args[i]));
         }
 
         Variables actualArgs = mainMethod.newArgArray(array);
@@ -115,7 +115,7 @@ public class Runner {
         // are there more fields we care about?
         Field name = threadClass.findField("name", false);
         // Thread.name is a char array!
-        name.set(mainThread, Heap.getOop(mainString.getFields()[0]));
+        name.set(mainThread, mainString.getFields().getOop(0));
 
         Field group = threadClass.findField("group", false);
         group.set(mainThread, mainThreadGroup);

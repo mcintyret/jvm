@@ -1,13 +1,14 @@
 package com.mcintyret.jvm.core.clazz;
 
-import java.util.Set;
-
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
+import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.NonArrayType;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
+
+import java.util.Set;
 
 public class ClassObject extends AbstractClassObject {
 
@@ -23,7 +24,7 @@ public class ClassObject extends AbstractClassObject {
 
     private final Field[] staticFields;
 
-    private final int[] staticFieldValues;
+    private final Variables staticFieldValues;
 
     private final ClassLoader classLoader;
 
@@ -55,7 +56,7 @@ public class ClassObject extends AbstractClassObject {
         return instanceFields;
     }
 
-    public int[] getStaticFieldValues() {
+    public Variables getStaticFieldValues() {
         return staticFieldValues;
     }
 
@@ -71,13 +72,13 @@ public class ClassObject extends AbstractClassObject {
         return objectCreator.newObject(this, newInstanceFieldsValuesArray(instanceFields));
     }
 
-    private static int[] newInstanceFieldsValuesArray(Field[] fields) {
+    private static Variables newInstanceFieldsValuesArray(Field[] fields) {
         if (fields.length == 0) {
-            return new int[0];
+            return Variables.EMPTY_VARIABLES;
         }
         Field lastField = fields[fields.length - 1];
         int size = lastField.getOffset() + lastField.getType().getWidth();
-        return new int[size];
+        return new Variables(size);
     }
 
     public Method findMethod(String name, boolean isStatic) {
@@ -170,7 +171,7 @@ public class ClassObject extends AbstractClassObject {
 
     public interface NewObjectCreator<O extends OopClass> {
 
-        O newObject(ClassObject clazz, int[] fields);
+        O newObject(ClassObject clazz, Variables fields);
 
     }
 

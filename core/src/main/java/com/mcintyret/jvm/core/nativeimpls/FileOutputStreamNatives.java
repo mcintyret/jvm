@@ -1,5 +1,13 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
+import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.Variables;
+import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.util.Utils;
+import sun.misc.SharedSecrets;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilterOutputStream;
@@ -7,15 +15,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.mcintyret.jvm.core.exec.OperationContext;
-import com.mcintyret.jvm.core.exec.Variables;
-import com.mcintyret.jvm.core.oop.OopArray;
-import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.type.MethodSignature;
-import com.mcintyret.jvm.core.util.Utils;
-
-import sun.misc.SharedSecrets;
 
 public enum FileOutputStreamNatives implements NativeImplementation {
     CLOSE_0("close0", "()V") {
@@ -62,7 +61,7 @@ public enum FileOutputStreamNatives implements NativeImplementation {
             OopArray bytesOop = args.getOop(1);
             byte[] bytes = new byte[bytesOop.getLength()];
             for (int i = 0; i < bytes.length; i++) {
-                bytes[i] = (byte) bytesOop.getFields()[i];
+                bytes[i] = (byte) bytesOop.getFields().getRawValue(i);
             }
 
             try {

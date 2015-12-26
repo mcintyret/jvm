@@ -34,6 +34,7 @@ public abstract class ReferenceType implements Type {
     @Override
     public OopClassClass getOopClassClass(boolean gc) {
         if (oopClassClass == null) {
+            // TODO: is there a nicer way to do this?
             if (!gc) {
                 oopClassClass = Heap.allocateAndGet(
                     Utils.getClassObject(ImportantClasses.JAVA_LANG_CLASS).newObject((clazz, fields) ->

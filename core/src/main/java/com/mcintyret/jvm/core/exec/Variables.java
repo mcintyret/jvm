@@ -9,6 +9,8 @@ import java.util.Arrays;
 
 public class Variables {
 
+    public static final Variables EMPTY_VARIABLES = new Variables(0);
+
     // TODO: can be smarter about this - ie only from non-library code, only the first time it is executed etc.
     private static boolean checking = false;
 

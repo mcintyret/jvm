@@ -34,7 +34,7 @@ public class GiveItAllAGo {
             @Override
             public NativeReturn execute(Variables args, OperationContext ctx) {
                 OopArray array = args.getOop(1);
-                array.getFields()[0]++;
+                array.getFields().getRawValues()[0]++;
                 return NativeReturn.forVoid();
             }
         });
@@ -43,7 +43,7 @@ public class GiveItAllAGo {
             @Override
             public NativeReturn execute(Variables args, OperationContext ctx) {
                 OopArray array = args.getOop(0);
-                array.getFields()[0]++;
+                array.getFields().getRawValues()[0]++;
                 return NativeReturn.forVoid();
             }
         });
@@ -52,10 +52,10 @@ public class GiveItAllAGo {
             @Override
             public NativeReturn execute(Variables args, OperationContext ctx) {
                 OopArray array = args.getOop(1);
-                if (array.getFields()[0]++ % 2 == 0) {
+                if (array.getFields().getRawValues()[0]++ % 2 == 0) {
                     return NativeReturn.forThrowable(Utils.toThrowableOop(new RuntimeException(), ctx.getThread()));
                 }
-                array.getFields()[1]++;
+                array.getFields().getRawValues()[1]++;
                 return NativeReturn.forVoid();
             }
         });
@@ -64,10 +64,10 @@ public class GiveItAllAGo {
             @Override
             public NativeReturn execute(Variables args, OperationContext ctx) {
                 OopArray array = args.getOop(0);
-                if (array.getFields()[0]++ % 2 == 0) {
+                if (array.getFields().getRawValues()[0]++ % 2 == 0) {
                     return NativeReturn.forThrowable(Utils.toThrowableOop(new RuntimeException(), ctx.getThread()));
                 }
-                array.getFields()[1]++;
+                array.getFields().getRawValues()[1]++;
                 return NativeReturn.forVoid();
             }
         });

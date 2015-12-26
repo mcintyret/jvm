@@ -5,6 +5,7 @@ import com.mcintyret.jvm.core.exec.VariableStack;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.Typed;
+import com.mcintyret.jvm.core.type.SimpleType;
 
 abstract class SingleWidthALoad extends OpCode implements Typed {
 
@@ -16,7 +17,8 @@ abstract class SingleWidthALoad extends OpCode implements Typed {
 
         OopArray array = stack.popOop();
 
-        stack.pushSingleWidth(array.getFields()[index], getType());
+        SimpleType type = getType();
+        stack.pushSingleWidth(array.getFields().getCheckedValue(index, type), type);
     }
 
 }

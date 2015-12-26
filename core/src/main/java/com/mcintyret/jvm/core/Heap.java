@@ -1,7 +1,6 @@
 package com.mcintyret.jvm.core;
 
 import com.mcintyret.jvm.core.clazz.ClassObject;
-import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.exec.Execution;
 import com.mcintyret.jvm.core.exec.Thread;
 import com.mcintyret.jvm.core.exec.Threads;
@@ -9,9 +8,7 @@ import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.type.ArrayType;
 import com.mcintyret.jvm.core.type.SimpleType;
-import com.mcintyret.jvm.core.type.Type;
 import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
 import org.slf4j.Logger;
@@ -26,9 +23,9 @@ public class Heap {
 
     private static final Logger LOG = LoggerFactory.getLogger(Heap.class);
 
-    private static final int INITIAL_HEAP_SIZE = 32;
+    private static final int INITIAL_HEAP_SIZE = 10000;
 
-    private static final int MAX_HEAP_SIZE = 4096;
+    private static final int MAX_HEAP_SIZE = 10000;
 
     private static volatile Oop[] OOP_TABLE = new Oop[INITIAL_HEAP_SIZE];
 
@@ -118,7 +115,7 @@ public class Heap {
             for (ClassObject classObject : ClassLoader.getDefaultClassLoader().getLoadedClasses()) {
                 gcOop(classObject.getOop(true)); // this will keep any reflection data.
 
-                gcFields(classObject.getStaticFieldValues(), classObject.getStaticFields());
+                gcVariables(classObject.getStaticFieldValues());
             }
 
             for (Oop oop : newOops) {
@@ -157,35 +154,7 @@ public class Heap {
                 // Actually keep the added Oop for the next cycle
                 addOop(oop);
 
-                int[] fieldVals = oop.getFields();
-
-                Type type = oop.getClassObject().getType();
-                if (type.isArray() && !((ArrayType) type).getComponentType().isPrimitive()) {
-                    for (int i = 0; i < fieldVals.length; i++) {
-                        Oop field = Heap.getOop(fieldVals[i]);
-                        gcOop(field);
-                        if (field != null) {
-                            fieldVals[i] = field.getAddress(); // update the address
-                        }
-                    }
-                } else if (!type.isArray()) {
-                    Field[] fields = ((ClassObject) oop.getClassObject()).getInstanceFields();
-                    gcFields(fieldVals, fields);
-                }
-            }
-        }
-
-        private void gcFields(int[] fieldVals, Field[] fields) {
-            for (Field field : fields) {
-                Type fieldType = field.getType();
-
-                if (!fieldType.isPrimitive()) {
-                    Oop fieldOop = Heap.getOop(fieldVals[field.getOffset()]);
-                    gcOop(fieldOop);
-                    if (fieldOop != null) {
-                        fieldVals[field.getOffset()] = fieldOop.getAddress(); // update the address
-                    }
-                }
+                gcVariables(oop.getFields());
             }
         }
 

@@ -1,11 +1,5 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-
-import org.reflections.Reflections;
-
 import com.mcintyret.jvm.core.ImportantClasses;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.Variables;
@@ -13,6 +7,11 @@ import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.type.MethodSignature;
+import org.reflections.Reflections;
+
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
 
 /**
  * User: tommcintyre
@@ -83,7 +82,7 @@ public enum ObjectNatives implements NativeImplementation {
                 clone = ((OopClass) oop).getClassObject().newObject();
             }
 
-            System.arraycopy(oop.getFields(), 0, clone.getFields(), 0, oop.getFields().length);
+            System.arraycopy(oop.getFields().getRawValues(), 0, clone.getFields().getRawValues(), 0, oop.getFields().length());
 
             return NativeReturn.forReference(clone);
         }

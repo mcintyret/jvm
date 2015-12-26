@@ -1,7 +1,5 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import java.util.Deque;
-
 import com.google.common.collect.Iterables;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
@@ -9,16 +7,18 @@ import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.exec.Execution;
 import com.mcintyret.jvm.core.exec.OperationContext;
+import com.mcintyret.jvm.core.exec.Thread;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.exec.Thread;
 import com.mcintyret.jvm.core.type.ArrayType;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
+
+import java.util.Deque;
 
 /**
  * User: tommcintyre
@@ -34,15 +34,14 @@ public enum ThrowableNatives implements NativeImplementation {
             OopArray stes = ArrayClassObject.forType(ArrayType.create(stackTraceElemCo.getType(), 1)).newArray(stack.size());
 
             Oop thisThrowable = args.getOop(0);
-            thisThrowable.getFields()[3] = Heap.allocate(stes);
-
+            thisThrowable.getFields().put(3, SimpleType.REF, Heap.allocate(stes));
 
             int i = 0;
             Method ctor = stackTraceElemCo.findConstructor("(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)V");
             for (Execution ese : stack) {
                 OopClass ste = makeStackTraceElement(stackTraceElemCo, ctor, ese, ctx.getThread());
 
-                stes.getFields()[i++] = ste.getAddress();
+                stes.getFields().putOop(i++, ste);
             }
 
             // Return this

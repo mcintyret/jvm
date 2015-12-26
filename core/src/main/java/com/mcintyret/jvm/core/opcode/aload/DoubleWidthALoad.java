@@ -2,6 +2,7 @@ package com.mcintyret.jvm.core.opcode.aload;
 
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.VariableStack;
+import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.opcode.Typed;
@@ -15,10 +16,13 @@ abstract class DoubleWidthALoad extends OpCode implements Typed {
 
         int index = stack.popInt() * 2;
         OopArray array = stack.popOop();
-
+        Variables fields = array.getFields();
         SimpleType type = getType();
-        stack.pushSingleWidth(array.getFields()[index], type);
-        stack.pushSingleWidth(array.getFields()[index + 1], type);
+
+        stack.pushDoubleWidth(
+            fields.getCheckedValue(index, type),
+            fields.getCheckedValue(index + 1, type),
+            type);
     }
 
 }

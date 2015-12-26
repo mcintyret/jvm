@@ -1,8 +1,5 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.ImportantClasses;
 import com.mcintyret.jvm.core.clazz.AbstractClassObject;
@@ -25,6 +22,9 @@ import com.mcintyret.jvm.core.type.Type;
 import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * User: tommcintyre
@@ -98,7 +98,7 @@ public enum ClassNatives implements NativeImplementation {
                 Variables ctorArgs = ctor.newArgArray();
 
                 OopClass fieldObj = fieldClass.newObject();
-                array.getFields()[i] = Heap.allocate(fieldObj);
+                array.getFields().put(i, SimpleType.REF, Heap.allocate(fieldObj));
 
                 ctorArgs.putOop(0, fieldObj);
                 ctorArgs.putOop(1, thisType.getOopClassClass());
@@ -226,7 +226,7 @@ public enum ClassNatives implements NativeImplementation {
                     OopArray paramTypes = classArray.newArray(ctor.getSignature().getArgTypes().size());
                     int j = 0;
                     for (Type type : ctor.getSignature().getArgTypes()) {
-                        paramTypes.getFields()[j++] = type.getOopClassClass().getAddress();
+                        paramTypes.getFields().putOop(j++, type.getOopClassClass());
                     }
 
                     ctorArgs.put(2, SimpleType.REF, Heap.allocate(paramTypes));
@@ -240,7 +240,7 @@ public enum ClassNatives implements NativeImplementation {
 
                     Utils.executeMethodAndThrow(ctorCtor, ctorArgs, ctx.getThread());
 
-                    result.getFields()[i] = ctorObj.getAddress();
+                    result.getFields().putOop(i, ctorObj);
                 }
 
                 return NativeReturn.forReference(result);

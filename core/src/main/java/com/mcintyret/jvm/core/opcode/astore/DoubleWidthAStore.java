@@ -21,8 +21,8 @@ abstract class DoubleWidthAStore extends OpCode implements Typed {
 
         OopArray array = stack.popOop();
 
-        array.getFields()[index] = val1;
-        array.getFields()[index] = val2;
+        array.getFields().put(index, type, val1);
+        array.getFields().put(index + 1, type, val2);
     }
 
 }

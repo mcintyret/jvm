@@ -40,7 +40,7 @@ public enum SystemNatives implements NativeImplementation {
             int destPos = args.getInt(3) * width;
             int len = args.getInt(4) * width;
 
-            System.arraycopy(src.getFields(), srcPos, dest.getFields(), destPos, len);
+            System.arraycopy(src.getFields().getRawValues(), srcPos, dest.getFields().getRawValues(), destPos, len);
 
             return NativeReturn.forVoid();
         }

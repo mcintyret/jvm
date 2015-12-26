@@ -1,6 +1,7 @@
 package com.mcintyret.jvm.core.oop;
 
 import com.mcintyret.jvm.core.clazz.ClassObject;
+import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.type.Type;
 
 /**
@@ -11,7 +12,7 @@ public class OopClassClass extends OopClass {
 
     private final Type thisType;
 
-    public OopClassClass(ClassObject classObject, int[] fields, Type thisType) {
+    public OopClassClass(ClassObject classObject, Variables fields, Type thisType) {
         super(classObject, fields);
         this.thisType = thisType;
     }
