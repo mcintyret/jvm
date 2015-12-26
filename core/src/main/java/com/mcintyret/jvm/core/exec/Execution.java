@@ -42,6 +42,8 @@ public class Execution implements OperationContext {
         this.constantPool = method.getClassObject().getConstantPool();
         this.thread = thread;
 
+        // TODO: I think this happens anyway because of monitor enter / exit bytecodes
+        // TODO: still need to take care of locks released due to exceptions thrown
         if (method.hasModifier(Modifier.SYNCHRONIZED)) {
             Oop target = method.isStatic() ?
                 method.getClassObject().getOop() :
