@@ -108,6 +108,7 @@ public class Runner {
 
         // OK, now we can create the main thread
         OopClass mainThread = threadClass.newObject();
+        Heap.allocate(mainThread);
 
         // The pain here is that we can't run the constructor because that depends on Thread.currentThread(),
         // which in turn depends on having the main thread properly initialized!
