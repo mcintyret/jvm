@@ -57,7 +57,7 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
             throw new NoSuchElementException();
         }
         int pos = --head;
-        Variable ret = stack.get(pos);
+        Variable ret = Variable.forType(stack.getType(pos), stack.getRawValue(pos));
         stack.clear(pos);
         return ret;
     }
@@ -67,11 +67,13 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
         if (head <= 1) {
             throw new NoSuchElementException();
         }
-        WideVariable wv = stack.getWide(head - 2);
+        int pos = head - 2;
+        // TODO: may be the wrong way around!
+        WideVariable wv = new WideVariable(stack.getType(pos), Utils.toLong(stack.getRawValue(pos), stack.getRawValue(pos + 1)));
         stack.clear(head - 1);
         stack.clear(head - 2);
 
-        head -= 2;
+        head = pos;
 
         return wv;
     }
@@ -187,12 +189,7 @@ public class VariableStackImpl implements ValueReceiver, VariableStack {
 
     @Override
     public void pushWide(WideVariable v) {
-        if (head >= stack.length() - 1) {
-            resize();
-        }
-
-        stack.putWide(head, v);
-        head += 2;
+        pushDoubleWidth(v.getLeft(), v.getRight(), v.getType());
     }
 
     @Override

@@ -1,7 +1,5 @@
 package com.mcintyret.jvm.core.exec;
 
-import java.util.function.IntSupplier;
-
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.type.SimpleType;
@@ -12,14 +10,14 @@ import com.mcintyret.jvm.core.type.SimpleType;
  */
 public final class Variable {
 
-    private static final Variable NULL = new Variable(SimpleType.REF, () -> Heap.NULL_POINTER);
+    private static final Variable NULL = new Variable(SimpleType.REF, Heap.NULL_POINTER);
 
     public static Variable forNull() {
         return NULL;
     }
 
     public static Variable forType(SimpleType type, int value) {
-        return new Variable(type, () -> value);
+        return new Variable(type, value);
     }
 
     public static Variable forInt(int i) {
@@ -35,17 +33,17 @@ public final class Variable {
     }
 
     public static Variable forOop(Oop oop) {
-        return new Variable(SimpleType.REF, oop::getAddress);
+        return new Variable(SimpleType.REF, oop.getAddress());
     }
 
 
     private final SimpleType type;
 
-    private final IntSupplier valueSupplier;
+    private final int value;
 
-    private Variable(SimpleType type, IntSupplier valueSupplier) {
+    private Variable(SimpleType type, int value) {
         this.type = type;
-        this.valueSupplier = valueSupplier;
+        this.value = value;
     }
 
     public final SimpleType getType() {
@@ -53,6 +51,6 @@ public final class Variable {
     }
 
     public final int getValue() {
-        return valueSupplier.getAsInt();
+        return value;
     }
 }

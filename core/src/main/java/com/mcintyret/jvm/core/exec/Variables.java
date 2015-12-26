@@ -1,30 +1,29 @@
 package com.mcintyret.jvm.core.exec;
 
-import java.util.Arrays;
-
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.util.Utils;
+
+import java.util.Arrays;
 
 public class Variables {
 
     // TODO: can be smarter about this - ie only from non-library code, only the first time it is executed etc.
     private static boolean checking = false;
 
-    private final Variable[] variables;
+    private final int[] values;
+    private final SimpleType[] types;
 
     public Variables(int size) {
-        this.variables = new Variable[size];
+        this.values = new int[size];
+        this.types = new SimpleType[size];
     }
 
     // Copy constructor
-    private Variables(Variable[] variables) {
-        this.variables = variables;
-    }
-
-    public boolean isEmpty(int i) {
-        return variables[i] == null;
+    private Variables(int[] values, SimpleType[] types) {
+        this.values = values;
+        this.types = types;
     }
 
     public <O extends Oop> O getOop(int i) {
@@ -52,7 +51,7 @@ public class Variables {
     }
 
     public void putOop(int i, Oop val) {
-        variables[i] = Variable.forOop(val);
+        put(i, SimpleType.REF, val.getAddress());
     }
 
     public void putNull(int i) {
@@ -68,24 +67,25 @@ public class Variables {
     }
 
     public void put(int i, SimpleType type, int value) {
-        variables[i] = Variable.forType(type, value);
+        types[i] = type;
+        values[i] = value;
     }
 
     public void putWide(int i, SimpleType type, long value) {
-        putWide(i, new WideVariable(type, value));
+        putWide(i, type, (int) (value >> 32), (int) value);
     }
 
-    public void put(int i, Variable v) {
-        put(i, v.getType(), v.getValue());
+    public void putWide(int i, SimpleType type, int left, int right) {
+        types[i] = type;
+        types[i + 1] = type;
+
+        values[i] = left;
+        values[i + 1] = right;
     }
 
-    public void putWide(int i, WideVariable v) {
-        put(i, v.getType(), v.getLeft());
-        put(i + 1, v.getType(), v.getRight());
-    }
 
     private SimpleType checkType(int i, SimpleType type) {
-        SimpleType currentType = variables[i].getType();
+        SimpleType currentType = types[i];
         if (currentType != null && currentType != type) {
 //            throw new IllegalStateException("Expected value of type " + type + " but was of type " + types[i]); // this may be completely invalid!
         }
@@ -100,55 +100,42 @@ public class Variables {
     }
 
     public int getCheckedValue(int i, SimpleType type) {
-        Variable v = variables[i];
         if (checking) {
             // This condition will probably need to be made smarter to deal with automatic widening conversions, which are allowed
-            if (v.getType() != type) {
-                throw new IllegalStateException("Expected value of type " + type + " but was of type " + v.getType());
+            if (types[i] != type) {
+                throw new IllegalStateException("Expected value of type " + type + " but was of type " + types[i]);
             }
         }
-        return v.getValue();
+        return values[i];
     }
 
     public int getRawValue(int i) {
-        return variables[i].getValue();
+        return values[i];
     }
 
     public int[] getRawValues() {
-        int[] vals = new int[variables.length];
-        for (int i = 0; i < vals.length; i++) {
-            vals[i] = variables[i].getValue();
-        }
-        return vals;
+        return values;
     }
 
     public SimpleType[] getTypes() {
-        return Utils.transformArray(variables, Variable::getType, SimpleType.class);
+        return types;
     }
 
     public SimpleType getType(int i) {
-        return variables[i].getType();
+        return types[i];
     }
 
     public int length() {
-        return variables.length;
+        return values.length;
     }
 
-    public Variable get(int i) {
-        return variables[i];
-    }
-
-    public WideVariable getWide(int i) {
-        Variable v1 = variables[i];
-        Variable v2 = variables[i + 1];
-        return new WideVariable(v1.getType(), Utils.toLong(v1.getValue(), v2.getValue()));
-    }
-
+    // TODO: how is this used?
     void clear(int i) {
-        variables[i] = null;
+        values[i] = 0;
+        types[i] = null;
     }
 
     public Variables copy(int newSize) {
-        return new Variables(Arrays.copyOf(variables, newSize));
+        return new Variables(Arrays.copyOf(values, newSize), Arrays.copyOf(types, newSize));
     }
 }

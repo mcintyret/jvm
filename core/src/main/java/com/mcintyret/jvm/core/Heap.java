@@ -5,7 +5,6 @@ import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.exec.Execution;
 import com.mcintyret.jvm.core.exec.Thread;
 import com.mcintyret.jvm.core.exec.Threads;
-import com.mcintyret.jvm.core.exec.Variable;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
@@ -142,8 +141,7 @@ public class Heap {
 
         private void gcVariables(Variables variables) {
             for (int i = 0; i < variables.length(); i++) {
-                Variable v = variables.get(i);
-                if (v != null && v.getType() == SimpleType.REF) {
+                if (variables.getType(i) == SimpleType.REF) {
                     Oop oop = variables.getOop(i);
                     gcOop(oop);
                     variables.putOop(i, oop); // update the address
