@@ -3,6 +3,7 @@ package com.mcintyret.jvm.core.exec;
 import com.google.common.collect.Iterables;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ClassObject;
+import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.OopClass;
@@ -17,7 +18,7 @@ import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
  * User: tommcintyre
  * Date: 5/26/14
  */
-public class Thread {
+public final class Thread {
 
     private final OopClass thisThread;
 
@@ -135,8 +136,18 @@ public class Thread {
 
         private final Method THREAD_RUN = THREAD_CLASS.findMethod("run", "()V", false);
 
+        private final Field THREAD_DAEMON = THREAD_CLASS.findField("daemon", false);
+
         public ActualThread(String name) {
             super(name);
+        }
+
+        @Override
+        public synchronized void start() {
+            boolean isDaemon = THREAD_DAEMON.getInt(thisThread) != 0;
+            thread.setDaemon(isDaemon);
+
+            super.start();
         }
 
         @Override
