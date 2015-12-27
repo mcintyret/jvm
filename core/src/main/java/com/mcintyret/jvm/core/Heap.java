@@ -80,6 +80,15 @@ public class Heap {
         }
     }
 
+    public static void threadSleeping() {
+        GC_PHASER.arriveAndDeregister();
+    }
+
+    public static void threadWaking() {
+        // This will automatically wait for any ongoing GC, thanks to the semantics of Phaser.onAdvance()
+        GC_PHASER.register();
+    }
+
     public static void deregisterThread() {
         GC_PHASER.arriveAndDeregister();
         Stack<NativeMethodOops> stack = NATIVE_METHOD_OOPS.remove(currentThread());

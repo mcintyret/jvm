@@ -1,5 +1,6 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
+import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.ImportantClasses;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.Variables;
@@ -38,6 +39,7 @@ public enum ObjectNatives implements NativeImplementation {
             long timeout = args.getLong(1);
             Condition condition = args.getOop(0).getMarkRef().getMonitorCondition();
             try {
+                Heap.threadSleeping();
                 if (timeout == 0) {
                     condition.await();
                 } else {
@@ -45,6 +47,8 @@ public enum ObjectNatives implements NativeImplementation {
                 }
             } catch (InterruptedException e) {
                 Thread.interrupted();
+            } finally {
+                Heap.threadWaking();
             }
             return NativeReturn.forVoid();
         }

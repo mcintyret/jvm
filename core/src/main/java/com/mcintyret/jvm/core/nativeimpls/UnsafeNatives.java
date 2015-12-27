@@ -1,5 +1,6 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
+import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.Threads;
@@ -207,12 +208,14 @@ public enum UnsafeNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
             THE_UNSAFE.park(args.getBoolean(1), args.getLong(2));
+            Heap.threadSleeping();
             return NativeReturn.forVoid();
         }
     },
     UNPARK("unpark", "(Ljava/lang/Object;)V") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
+            Heap.threadWaking();
             THE_UNSAFE.unpark(Threads.get(args.getOop(1)).getThread());
             return NativeReturn.forVoid();
         }
