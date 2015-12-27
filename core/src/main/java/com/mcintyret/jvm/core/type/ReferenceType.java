@@ -32,7 +32,7 @@ public abstract class ReferenceType implements Type {
     private OopClassClass oopClassClass;
 
     @Override
-    public OopClassClass getOopClassClass(boolean gc) {
+    public synchronized OopClassClass getOopClassClass(boolean gc) {
         if (oopClassClass == null) {
             // TODO: is there a nicer way to do this?
             if (!gc) {

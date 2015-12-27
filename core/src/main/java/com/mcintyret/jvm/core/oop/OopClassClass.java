@@ -8,6 +8,7 @@ import com.mcintyret.jvm.core.type.Type;
  * User: tommcintyre
  * Date: 5/21/14
  */
+// An Oop that corresponds to a Class object
 public class OopClassClass extends OopClass {
 
     private final Type thisType;

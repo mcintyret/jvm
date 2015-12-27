@@ -10,6 +10,7 @@ import com.mcintyret.jvm.parse.Modifier;
 
 import java.util.Set;
 
+// The internal representation of a Class
 public class ClassObject extends AbstractClassObject {
 
     private final NonArrayType type;

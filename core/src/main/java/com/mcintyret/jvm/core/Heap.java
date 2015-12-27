@@ -8,12 +8,14 @@ import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopArray;
 import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.oop.OopClassClass;
 import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -41,6 +43,8 @@ public class Heap {
     private static final StringPool STRING_POOL = new StringPool();
 
     private static final ConcurrentMap<java.lang.Thread, Stack<NativeMethodOops>> NATIVE_METHOD_OOPS = new ConcurrentHashMap<>();
+
+    private static final Set<OopClassClass> OOP_CLASS_CLASSES = Collections.synchronizedSet(new HashSet<OopClassClass>());
 
     public static void enterNativeMethod() {
         NATIVE_METHOD_OOPS.get(currentThread()).push(new NativeMethodOops());
@@ -145,6 +149,8 @@ public class Heap {
                     heapChecker.register(oop);
                 }
             }
+
+            OOP_CLASS_CLASSES.forEach(this::gcOop);
 
             // The String Pool
             // TODO: some kind of PERM_GEN so we don't have to do this every time
@@ -311,13 +317,17 @@ public class Heap {
                     }
                 }
 
+                for (Oop remaining : updatedOops.keySet()) {
+                    if (remaining instanceof OopClassClass) {
+                        System.out.println("foo");
+                    }
+                }
+
 //                if (!updatedOops.isEmpty()) {
 //                    throw new IllegalStateException("Registered Oop not on new heap");
 //                }
             }
-
         }
-
     }
 
     public static int allocate(Oop oop) {
@@ -341,6 +351,12 @@ public class Heap {
         Stack<NativeMethodOops> nativeMethodStack = NATIVE_METHOD_OOPS.get(currentThread());
         if (!nativeMethodStack.isEmpty()) {
             nativeMethodStack.peek().oops.add(oop);
+        }
+
+        if (oop instanceof OopClassClass) {
+            if (!OOP_CLASS_CLASSES.add((OopClassClass) oop)) {
+                throw new IllegalStateException("Duplicate OopClassClass");
+            }
         }
 
         return heapPointer;
