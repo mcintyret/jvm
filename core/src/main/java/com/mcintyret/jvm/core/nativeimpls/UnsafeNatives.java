@@ -207,8 +207,8 @@ public enum UnsafeNatives implements NativeImplementation {
     PARK("park", "(ZJ)V") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            THE_UNSAFE.park(args.getBoolean(1), args.getLong(2));
             Heap.threadSleeping();
+            THE_UNSAFE.park(args.getBoolean(1), args.getLong(2));
             return NativeReturn.forVoid();
         }
     },
