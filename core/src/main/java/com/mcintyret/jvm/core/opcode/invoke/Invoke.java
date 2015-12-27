@@ -1,5 +1,6 @@
 package com.mcintyret.jvm.core.opcode.invoke;
 
+import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.NativeMethod;
 import com.mcintyret.jvm.core.exec.Execution;
@@ -39,8 +40,15 @@ abstract class Invoke extends OpCode {
         if (nativeImplementation == null) {
             throw new IllegalStateException("No Native implementation for " + nativeMethod.getClassObject().getClassName() + "." + nativeMethod.getSignature());
         }
+
+        Heap.enterNativeMethod();
+        nativeExecution.getExecutionStack().push(nativeExecution);
+
         NativeReturn nr = nativeImplementation.execute(args, nativeExecution);
+
         nativeExecution.onComplete(); // Releases lock if this method was synchronized
+        Heap.exitNativeMethod();
+        nativeExecution.getExecutionStack().pop();
 
         nr.applyValue(ctx.getStack());
         if (nr.isThrowable()) {

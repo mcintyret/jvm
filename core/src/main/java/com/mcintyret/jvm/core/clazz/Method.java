@@ -1,5 +1,6 @@
 package com.mcintyret.jvm.core.clazz;
 
+import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.type.MethodSignature;
@@ -36,7 +37,7 @@ public class Method extends Member {
 
 
     // TODO: what about primitive args??
-    public Variables newArgArray(Oop... args) {
+    public final Variables newArgArray(Oop... args) {
         Code code = getCode();
         int maxLocals = code == null ? 0 : code.getMaxLocals();
 
@@ -52,6 +53,7 @@ public class Method extends Member {
             }
         }
 
+        Heap.registerNativeMethodArgs(argArray);
         return argArray;
     }
 }

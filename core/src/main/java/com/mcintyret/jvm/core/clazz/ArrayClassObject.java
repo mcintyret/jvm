@@ -1,5 +1,6 @@
 package com.mcintyret.jvm.core.clazz;
 
+import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.ImportantClasses;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.OopArray;
@@ -18,8 +19,8 @@ public class ArrayClassObject extends AbstractClassObject {
     private static final ClassObject PARENT = getDefaultClassLoader().getClassObject(ImportantClasses.JAVA_LANG_OBJECT);
 
     private static final ClassObject[] INTERFACES = {
-            getDefaultClassLoader().getClassObject(ImportantClasses.JAVA_LANG_CLONEABLE),
-            getDefaultClassLoader().getClassObject(ImportantClasses.JAVA_IO_SERIALIZABLE)
+        getDefaultClassLoader().getClassObject(ImportantClasses.JAVA_LANG_CLONEABLE),
+        getDefaultClassLoader().getClassObject(ImportantClasses.JAVA_IO_SERIALIZABLE)
     };
 
     private static final Set<Modifier> MODIFIERS = EnumSet.of(Modifier.PUBLIC, Modifier.FINAL, Modifier.ABSTRACT);
@@ -44,7 +45,9 @@ public class ArrayClassObject extends AbstractClassObject {
 
     public OopArray newArray(int length) {
         length *= arrayType.getComponentType().getWidth();
-        return new OopArray(this, new Variables(length));
+        Variables v = new Variables(length);
+        Heap.registerNativeMethodArgs(v);
+        return new OopArray(this, v);
     }
 
     @Override

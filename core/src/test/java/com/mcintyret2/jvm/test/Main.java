@@ -13,7 +13,7 @@ public class Main {
         interfaceMethods();
         simpleIntArrays();
         stringsAndNatives();
-        threadingTests();
+//        threadingTests();
         stringLength();
     }
 
