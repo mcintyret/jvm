@@ -25,7 +25,7 @@ public class AThrow extends OpCode {
     @Override
     public void execute(OperationContext ctx) {
         OopClass thrown = ctx.getStack().popOop();
-        LOG.warn("Throwing exception of type {} from method {}", thrown.getClassObject(), ctx.getMethod());
+        LOG.info("Throwing exception of type {} from method {}", thrown.getClassObject(), ctx.getMethod());
 
         Execution elem = ctx.getExecutionStack().peek();
         Execution prev;
