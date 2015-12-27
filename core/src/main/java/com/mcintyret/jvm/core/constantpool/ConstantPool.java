@@ -101,11 +101,15 @@ public class ConstantPool {
                     if (constant instanceof CpString) {
                         int index = ((CpString) constant).getStringIndex();
                         String string = (String) constantPool[index];
+
+                        // This ensures that the string we are creating won't get GC'd mid creation
+                        Heap.enterNativeMethod();
                         constantPool[i] = Variable.forType(SimpleType.REF, Heap.intern(string));
+                        Heap.exitNativeMethod();
                     } else if (constantPool[i] instanceof CpClass) {
                         constantPool[i] = translateClassObject(i);
                     } else {
-                        throw new AssertionError("Can i get here??"); // TODO: less silly!
+                        throw new AssertionError("Unknown type for Constant Pool: " + constantPool[i].getClass());
                     }
             }
             getConstant(i, receiver);
