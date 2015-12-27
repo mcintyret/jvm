@@ -50,6 +50,7 @@ public class Execution implements OperationContext {
                 localVariables.getOop(0);
 
             synchronizedMethodLocks = target.getMarkRef().getMonitor();
+            // TODO: this can cause the JVM to freeze if we try to GC while threads are waiting on this lock
             synchronizedMethodLocks.lock();
         } else {
             synchronizedMethodLocks = null;
