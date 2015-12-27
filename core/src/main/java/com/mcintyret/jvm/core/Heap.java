@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Phaser;
@@ -39,14 +40,14 @@ public class Heap {
 
     private static final StringPool STRING_POOL = new StringPool();
 
-    private static final ConcurrentMap<java.lang.Thread, NativeMethodParts> nativeMethodArgs = new ConcurrentHashMap<>();
+    private static final ConcurrentMap<java.lang.Thread, Stack<NativeMethodOops>> NATIVE_METHOD_OOPS = new ConcurrentHashMap<>();
 
     public static void enterNativeMethod() {
-        nativeMethodArgs.put(currentThread(), new NativeMethodParts());
+        NATIVE_METHOD_OOPS.get(currentThread()).push(new NativeMethodOops());
     }
 
     public static void exitNativeMethod() {
-        nativeMethodArgs.remove(currentThread());
+        NATIVE_METHOD_OOPS.get(currentThread()).pop();
     }
 
     private static java.lang.Thread currentThread() {
@@ -72,12 +73,19 @@ public class Heap {
         return (OopArray) getOop(address);
     }
 
-    public static void register() {
+    public static void registerThread() {
         GC_PHASER.register();
+        if (NATIVE_METHOD_OOPS.put(currentThread(), new Stack<>()) != null) {
+            throw new IllegalStateException();
+        }
     }
 
-    public static void deregister() {
+    public static void deregisterThread() {
         GC_PHASER.arriveAndDeregister();
+        Stack<NativeMethodOops> stack = NATIVE_METHOD_OOPS.remove(currentThread());
+        if (!stack.isEmpty()) {
+            throw new IllegalStateException();
+        }
     }
 
     public static void atSafePoint() {
@@ -102,10 +110,10 @@ public class Heap {
     }
 
     public static void registerNativeMethodArgs(Variables argArray) {
-        nativeMethodArgs.computeIfPresent(currentThread(), (t, nmp) -> {
-            nmp.variables.add(argArray);
-            return nmp;
-        });
+        Stack<NativeMethodOops> nativeMethodStack = NATIVE_METHOD_OOPS.get(currentThread());
+        if (!nativeMethodStack.isEmpty()) {
+            nativeMethodStack.peek().variables.add(argArray);
+        }
     }
 
     private static class GarbageCollector {
@@ -145,10 +153,12 @@ public class Heap {
             }
 
             // Run for any objects currently being created in native methods
-            nativeMethodArgs.computeIfPresent(currentThread(), (t, nmp) -> {
-                nmp.variables.forEach(this::gcVariables);
-                nmp.oops.forEach(this::gcOop);
-                return nmp;
+            NATIVE_METHOD_OOPS.computeIfPresent(currentThread(), (t, stack) -> {
+                stack.forEach(nmp -> {
+                    nmp.variables.forEach(this::gcVariables);
+                    nmp.oops.forEach(this::gcOop);
+                });
+                return stack;
             });
 
             // finally look at static objects
@@ -319,10 +329,10 @@ public class Heap {
         OOP_TABLE[heapPointer] = oop;
         oop.setAddress(heapPointer);
 
-        nativeMethodArgs.computeIfPresent(currentThread(), (t, nmp) -> {
-            nmp.oops.add(oop);
-            return nmp;
-        });
+        Stack<NativeMethodOops> nativeMethodStack = NATIVE_METHOD_OOPS.get(currentThread());
+        if (!nativeMethodStack.isEmpty()) {
+            nativeMethodStack.peek().oops.add(oop);
+        }
 
         return heapPointer;
     }
@@ -352,7 +362,7 @@ public class Heap {
         }
     }
 
-    private static class NativeMethodParts {
+    private static class NativeMethodOops {
 
         private final Set<Oop> oops = new HashSet<>();
 

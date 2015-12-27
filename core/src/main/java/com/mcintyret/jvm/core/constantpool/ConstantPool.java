@@ -7,6 +7,7 @@ import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.ValueReceiver;
 import com.mcintyret.jvm.core.exec.Variable;
 import com.mcintyret.jvm.core.exec.WideVariable;
+import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
@@ -69,6 +70,11 @@ public class ConstantPool {
         } else if (constant instanceof WideVariable) {
             WideVariable v = (WideVariable) constant;
             receiver.receiveDoubleWidth(v.getValue(), v.getType());
+        } else if (constant instanceof OopClass) {
+            // A String that we interned
+            // Don't hold a Variable containing the address because it could change with GC
+            OopClass string = (OopClass) constant;
+            receiver.receiveSingleWidth(string.getAddress(), SimpleType.REF);
         } else if (constant instanceof AbstractClassObject) {
             receiver.receiveSingleWidth(((AbstractClassObject) constant).getOop().getAddress(), SimpleType.REF);
         } else {
@@ -104,7 +110,8 @@ public class ConstantPool {
 
                         // This ensures that the string we are creating won't get GC'd mid creation
                         Heap.enterNativeMethod();
-                        constantPool[i] = Variable.forType(SimpleType.REF, Heap.intern(string));
+                        int address = Heap.intern(string);
+                        constantPool[i] = Heap.getOop(address);
                         Heap.exitNativeMethod();
                     } else if (constantPool[i] instanceof CpClass) {
                         constantPool[i] = translateClassObject(i);

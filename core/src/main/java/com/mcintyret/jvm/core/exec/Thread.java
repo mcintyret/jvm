@@ -141,7 +141,7 @@ public class Thread {
 
         @Override
         public void run() {
-            Heap.register();
+            Heap.registerThread();
             try {
                 Variables args = THREAD_RUN.newArgArray();
                 args.putOop(0, thisThread);
@@ -156,7 +156,7 @@ public class Thread {
 
             } finally {
                 Threads.deregister(Thread.this);
-                Heap.deregister();
+                Heap.deregisterThread();
             }
         }
 

@@ -34,8 +34,8 @@ public class Runner {
         loader.load(classPath);
 
         // This happens early!
+        Heap.registerThread();
         MAIN_THREAD = createMainThread();
-        Heap.register();
 
         loader.afterInitialLoad(); // Sets System.out. Can I do this anywhere else??
 
@@ -45,6 +45,8 @@ public class Runner {
 
         ArrayClassObject aco = ArrayClassObject.forType(ArrayType.create(NonArrayType.forClass("java/lang/String"), 1));
         OopArray array = aco.newArray(args.length);
+        Heap.allocate(array);
+
         for (int i = 0; i < args.length; i++) {
             array.getFields().put(i, SimpleType.REF, Heap.intern(args[i]));
         }
