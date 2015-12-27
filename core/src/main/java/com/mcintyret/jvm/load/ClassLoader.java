@@ -326,7 +326,13 @@ public class ClassLoader {
                         OopClass name = args.getOop(3);
                         Threads.register(new Thread(thread, name));
 
-                        // Do the actual method stuff
+                        // This method is a special case where our hijacking native implementation calls an underlying
+                        // real implementation (in the Java source code).
+                        // We need to remove the stack frame corresponding to our native call, otherwise there will be
+                        // duplicate frames, which screws up GC.
+                        ctx.getExecutionStack().pop();
+
+                        // Call the real method
                         Utils.executeMethodAndThrow(method, args, ctx.getThread());
 
                         return NativeReturn.forVoid();
