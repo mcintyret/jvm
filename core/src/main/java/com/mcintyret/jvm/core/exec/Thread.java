@@ -88,6 +88,7 @@ public class Thread {
         } catch (Throwable t) {
             String threadName = thread == null ? "main" : thread.getName();
             System.out.println("ERROR on thread '" + threadName + "': " + t.getMessage());
+            t.printStackTrace();
             System.out.println("Caused By:");
             executionStacks.descendingIterator().forEachRemaining(stack -> {
                 stack.getStack().descendingIterator().forEachRemaining(exec -> {
