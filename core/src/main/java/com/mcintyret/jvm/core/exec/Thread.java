@@ -146,7 +146,13 @@ public class Thread {
                 Variables args = THREAD_RUN.newArgArray();
                 args.putOop(0, thisThread);
 
-                execute(THREAD_RUN, args);
+                Method method = THREAD_RUN;
+                // Find the overridden Thread.run() method, if there is one
+                if (thisThread.getClassObject() != THREAD_CLASS) {
+                    method = thisThread.getClassObject().getInstanceMethods()[THREAD_RUN.getOffset()];
+                }
+
+                execute(method, args);
 
             } finally {
                 Threads.deregister(Thread.this);
