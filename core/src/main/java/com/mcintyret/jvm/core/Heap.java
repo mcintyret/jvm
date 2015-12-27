@@ -143,7 +143,8 @@ public class Heap {
 
 
         public Oop[] run() {
-            LOG.warn("Starting GC, initial heap size: {}", OOP_TABLE.length);
+            int gcNum = GC_PHASER.getPhase();
+            LOG.warn("Starting GC #{}, initial heap size: {}", gcNum, OOP_TABLE.length);
             for (Oop oop : OOP_TABLE) {
                 if (oop != null) {
                     heapChecker.register(oop);
@@ -195,7 +196,7 @@ public class Heap {
                 expand();
             }
 
-            LOG.warn("Finished GC, final heap size: {}", index);
+            LOG.warn("Finished GC #{}, final heap size: {}", gcNum, index);
 
             heapAllocationPointer.set(index - 1);
 
