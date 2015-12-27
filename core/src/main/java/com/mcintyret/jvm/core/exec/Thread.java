@@ -143,8 +143,6 @@ public class Thread {
         public void run() {
             Heap.registerThread();
             try {
-                Variables args = THREAD_RUN.newArgArray();
-                args.putOop(0, thisThread);
 
                 Method method = THREAD_RUN;
                 // Find the overridden Thread.run() method, if there is one
@@ -152,6 +150,7 @@ public class Thread {
                     method = thisThread.getClassObject().getInstanceMethods()[THREAD_RUN.getOffset()];
                 }
 
+                Variables args = method.newArgArray(thisThread);
                 execute(method, args);
 
             } finally {
