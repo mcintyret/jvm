@@ -34,4 +34,9 @@ public abstract class Oop {
     public void setAddress(int address) {
         this.address = address;
     }
+
+    @Override
+    public String toString() {
+        return getClassObject().getType() + "@" + getAddress();
+    }
 }
