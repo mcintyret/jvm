@@ -323,7 +323,8 @@ public class ClassLoader {
                     @Override
                     public NativeReturn execute(Variables args, OperationContext ctx) {
                         OopClass thread = args.getOop(0);
-                        Threads.register(new Thread(thread));
+                        OopClass name = args.getOop(3);
+                        Threads.register(new Thread(thread, name));
 
                         // Do the actual method stuff
                         Utils.executeMethodAndThrow(method, args, ctx.getThread());

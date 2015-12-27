@@ -25,7 +25,8 @@ public class Runner {
 
     private static final MethodSignature MAIN_METHOD_SIGNATURE = MethodSignature.parse("main", "([Ljava/lang/String;)V");
 
-    public static Thread MAIN_THREAD = new Thread(null, null); // Just for bootstrap!
+    // TODO: is there a nicer way?
+    public static Thread MAIN_THREAD = new Thread(null, (java.lang.Thread) null); // Just for bootstrap!
 
     public void run(ClassPath classPath, String mainClassName, String... args) throws IOException {
         ClassLoader loader = ClassLoader.getDefaultClassLoader();

@@ -6,6 +6,7 @@ import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
 import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.util.Utils;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
@@ -28,9 +29,9 @@ public class Thread {
 
     private ExecutionStack currentStack;
 
-    public Thread(OopClass thisThread) {
+    public Thread(OopClass thisThread, OopClass name) {
         this.thisThread = thisThread;
-        this.thread = new ActualThread();
+        this.thread = new ActualThread(Utils.toString(name));
     }
 
     // For system threads. Note these must call Heap.register manually!
@@ -133,6 +134,10 @@ public class Thread {
         private final ClassObject THREAD_CLASS = getDefaultClassLoader().getClassObject("java/lang/Thread");
 
         private final Method THREAD_RUN = THREAD_CLASS.findMethod("run", "()V", false);
+
+        public ActualThread(String name) {
+            super(name);
+        }
 
         @Override
         public void run() {
