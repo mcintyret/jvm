@@ -309,10 +309,10 @@ public class ClassLoader {
         return co;
     }
 
-    private static void doFancyThreadInitMethodStuff(ClassObject co) {
-        Method[] methods = co.getInstanceMethods();
-        for (int i = 0; i < methods.length; i++) {
-            Method method = methods[i];
+    private static void doFancyThreadInitMethodStuff(ClassObject threadClass) {
+        Method[] threadMethods = threadClass.getInstanceMethods();
+        for (int i = 0; i < threadMethods.length; i++) {
+            Method method = threadMethods[i];
             MethodSignature ms = method.getSignature();
             if (ms.getName().equals("init") && ms.getArgTypes().size() == 5) {
                 method.getModifiers().add(Modifier.NATIVE);
@@ -341,8 +341,8 @@ public class ClassLoader {
 
                 Set<Modifier> modifiers = EnumSet.copyOf(method.getModifiers());
                 modifiers.add(Modifier.NATIVE);
-                methods[i] = new NativeMethod(modifiers, method.getAttributes(), ms, method.getOffset(), ni);
-                methods[i].setClassObject(method.getClassObject());
+                threadMethods[i] = new NativeMethod(modifiers, method.getAttributes(), ms, method.getOffset(), ni);
+                threadMethods[i].setClassObject(method.getClassObject());
                 return;
             }
         }
