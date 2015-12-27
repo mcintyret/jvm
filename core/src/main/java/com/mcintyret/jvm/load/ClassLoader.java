@@ -290,7 +290,7 @@ public class ClassLoader {
             this);
 
         if (className.equals("java/lang/Thread")) {
-            doFancyThreadInitMethodStuff(co);
+            registerThreadCreationHookForThreadInit(co);
         }
 
         if (!isInterface) {
@@ -309,7 +309,10 @@ public class ClassLoader {
         return co;
     }
 
-    private static void doFancyThreadInitMethodStuff(ClassObject threadClass) {
+    /**
+     * We need to tap in to the Thread.init() method in order to actually create a native thread ourselves
+     */
+    private static void registerThreadCreationHookForThreadInit(ClassObject threadClass) {
         Method[] threadMethods = threadClass.getInstanceMethods();
         for (int i = 0; i < threadMethods.length; i++) {
             Method method = threadMethods[i];
