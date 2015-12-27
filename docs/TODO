@@ -2,6 +2,8 @@ GC
 - native method need to preserve the stack
 - main thread should have reference to its stack
 
+Thread interruption
+
 Bytecode verification
 
 Remove Reflections dependency
