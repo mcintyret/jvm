@@ -24,13 +24,13 @@ public class Threads {
         return unmodifiableCollection(THREADS.values());
     }
 
-    public static void register(Thread thread) {
+    public static synchronized void register(Thread thread) {
         if (THREADS.put(thread.getThisThread(), thread) != null) {
 //            throw new AssertionError("Multiple live threads with id " + thread.getId());
         }
     }
 
-    public static void deregister(Thread thread) {
+    public static synchronized void deregister(Thread thread) {
         if (THREADS.remove(thread.getThisThread()) != thread) {
 //            throw new AssertionError("Thread with id '" + thread.getId() + "' not registered");
         }
