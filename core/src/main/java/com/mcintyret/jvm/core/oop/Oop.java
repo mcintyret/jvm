@@ -11,7 +11,7 @@ public abstract class Oop {
 
     private final Variables fields;
 
-    private int address = UNALLOCATED_ADDRESS;
+    private volatile int address = UNALLOCATED_ADDRESS;
 
     public Oop(Variables fields) {
         this.fields = fields;
