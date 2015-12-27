@@ -69,7 +69,7 @@ public class AThrow extends OpCode {
         } while (elem != null);
 
         // If we're here, the Exception has gone all the way to the top.
-        LOG.warn("Did not catch error of type {}. Exiting from method {}", thrown.getClassObject(), prev.getMethod());
+        LOG.info("Did not catch error of type {}. Exiting from method {}", thrown.getClassObject(), prev.getMethod());
         ctx.getExecutionStack().setFinalReturn(NativeReturn.forThrowable(thrown));
     }
 
