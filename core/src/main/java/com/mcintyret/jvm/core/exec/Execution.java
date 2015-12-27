@@ -33,7 +33,7 @@ public class Execution implements OperationContext {
 
     private final VariableStack stack = new VariableStackImpl();
 
-    private final Lock lock;
+    private final Lock synchronizedMethodLocks;
 
     public Execution(Method method, Variables localVariables, Thread thread) {
         this.method = method;
@@ -42,17 +42,17 @@ public class Execution implements OperationContext {
         this.constantPool = method.getClassObject().getConstantPool();
         this.thread = thread;
 
-        // TODO: I think this happens anyway because of monitor enter / exit bytecodes
-        // TODO: still need to take care of locks released due to exceptions thrown
+        // Apparently synchronized methods don't create monitorenter/exit bytecodes, so we have to do it manually
+        // (synchronized blocks do, however)
         if (method.hasModifier(Modifier.SYNCHRONIZED)) {
             Oop target = method.isStatic() ?
                 method.getClassObject().getOop() :
                 localVariables.getOop(0);
 
-            lock = target.getMarkRef().getMonitor();
-            lock.lock();
+            synchronizedMethodLocks = target.getMarkRef().getMonitor();
+            synchronizedMethodLocks.lock();
         } else {
-            lock = null;
+            synchronizedMethodLocks = null;
         }
     }
 
@@ -106,8 +106,8 @@ public class Execution implements OperationContext {
 
     @Override
     public void onComplete() {
-        if (lock != null) {
-            lock.unlock();
+        if (synchronizedMethodLocks != null) {
+            synchronizedMethodLocks.unlock();
         }
     }
 }

@@ -2,8 +2,6 @@ GC
 - native method need to preserve the stack
 - main thread should have reference to its stack
 
-Thread interruption
-
 Bytecode verification
 
 Remove Reflections dependency
@@ -28,4 +26,3 @@ Runtime exceptions
 
 Bugs:
 - System.out.println newline often missing
-- apparently synchronized METHODS don't create the monitor enter/exit opcodes, must be done manually (as opposed to blocks, which do).
