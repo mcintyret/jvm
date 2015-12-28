@@ -1,11 +1,11 @@
 package com.mcintyret.jvm.core.opcode.branch;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.util.ByteIterator;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User: tommcintyre
@@ -19,7 +19,10 @@ class LookupSwitch extends OpCode {
         int startPos = bi.getPos();
 
         // first get rid of the padding
-        bi.seek(4 - (startPos % 4));
+        int mod = startPos % 4;
+        if (mod > 0) {
+            bi.seek(4 - mod);
+        }
 
         int defaultOffset = bi.nextInt();
 
