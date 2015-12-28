@@ -134,6 +134,7 @@ public enum SystemNatives implements NativeImplementation {
     static {
         final String javaHome = System.getProperty("java.jvm.home");
 
+        // TODO: java.class.path
         OVERRIDE_PROPERTIES.put("java.home", javaHome);
         OVERRIDE_PROPERTIES.put("sun.boot.library.path", javaHome + "/lib");
         OVERRIDE_PROPERTIES.put("sun.boot.class.path", javaHome + "/lib/resources.jar:" +
