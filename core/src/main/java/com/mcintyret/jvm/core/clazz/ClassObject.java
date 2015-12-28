@@ -5,6 +5,7 @@ import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.NonArrayType;
+import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
 
@@ -41,6 +42,13 @@ public class ClassObject extends AbstractClassObject {
         this.staticFields = staticFields;
         this.staticFieldValues = newInstanceFieldsValuesArray(staticFields);
         this.classLoader = classLoader;
+
+        for (int i = 0; i < staticFields.length; i++) {
+            SimpleType staticFieldType = staticFields[i].getType().asSimpleType();
+            for (int w = 0; w < staticFieldType.getWidth(); w++) {
+                staticFieldValues.getTypes()[i + w] = staticFieldType;
+            }
+        }
 
         finalizeMembers(instanceFields);
         finalizeMembers(instanceMethods);
@@ -162,7 +170,7 @@ public class ClassObject extends AbstractClassObject {
     }
 
     private void finalizeMembers(Member[] members) {
-        for (Member member : members)  {
+        for (Member member : members) {
             if (member.getClassObject() == null) {
                 // So we can reuse the same object for overridden methods
                 member.setClassObject(this);
