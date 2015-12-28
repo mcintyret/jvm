@@ -32,7 +32,7 @@ public class Heap {
 
     private static final int INITIAL_HEAP_SIZE = 32;
 
-    private static final int MAX_HEAP_SIZE = 10000;
+    private static final int MAX_HEAP_SIZE = 200000;
 
     private static volatile Oop[] OOP_TABLE = new Oop[INITIAL_HEAP_SIZE];
 
@@ -107,7 +107,7 @@ public class Heap {
         }
     }
 
-    private static final Phaser GC_PHASER = new Phaser() {
+    public static final Phaser GC_PHASER = new Phaser() {
         @Override
         protected boolean onAdvance(int ignoredA, int ignoredB) {
             garbageCollection();
@@ -135,21 +135,14 @@ public class Heap {
 
         private final Map<Integer, Integer> newOopAddresses = new HashMap<>();
 
-        private final HeapChecker heapChecker = new HeapChecker();
+        private final int gcNum = GC_PHASER.getPhase();
 
         // Optimistically assume we can reclaim enough resources that the existing heap size is big enough
         private int index = 1; // 0 is reserved for NULL_POINTER
         private Oop[] newOops = new Oop[OOP_TABLE.length];
 
-
         public Oop[] run() {
-            int gcNum = GC_PHASER.getPhase();
             LOG.warn("Starting GC #{}, initial heap size: {}", gcNum, OOP_TABLE.length);
-            for (Oop oop : OOP_TABLE) {
-                if (oop != null) {
-                    heapChecker.register(oop);
-                }
-            }
 
             OOP_CLASS_CLASSES.forEach(this::gcOop);
 
@@ -161,9 +154,9 @@ public class Heap {
 
             // All the execution stacks in all the live threads
             for (Thread thread : Threads.getAll()) {
-                for (Execution stack : thread.getExecutions()) {
-                    gcVariables(stack.getLocalVariables());
-                    gcVariables(stack.getStack().asVariables());
+                for (Execution exec : thread.getExecutions()) {
+                    gcVariables(exec.getLocalVariables());
+                    gcVariables(exec.getStack().asVariables());
                 }
                 gcOop(thread.getThisThread()); // Remember the thread itself
             }
@@ -200,8 +193,6 @@ public class Heap {
 
             heapAllocationPointer.set(index - 1);
 
-            heapChecker.confirmOops();
-
             return newOops;
         }
 
@@ -212,6 +203,10 @@ public class Heap {
 
                     if (address == NULL_POINTER) {
                         continue;
+                    }
+
+                    if (address == 32216) {
+                        System.out.println("Oop at 32216 is: " + getOop(32216));
                     }
 
                     Integer newAddress = newOopAddresses.get(address);
@@ -228,6 +223,8 @@ public class Heap {
                     gcOop(oop);
 
                     variables.put(i, SimpleType.REF, oop.getAddress()); // update the address
+                } else if (variables.getType(i) == null && variables.getRawValue(i) != 0) {
+                    System.out.println("woah");
                 }
             }
         }
@@ -237,10 +234,9 @@ public class Heap {
                 // we haven't visited this one yet
                 oop.getMarkRef().setLive(true);
 
-                checkOopIsOnHeap(oop);
-
                 // Actually keep the added Oop for the next cycle. This updates the Oop's address
                 int oldAddress = oop.getAddress();
+
                 addOop(oop);
                 int newAddress = oop.getAddress();
 
@@ -254,15 +250,6 @@ public class Heap {
                 gcVariables(oop.getFields());
 
             }
-        }
-
-        private void checkOopIsOnHeap(Oop oop) {
-            for (Oop heapOop : OOP_TABLE) {
-                if (heapOop == oop) {
-                    return;
-                }
-            }
-            throw new IllegalStateException();
         }
 
         private void addOop(Oop oop) {
@@ -280,55 +267,6 @@ public class Heap {
             newOops = tmp;
         }
 
-        private class HeapChecker {
-
-            private final Map<Oop, Oop[]> updatedOops = new HashMap<>();
-
-            public void register(Oop oop) {
-                Variables vars = oop.getFields();
-                Oop[] array = new Oop[vars.length()];
-                for (int i = 0; i < vars.length(); i++) {
-                    if (vars.getType(i) == SimpleType.REF) {
-                        array[i] = Heap.getOop(vars.getRawValue(i));
-                    }
-                }
-                updatedOops.put(oop, array);
-            }
-
-            public void confirmOops() {
-                for (int i = 1; i < newOops.length; i++) {
-                    Oop oop = newOops[i];
-                    if (oop == null) {
-                        break;
-                    }
-
-                    Oop[] array = updatedOops.remove(oop);
-
-                    if (array == null) {
-                        throw new IllegalStateException("Didn't register Oop");
-                    }
-
-                    Variables vars = oop.getFields();
-                    for (int v = 0; v < vars.length(); v++) {
-                        if (vars.getType(v) == SimpleType.REF) {
-                            if (array[v] != newOops[vars.getRawValue(v)]) {
-                                throw new IllegalStateException("Oops don't match");
-                            }
-                        }
-                    }
-                }
-
-                for (Oop remaining : updatedOops.keySet()) {
-                    if (remaining instanceof OopClassClass) {
-                        System.out.println("foo");
-                    }
-                }
-
-//                if (!updatedOops.isEmpty()) {
-//                    throw new IllegalStateException("Registered Oop not on new heap");
-//                }
-            }
-        }
     }
 
     public static int allocate(Oop oop) {
