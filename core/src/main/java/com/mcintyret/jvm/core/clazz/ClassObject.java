@@ -5,7 +5,7 @@ import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.NonArrayType;
-import com.mcintyret.jvm.core.type.SimpleType;
+import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
 
@@ -43,12 +43,7 @@ public class ClassObject extends AbstractClassObject {
         this.staticFieldValues = newInstanceFieldsValuesArray(staticFields);
         this.classLoader = classLoader;
 
-        for (int i = 0; i < staticFields.length; i++) {
-            SimpleType staticFieldType = staticFields[i].getType().asSimpleType();
-            for (int w = 0; w < staticFieldType.getWidth(); w++) {
-                staticFieldValues.getTypes()[i + w] = staticFieldType;
-            }
-        }
+        Utils.setFieldVariablesTypes(staticFields, staticFieldValues);
 
         finalizeMembers(instanceFields);
         finalizeMembers(instanceMethods);

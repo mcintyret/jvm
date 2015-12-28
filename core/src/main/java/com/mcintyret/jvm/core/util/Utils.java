@@ -3,6 +3,7 @@ package com.mcintyret.jvm.core.util;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
+import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.clazz.ValueReceiver;
 import com.mcintyret.jvm.core.exec.Thread;
@@ -188,11 +189,20 @@ public class Utils {
     public static <S, T> T[] transformArray(S[] source, Function<S, T> func, Class<T> targetClass) {
         T[] target = (T[]) Array.newInstance(targetClass, source.length);
         for (int i = 0; i < source.length; i++) {
-            target[i] = func.apply(source[i]) ;
+            target[i] = func.apply(source[i]);
         }
         return target;
     }
 
+    public static void setFieldVariablesTypes(Field[] fields, Variables variables) {
+        int index = 0;
+        for (Field field : fields) {
+            SimpleType type = field.getType().asSimpleType();
+            for (int w = 0; w < type.getWidth(); w++) {
+                variables.getTypes()[index++] = type;
+            }
+        }
+    }
 
 }
 
