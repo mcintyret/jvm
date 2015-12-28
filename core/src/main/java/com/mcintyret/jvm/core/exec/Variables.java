@@ -5,8 +5,6 @@ import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.util.Utils;
 
-import java.util.Arrays;
-
 public class Variables {
 
     public static final Variables EMPTY_VARIABLES = new Variables(0);
@@ -17,15 +15,15 @@ public class Variables {
     private final int[] values;
     private final SimpleType[] types;
 
+    public static Variables copyInto(Variables source, Variables target) {
+        System.arraycopy(source.values, 0, target.values, 0, source.length());
+        System.arraycopy(source.types, 0, target.types, 0, source.length());
+        return target;
+    }
+
     public Variables(int size) {
         this.values = new int[size];
         this.types = new SimpleType[size];
-    }
-
-    // Copy constructor
-    private Variables(int[] values, SimpleType[] types) {
-        this.values = values;
-        this.types = types;
     }
 
     public <O extends Oop> O getOop(int i) {
@@ -78,6 +76,9 @@ public class Variables {
     }
 
     public void putWide(int i, SimpleType type, int left, int right) {
+        if (type == SimpleType.REF) {
+            throw new IllegalStateException();
+        }
         types[i] = type;
         types[i + 1] = type;
 
@@ -108,7 +109,7 @@ public class Variables {
                 throw new IllegalStateException("Expected value of type " + type + " but was of type " + types[i]);
             }
         }
-        return values[i];
+        return getRawValue(i);
     }
 
     public int getRawValue(int i) {
@@ -138,6 +139,6 @@ public class Variables {
     }
 
     public Variables copy(int newSize) {
-        return new Variables(Arrays.copyOf(values, newSize), Arrays.copyOf(types, newSize));
+        return copyInto(this, new Variables(newSize));
     }
 }

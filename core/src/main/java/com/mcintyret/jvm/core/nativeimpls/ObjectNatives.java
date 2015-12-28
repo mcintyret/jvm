@@ -86,7 +86,7 @@ public enum ObjectNatives implements NativeImplementation {
                 clone = ((OopClass) oop).getClassObject().newObject();
             }
 
-            System.arraycopy(oop.getFields().getRawValues(), 0, clone.getFields().getRawValues(), 0, oop.getFields().length());
+            Variables.copyInto(oop.getFields(), clone.getFields());
 
             return NativeReturn.forReference(clone);
         }

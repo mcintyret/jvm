@@ -105,7 +105,7 @@ public enum MiscNatives implements NativeImplementation {
 
             OopArray givenArgs = args.getOop(1);
             Variables argInts = givenArgs == null ? Variables.EMPTY_VARIABLES : givenArgs.getFields();
-            System.arraycopy(argInts.getRawValues(), 0, ctorArgs.getRawValues(), 1, argInts.length());
+            Variables.copyInto(argInts, ctorArgs);
 
             Utils.executeMethodAndThrow(ctor, ctorArgs, ctx.getThread());
 
