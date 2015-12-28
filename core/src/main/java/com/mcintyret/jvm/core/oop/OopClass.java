@@ -3,6 +3,7 @@ package com.mcintyret.jvm.core.oop;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.exec.Variables;
+import com.mcintyret.jvm.core.type.SimpleType;
 
 public class OopClass extends Oop {
 
@@ -14,7 +15,10 @@ public class OopClass extends Oop {
 
         Field[] instanceFields = classObject.getInstanceFields();
         for (int i = 0; i < instanceFields.length; i++) {
-            getFields().getTypes()[i] = instanceFields[i].getType().asSimpleType();
+            SimpleType type = instanceFields[i].getType().asSimpleType();
+            for (int w = 0; w < type.getWidth(); w++) {
+                getFields().getTypes()[i + w] = type;
+            }
         }
     }
 
