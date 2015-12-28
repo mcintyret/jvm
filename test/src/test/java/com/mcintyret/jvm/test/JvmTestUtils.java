@@ -12,7 +12,7 @@ class JvmTestUtils {
 
     private static final String[] EMPTY_ARGS = new String[0];
 
-    private static final String JAVA_LIB_JAR_PATH = "java.lib.jar.path";
+    private static final String JAVA_JVM_HOME = "java.jvm.home";
 
     private static final String PROJECT_BASE_DIR = getProjectBaseDir();
 
@@ -61,7 +61,7 @@ class JvmTestUtils {
 
         command.add("-jar");
         command.add("-Xmx1024m");
-        command.add("-D" + JAVA_LIB_JAR_PATH + "=" + System.getProperty(JAVA_LIB_JAR_PATH));
+        command.add("-D" + JAVA_JVM_HOME + "=" + System.getProperty(JAVA_JVM_HOME));
         if (classPath != null) {
             command.add("-Djvm.classpath=" + classPath);
         }

@@ -14,6 +14,9 @@ import com.mcintyret.jvm.core.type.Type;
 import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * User: tommcintyre
  * Date: 5/21/14
@@ -109,7 +112,7 @@ public enum SystemNatives implements NativeImplementation {
                 Variables spArgs = setProperty.newArgArray();
                 spArgs.putOop(0, props);
                 spArgs.put(1, SimpleType.REF, Heap.intern(key));
-                spArgs.put(2, SimpleType.REF, Heap.intern(System.getProperty(key)));
+                spArgs.put(2, SimpleType.REF, Heap.intern(OVERRIDE_PROPERTIES.getOrDefault(key, System.getProperty(key))));
 
                 Utils.executeMethodAndThrow(setProperty, spArgs, ctx.getThread());
             }
@@ -125,6 +128,23 @@ public enum SystemNatives implements NativeImplementation {
                     System.mapLibraryName(Utils.toString(args.<OopClass>getOop(0)))));
         }
     };
+
+    private static final Map<String, String> OVERRIDE_PROPERTIES = new HashMap<>();
+
+    static {
+        final String javaHome = System.getProperty("java.jvm.home");
+
+        OVERRIDE_PROPERTIES.put("java.home", javaHome);
+        OVERRIDE_PROPERTIES.put("sun.boot.library.path", javaHome + "/lib");
+        OVERRIDE_PROPERTIES.put("sun.boot.class.path", javaHome + "/lib/resources.jar:" +
+                                                       javaHome + "/lib/rt.jar:" +
+                                                       javaHome + "/lib/jsse.jar:" +
+                                                       javaHome + "/lib/jce.jar:" +
+                                                       javaHome + "/lib/charsets.jar:" +
+                                                       javaHome + "/lib/jfr.jar");
+        OVERRIDE_PROPERTIES.put("java.vm.specification.version", "1.7");
+
+    }
 
     private final MethodSignature methodSignature;
 

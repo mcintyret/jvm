@@ -36,7 +36,7 @@
                 <configuration>
                     <forkCount>0</forkCount>
                     <systemPropertyVariables>
-                        <java.lib.jar.path>/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home/jre/lib/rt.jar</java.lib.jar.path>
+                        <java.jvm.home>/Library/Java/JavaVirtualMachines/jdk1.7.0_51.jdk/Contents/Home/jre</java.jvm.home>
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
