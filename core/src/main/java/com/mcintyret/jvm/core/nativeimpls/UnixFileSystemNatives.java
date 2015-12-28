@@ -1,14 +1,21 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
-
-import java.io.File;
-
+import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.ImportantClasses;
+import com.mcintyret.jvm.core.clazz.ArrayClassObject;
 import com.mcintyret.jvm.core.clazz.Field;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.Variables;
+import com.mcintyret.jvm.core.oop.OopArray;
+import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.type.ArrayType;
 import com.mcintyret.jvm.core.type.MethodSignature;
+import com.mcintyret.jvm.core.type.NonArrayType;
 import com.mcintyret.jvm.core.util.Utils;
+
+import java.io.File;
+
+import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 
 /**
  * User: tommcintyre
@@ -48,7 +55,38 @@ public enum UnixFileSystemNatives implements NativeImplementation {
         public NativeReturn execute(Variables args, OperationContext ctx) {
             return NativeReturn.forInt(args.getRawValue(1)); // Just return the input
         }
+    },
+    LIST("list", "(Ljava/io/File;)[Ljava/lang/String;") {
+        @Override
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            File file = makeCorrespondingFile(args);
+            String[] res = file.list();
+
+            if (res == null) {
+                return NativeReturn.forNull();
+            }
+
+            OopArray array = Heap.allocateAndGet(new OopArray(ArrayClassObject.forType(ArrayType.create(NonArrayType.forClass(ImportantClasses.JAVA_LANG_STRING), 1)), new Variables(res.length)));
+
+            for (int i = 0; i < res.length; i++) {
+                array.getFields().getRawValues()[i] = Utils.toOopString(res[i]).getAddress();
+            }
+
+            return NativeReturn.forReference(array);
+        }
+    },
+    GET_LAST_MODIFIED_TIME("getLastModifiedTime", "(Ljava/io/File;)J") {
+        @Override
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            File file = makeCorrespondingFile(args);
+
+            return NativeReturn.forLong(file.lastModified());
+        }
     };
+
+    private static File makeCorrespondingFile(Variables args) {
+        return new File(Utils.toString((OopClass) args.getOop(0).getFields().getOop(0)));
+    }
 
 
     private final MethodSignature methodSignature;

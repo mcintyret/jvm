@@ -219,6 +219,13 @@ public enum UnsafeNatives implements NativeImplementation {
             THE_UNSAFE.unpark(Threads.get(args.getOop(1)).getThread());
             return NativeReturn.forVoid();
         }
+    },
+    ENSURE_CLASS_INITIALIZED("ensureClassInitialized", "(Ljava/lang/Class;)V") {
+        @Override
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            // Dont' think we need to do anything here...
+            return NativeReturn.forNull();
+        }
     };
 
 

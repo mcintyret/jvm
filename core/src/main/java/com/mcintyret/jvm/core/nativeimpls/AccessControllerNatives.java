@@ -11,17 +11,20 @@ public enum AccessControllerNatives implements NativeImplementation {
     DO_PRIVILEGED("doPrivileged", "(Ljava/security/PrivilegedAction;)Ljava/lang/Object;") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            // Meh, I'm sure it's fine...
-            OopClass privilegedAction = args.getOop(0);
-            Method run = privilegedAction.getClassObject().findMethod("run", "()Ljava/lang/Object;", false);
-            Variables runArgs = run.newArgArray();
-            runArgs.putOop(0, privilegedAction);
-            return Utils.executeMethodAndThrow(run, runArgs, ctx.getThread());
+            return justDoIt(args, ctx);
         }
-
+    },
+    DO_PRIVILEGED_2("doPrivileged", "(Ljava/security/PrivilegedExceptionAction;)Ljava/lang/Object;") {
         @Override
-        public String getClassName() {
-            return "java/security/AccessController";
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            return justDoIt(args, ctx);
+
+        }
+    },
+    DO_PRIVELEGED_3("doPrivileged", "(Ljava/security/PrivilegedAction;Ljava/security/AccessControlContext;)Ljava/lang/Object;") {
+        @Override
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            return justDoIt(args, ctx);
         }
     },
     GET_STACK_ACCESS_CONTROL_CONTEXT("getStackAccessControlContext", "()Ljava/security/AccessControlContext;") {
@@ -30,6 +33,15 @@ public enum AccessControllerNatives implements NativeImplementation {
             return NativeReturn.forNull();
         }
     };
+
+    private static NativeReturn justDoIt(Variables args, OperationContext ctx) {
+        // Meh, I'm sure it's fine...
+        OopClass privilegedAction = args.getOop(0);
+        Method run = privilegedAction.getClassObject().findMethod("run", "()Ljava/lang/Object;", false);
+        Variables runArgs = run.newArgArray();
+        runArgs.putOop(0, privilegedAction);
+        return Utils.executeMethodAndThrow(run, runArgs, ctx.getThread());
+    }
 
     private final MethodSignature methodSignature;
 
