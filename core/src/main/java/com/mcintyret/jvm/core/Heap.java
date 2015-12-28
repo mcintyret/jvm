@@ -155,8 +155,8 @@ public class Heap {
             // All the execution stacks in all the live threads
             for (Thread thread : Threads.getAll()) {
                 for (Execution exec : thread.getExecutions()) {
-                    gcVariables(exec.getLocalVariables());
-                    gcVariables(exec.getStack().asVariables());
+                    gcVariables(exec.getLocalVariables(), null);
+                    gcVariables(exec.getStack().asVariables(), null);
                 }
                 gcOop(thread.getThisThread()); // Remember the thread itself
             }
@@ -164,7 +164,7 @@ public class Heap {
             // Run for any objects currently being created in native methods
             NATIVE_METHOD_OOPS.computeIfPresent(currentThread(), (t, stack) -> {
                 stack.forEach(nmp -> {
-                    nmp.variables.forEach(this::gcVariables);
+                    nmp.variables.forEach(v -> gcVariables(v, null));
                     nmp.oops.forEach(this::gcOop);
                 });
                 return stack;
@@ -174,7 +174,7 @@ public class Heap {
             for (ClassObject classObject : ClassLoader.getDefaultClassLoader().getLoadedClasses()) {
                 gcOop(classObject.getOop(true)); // this will keep any reflection data.
 
-                gcVariables(classObject.getStaticFieldValues());
+                gcVariables(classObject.getStaticFieldValues(), null);
             }
 
             for (int i = 1; i < newOops.length; i++) {
@@ -196,7 +196,7 @@ public class Heap {
             return newOops;
         }
 
-        private void gcVariables(Variables variables) {
+        private void gcVariables(Variables variables, Oop owner) {
             for (int i = 0; i < variables.length(); i++) {
                 if (variables.getType(i) == SimpleType.REF) {
                     int address = variables.getRawValue(i);
@@ -224,7 +224,7 @@ public class Heap {
 
                     variables.put(i, SimpleType.REF, oop.getAddress()); // update the address
                 } else if (variables.getType(i) == null && variables.getRawValue(i) != 0) {
-                    System.out.println("woah");
+                    throw new IllegalStateException("Untyped oop: " + getOop(variables.getRawValue(i)) + ", pos: " + i + ", owner: " + owner);
                 }
             }
         }
@@ -247,7 +247,7 @@ public class Heap {
                     throw new IllegalStateException("Oop GCd multiple times");
                 }
 
-                gcVariables(oop.getFields());
+                gcVariables(oop.getFields(), oop);
 
             }
         }
