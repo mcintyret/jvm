@@ -33,7 +33,7 @@ public class Execution implements OperationContext {
 
     private final VariableStack stack = new VariableStackImpl();
 
-    private final Lock synchronizedMethodLocks;
+    private final Lock synchronizedMethodLock;
 
     public Execution(Method method, Variables localVariables, Thread thread) {
         this.method = method;
@@ -49,15 +49,19 @@ public class Execution implements OperationContext {
                 method.getClassObject().getOop() :
                 localVariables.getOop(0);
 
-            synchronizedMethodLocks = target.getMarkRef().getMonitor();
+            synchronizedMethodLock = target.getMarkRef().getMonitor();
+        } else {
+            synchronizedMethodLock = null;
+        }
+    }
 
-            if (!synchronizedMethodLocks.tryLock()) {
+    void prepare() {
+        if (synchronizedMethodLock != null) {
+            if (!synchronizedMethodLock.tryLock()) {
                 Heap.threadSleeping();
-                synchronizedMethodLocks.lock();
+                synchronizedMethodLock.lock();
                 Heap.threadWaking();
             }
-        } else {
-            synchronizedMethodLocks = null;
         }
     }
 
@@ -111,8 +115,8 @@ public class Execution implements OperationContext {
 
     @Override
     public void onComplete() {
-        if (synchronizedMethodLocks != null) {
-            synchronizedMethodLocks.unlock();
+        if (synchronizedMethodLock != null) {
+            synchronizedMethodLock.unlock();
         }
     }
 }

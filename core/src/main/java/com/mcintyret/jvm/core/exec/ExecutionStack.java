@@ -30,6 +30,7 @@ public class ExecutionStack implements Iterable<Execution> {
 
     public void push(Execution element) {
         stack.push(element);
+        element.prepare();
     }
 
     public void pop() {
