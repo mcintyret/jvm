@@ -25,10 +25,21 @@ abstract class Invoke extends OpCode {
     @Override
     public final void execute(OperationContext ctx) {
         Method method = ctx.getConstantPool().getMethod(ctx.getByteIterator().nextShortUnsigned());
-        LOG.info("Invoking {}.{}", method.getClassObject().getClassName(), method.getSignature());
+
+        if (LOG.isInfoEnabled()) {
+            LOG.info("{}Invoking {}.{}", makeSpace(ctx), method.getClassObject().getClassName(), method.getSignature());
+        }
 
         Variables args = getMethodArgs(ctx, method);
         doInvoke(method, args, ctx);
+    }
+
+    private String makeSpace(OperationContext ctx) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < ctx.getExecutionStack().getStack().size(); i++) {
+            sb.append("  ");
+        }
+        return sb.toString();
     }
 
     protected abstract void doInvoke(Method method, Variables args, OperationContext ctx);
@@ -50,6 +61,7 @@ abstract class Invoke extends OpCode {
         Heap.exitNativeMethod();
         nativeExecution.getExecutionStack().pop();
 
+        LOG.debug("Returning from {}.{}", nativeMethod.getClassObject().getClassName(), nativeMethod.getSignature());
         nr.applyValue(ctx.getStack());
         if (nr.isThrowable()) {
             new AThrow().execute(ctx);
@@ -95,6 +107,4 @@ abstract class Invoke extends OpCode {
     public boolean isSafePoint() {
         return true;
     }
-
-
 }

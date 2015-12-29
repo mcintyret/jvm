@@ -21,7 +21,7 @@ abstract class BaseReturn extends OpCode {
         returnValue(ctx);
 
         ctx.onComplete(); // releases lock if this method was synchronized
-        LOG.info("Returning from {}", ctx.getMethod());
+        LOG.debug("Returning from {}", ctx.getMethod());
     }
 
     protected abstract void returnValue(OperationContext ctx);
