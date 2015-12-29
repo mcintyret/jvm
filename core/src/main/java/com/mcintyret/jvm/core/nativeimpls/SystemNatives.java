@@ -163,7 +163,8 @@ public enum SystemNatives implements NativeImplementation {
         // TODO: add non-core classpath elements to this
         Path javaHomePath = Paths.get(javaHome);
         Path javaHomeLib = javaHomePath.getParent().resolve("lib");
-        final List<String> javaJars = getClassPath(javaHomePath, javaHomeLib);
+        final List<String> javaJars = getClassPath(Integer.MAX_VALUE, javaHomePath);
+        javaJars.addAll(getClassPath(1, javaHomeLib));
 
         StringBuilder classpath = new StringBuilder();
         Iterator<String> jarIt = javaJars.iterator();
@@ -177,25 +178,23 @@ public enum SystemNatives implements NativeImplementation {
         OVERRIDE_PROPERTIES.put("java.class.path", System.getProperty("user.dir") + "/docs:" + classpath);
     }
 
-    private static List<String> getClassPath(Path... classPathRoots) {
+    private static List<String> getClassPath(int depth, Path classPathRoot) {
         final List<String> javaJars = new ArrayList<>();
-        for (Path classPathRoot : classPathRoots) {
-            try {
-                Files.walkFileTree(classPathRoot, Collections.emptySet(), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
+        try {
+            Files.walkFileTree(classPathRoot, Collections.emptySet(), depth, new SimpleFileVisitor<Path>() {
 
-                    @Override
-                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                        String name = file.toAbsolutePath().toString();
-                        if (name.endsWith(".jar") && !name.endsWith("alr-rt.jar")) { // don't want the alt one - confuses things!
-                            javaJars.add(name);
-                        }
-                        return FileVisitResult.CONTINUE;
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                    String name = file.toAbsolutePath().toString();
+                    if (name.endsWith(".jar") && !name.endsWith("alr-rt.jar")) { // don't want the alt one - confuses things!
+                        javaJars.add(name);
                     }
+                    return FileVisitResult.CONTINUE;
+                }
 
-                });
-            } catch (IOException e) {
-                throw new AssertionError(e);
-            }
+            });
+        } catch (IOException e) {
+            throw new AssertionError(e);
         }
         return javaJars;
     }
