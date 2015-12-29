@@ -29,8 +29,8 @@ public class Main {
 //            stringLength();
 //            readFile();
 //        }
-//        readFromClassPath();
-        scanner();
+        readFromClassPath();
+//        scanner();
 //        testZip();
 //        assignableFrom();
     }
@@ -66,9 +66,11 @@ public class Main {
         System.out.println("Ready for input");
 
         String line;
-        while (true) {
+        boolean running = true;
+        while (running) {
             line = scanner.nextLine();
             System.out.println(reverse(line));
+            running = false;
         }
     }
 

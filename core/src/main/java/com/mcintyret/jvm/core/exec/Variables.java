@@ -15,6 +15,8 @@ public class Variables {
     private final int[] values;
     private final SimpleType[] types;
 
+    private int lastGcPhase = -1;
+
     public static Variables copyInto(Variables source, Variables target) {
         System.arraycopy(source.values, 0, target.values, 0, source.length());
         System.arraycopy(source.types, 0, target.types, 0, source.length());
@@ -144,5 +146,12 @@ public class Variables {
 
     public Variables copy(int newSize) {
         return copyInto(this, new Variables(newSize));
+    }
+
+    // TODO: can I do it without this?
+    public boolean shouldGc(int gcPhase) {
+        boolean ret = gcPhase > lastGcPhase;
+        lastGcPhase = gcPhase;
+        return ret;
     }
 }

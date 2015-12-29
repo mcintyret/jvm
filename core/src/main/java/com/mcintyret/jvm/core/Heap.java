@@ -31,7 +31,7 @@ public class Heap {
 
     private static final Logger LOG = LoggerFactory.getLogger(Heap.class);
 
-    private static final int INITIAL_HEAP_SIZE = 32;
+    private static final int INITIAL_HEAP_SIZE = 320000;
 
     private static final int MAX_HEAP_SIZE = 200000;
 
@@ -142,6 +142,8 @@ public class Heap {
         private int index = 1; // 0 is reserved for NULL_POINTER
         private Oop[] newOops = new Oop[OOP_TABLE.length];
 
+        final Set<Variables> allVariables = new HashSet<>();
+
         public Oop[] run() {
             LOG.warn("Starting GC #{}, initial heap size: {}", gcNum, OOP_TABLE.length);
 
@@ -197,9 +199,12 @@ public class Heap {
             return newOops;
         }
 
-        final Set<Integer> intersting = Sets.newHashSet(1740);
+        final Set<Integer> intersting = Sets.newHashSet();
 
         private void gcVariables(Variables variables, Oop owner) {
+            if (!variables.shouldGc(gcNum)) {
+                return;
+            }
             for (int i = 0; i < variables.length(); i++) {
                 if (variables.getType(i) == SimpleType.REF) {
                     int address = variables.getRawValue(i);

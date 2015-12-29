@@ -32,6 +32,9 @@ public abstract class Oop {
     }
 
     public void setAddress(int address) {
+        if (this.address == 458) {
+            System.out.println("foo");
+        }
         this.address = address;
     }
 
