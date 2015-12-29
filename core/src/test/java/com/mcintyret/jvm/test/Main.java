@@ -1,4 +1,4 @@
-package com.mcintyret.jvm.test.jvm;
+package com.mcintyret.jvm.test;
 
 import java.io.File;
 import java.io.FileInputStream;
