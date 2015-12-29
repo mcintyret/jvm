@@ -1,6 +1,5 @@
 package com.mcintyret.jvm.core;
 
-import com.google.common.collect.Sets;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.exec.Execution;
 import com.mcintyret.jvm.core.exec.Thread;
@@ -31,7 +30,7 @@ public class Heap {
 
     private static final Logger LOG = LoggerFactory.getLogger(Heap.class);
 
-    private static final int INITIAL_HEAP_SIZE = 320000;
+    private static final int INITIAL_HEAP_SIZE = 32;
 
     private static final int MAX_HEAP_SIZE = 200000;
 
@@ -142,8 +141,6 @@ public class Heap {
         private int index = 1; // 0 is reserved for NULL_POINTER
         private Oop[] newOops = new Oop[OOP_TABLE.length];
 
-        final Set<Variables> allVariables = new HashSet<>();
-
         public Oop[] run() {
             LOG.warn("Starting GC #{}, initial heap size: {}", gcNum, OOP_TABLE.length);
 
@@ -199,8 +196,6 @@ public class Heap {
             return newOops;
         }
 
-        final Set<Integer> intersting = Sets.newHashSet();
-
         private void gcVariables(Variables variables, Oop owner) {
             if (!variables.shouldGc(gcNum)) {
                 return;
@@ -211,10 +206,6 @@ public class Heap {
 
                     if (address == NULL_POINTER) {
                         continue;
-                    }
-
-                    if (intersting.contains(address)) {
-                        System.out.println("Oop at " + address + " is: " + getOop(address));
                     }
 
                     Integer newAddress = newOopAddresses.get(address);
