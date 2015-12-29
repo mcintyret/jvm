@@ -3,6 +3,7 @@ package com.mcintyret.jvm.core.util;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.Arrays;
 
 public final class ReflectionUtils {
 
@@ -14,7 +15,7 @@ public final class ReflectionUtils {
         try {
             return m.invoke(null, args);
         } catch (ReflectiveOperationException e) {
-            throw new AssertionError(e);
+            throw new AssertionError(m.getDeclaringClass() + "." + m.getName() + "(" + Arrays.toString(args) + ")", e);
         }
     }
 
