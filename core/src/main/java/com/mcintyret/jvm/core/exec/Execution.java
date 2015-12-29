@@ -119,4 +119,9 @@ public class Execution implements OperationContext {
             synchronizedMethodLock.unlock();
         }
     }
+
+    @Override
+    public String toString() {
+        return "Execution[" + method + "]";
+    }
 }
