@@ -56,7 +56,7 @@ public class Runner {
         NativeReturn ret = Utils.executeMethodAndThrow(mainMethod, actualArgs, MAIN_THREAD);
 
         if (ret != null) {
-            VariableStack stack = new VariableStackImpl();
+            VariableStack stack = new VariableStackImpl(1);
             ret.applyValue(stack);
             try {
                 OopClass obj = stack.popOop();

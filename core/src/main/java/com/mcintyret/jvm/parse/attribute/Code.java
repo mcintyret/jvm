@@ -34,4 +34,8 @@ public class Code extends Attribute {
     public List<CodeException> getCodeExceptions() {
         return codeExceptions;
     }
+
+    public int getMaxStack() {
+        return maxStack;
+    }
 }

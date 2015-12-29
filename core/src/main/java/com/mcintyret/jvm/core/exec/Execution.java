@@ -31,7 +31,7 @@ public class Execution implements OperationContext {
 
     private final Thread thread;
 
-    private final VariableStack stack = new VariableStackImpl();
+    private final VariableStack stack;
 
     private final Lock synchronizedMethodLock;
 
@@ -41,6 +41,7 @@ public class Execution implements OperationContext {
         this.localVariables = localVariables;
         this.constantPool = method.getClassObject().getConstantPool();
         this.thread = thread;
+        this.stack = method.getCode() == null ? VariableStackImpl.EMPTY_STACK : new VariableStackImpl(method.getCode().getMaxStack());
 
         // Apparently synchronized methods don't create monitorenter/exit bytecodes, so we have to do it manually
         // (synchronized blocks do, however)

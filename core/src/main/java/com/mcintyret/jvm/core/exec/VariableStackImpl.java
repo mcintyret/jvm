@@ -10,18 +10,18 @@ import java.util.NoSuchElementException;
 
 public class VariableStackImpl implements ValueReceiver, VariableStack {
 
-    private static final int DEFAULT_SIZE = 10;
+    public static final VariableStack EMPTY_STACK = new VariableStackImpl(Variables.EMPTY_VARIABLES);
 
     private Variables stack;
 
     private int head = 0;
 
     public VariableStackImpl(int size) {
-        stack = new Variables(size);
+        this(new Variables(size));
     }
 
-    public VariableStackImpl() {
-        this(DEFAULT_SIZE);
+    private VariableStackImpl(Variables variables) {
+        this.stack = variables;
     }
 
     public void push(int val, SimpleType type) {
