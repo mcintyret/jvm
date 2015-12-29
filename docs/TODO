@@ -1,7 +1,3 @@
-GC
-- native method need to preserve the stack
-- main thread should have reference to its stack
-
 Bytecode verification
 
 Remove Reflections dependency
@@ -23,6 +19,3 @@ Runtime exceptions
 - DivideBy0
 - ArrayIndex
 - ClassCast
-
-Bugs:
-- System.out.println newline often missing
