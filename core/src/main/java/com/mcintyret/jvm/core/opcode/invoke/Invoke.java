@@ -36,7 +36,7 @@ abstract class Invoke extends OpCode {
 
     private String makeSpace(OperationContext ctx) {
         StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < ctx.getExecutionStack().getStack().size(); i++) {
+        for (int i = 0; i < ctx.getThread().getTotalStackDepth(); i++) {
             sb.append("  ");
         }
         return sb.toString();

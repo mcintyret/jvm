@@ -102,6 +102,14 @@ public final class Thread {
         }
     }
 
+    public int getTotalStackDepth() {
+        int total = 0;
+        for (ExecutionStack stack : executionStacks) {
+            total += stack.getStack().size();
+        }
+        return total;
+    }
+
     private NativeReturn doExecute(Method method, Variables args) {
         if (thread != null && java.lang.Thread.currentThread() != thread) {
             throw new IllegalStateException();
