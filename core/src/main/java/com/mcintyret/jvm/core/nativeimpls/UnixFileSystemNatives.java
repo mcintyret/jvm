@@ -85,7 +85,8 @@ public enum UnixFileSystemNatives implements NativeImplementation {
     };
 
     private static File makeCorrespondingFile(Variables args) {
-        return new File(Utils.toString((OopClass) args.getOop(0).getFields().getOop(0)));
+        // These methods aren't static, so we need to take the second arg
+        return new File(Utils.toString((OopClass) args.getOop(1).getFields().getOop(0)));
     }
 
 
