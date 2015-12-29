@@ -1,5 +1,6 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
+import com.google.common.collect.ImmutableSet;
 import com.mcintyret.jvm.core.Heap;
 import com.mcintyret.jvm.core.ImportantClasses;
 import com.mcintyret.jvm.core.clazz.ArrayClassObject;
@@ -14,6 +15,7 @@ import com.mcintyret.jvm.core.type.NonArrayType;
 import com.mcintyret.jvm.core.util.Utils;
 
 import java.io.File;
+import java.util.Set;
 
 import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 
@@ -57,9 +59,27 @@ public enum UnixFileSystemNatives implements NativeImplementation {
         }
     },
     LIST("list", "(Ljava/io/File;)[Ljava/lang/String;") {
+        /*
+          These directories contain jnilib files
+          For some reason, if the real result is returned, the JVM tries to open the files as a ZipFile
+          - since they aren't zip file, it blows up
+
+          TOOD: work out why this is happening and fix it
+        */
+
+        private final Set<String> FORBIDDEN_FILES = ImmutableSet.of(
+            "/Library/Java/Extensions",
+            "/System/Library/Java/Extensions"
+        );
+
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
             File file = makeCorrespondingFile(args);
+
+            if (FORBIDDEN_FILES.contains(file.getAbsolutePath())) {
+                return NativeReturn.forNull();
+            }
+
             String[] res = file.list();
 
             if (res == null) {
