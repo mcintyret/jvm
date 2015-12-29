@@ -14,7 +14,18 @@ import com.mcintyret.jvm.core.type.Type;
 import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
 
+import java.io.IOException;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -134,17 +145,59 @@ public enum SystemNatives implements NativeImplementation {
     static {
         final String javaHome = System.getProperty("java.jvm.home");
 
-        // TODO: java.class.path
         OVERRIDE_PROPERTIES.put("java.home", javaHome);
         OVERRIDE_PROPERTIES.put("sun.boot.library.path", javaHome + "/lib");
         OVERRIDE_PROPERTIES.put("sun.boot.class.path", javaHome + "/lib/resources.jar:" +
-                                                       javaHome + "/lib/rt.jar:" +
-                                                       javaHome + "/lib/jsse.jar:" +
-                                                       javaHome + "/lib/jce.jar:" +
-                                                       javaHome + "/lib/charsets.jar:" +
-                                                       javaHome + "/lib/jfr.jar");
+            javaHome + "/lib/rt.jar:" +
+            javaHome + "/lib/jsse.jar:" +
+            javaHome + "/lib/jce.jar:" +
+            javaHome + "/lib/charsets.jar:" +
+            javaHome + "/lib/ext/localedata.jar:" +
+            javaHome + "/lib/jfr.jar");
         OVERRIDE_PROPERTIES.put("java.vm.specification.version", "1.7");
+        OVERRIDE_PROPERTIES.put("java.endorsed.dirs", javaHome + "/lib/endorsed");
+        OVERRIDE_PROPERTIES.put("java.class.version", "51.0");
+        OVERRIDE_PROPERTIES.put("java.runtime.version", "1.7.0_51-b13");
+        OVERRIDE_PROPERTIES.put("java.version", "1.7.0_51");
 
+        // TODO: add non-core classpath elements to this
+        Path javaHomePath = Paths.get(javaHome);
+        Path javaHomeLib = javaHomePath.getParent().resolve("lib");
+        final List<String> javaJars = getClassPath(javaHomePath, javaHomeLib);
+
+        StringBuilder classpath = new StringBuilder();
+        Iterator<String> jarIt = javaJars.iterator();
+        while (jarIt.hasNext()) {
+            classpath.append(jarIt.next());
+            if (jarIt.hasNext()) {
+                classpath.append(":");
+            }
+        }
+
+        OVERRIDE_PROPERTIES.put("java.class.path", System.getProperty("user.dir") + "/docs:" + classpath);
+    }
+
+    private static List<String> getClassPath(Path... classPathRoots) {
+        final List<String> javaJars = new ArrayList<>();
+        for (Path classPathRoot : classPathRoots) {
+            try {
+                Files.walkFileTree(classPathRoot, Collections.emptySet(), Integer.MAX_VALUE, new SimpleFileVisitor<Path>() {
+
+                    @Override
+                    public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                        String name = file.toAbsolutePath().toString();
+                        if (name.endsWith(".jar") && !name.endsWith("alr-rt.jar")) { // don't want the alt one - confuses things!
+                            javaJars.add(name);
+                        }
+                        return FileVisitResult.CONTINUE;
+                    }
+
+                });
+            } catch (IOException e) {
+                throw new AssertionError(e);
+            }
+        }
+        return javaJars;
     }
 
     private final MethodSignature methodSignature;
