@@ -178,6 +178,31 @@ public enum ClassNatives implements NativeImplementation {
             return ((ReferenceType) type).getClassObject();
         }
     },
+    IS_INSTANCE("isInstance", "(Ljava/lang/Object;)Z") {
+        @Override
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            OopClassClass thisClass = args.getOop(0);
+            OopClassClass thatClass = args.getOop(1).getClassObject().getOop();
+
+            if (thisClass == thatClass) {
+                return NativeReturn.forBool(true); // This takes care of all primitive classes
+            }
+
+            Type thisType = thisClass.getThisType();
+            Type thatType = thatClass.getThisType();
+
+            if (thisType.isPrimitive() || thatType.isPrimitive()) {
+                return NativeReturn.forBool(false);
+            }
+
+            boolean instanceOf = getTypeClassObject(thisType).isInstanceOf(getTypeClassObject(thatType));
+            return NativeReturn.forBool(instanceOf);
+        }
+
+        private AbstractClassObject getTypeClassObject(Type type) {
+            return ((ReferenceType) type).getClassObject();
+        }
+    },
     GET_DECLARED_CONSTRUCTORS_0("getDeclaredConstructors0", "(Z)[Ljava/lang/reflect/Constructor;") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {

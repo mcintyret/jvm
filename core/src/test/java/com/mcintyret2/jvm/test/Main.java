@@ -1,20 +1,86 @@
 package com.mcintyret2.jvm.test;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 public class Main {
 
-    public static void main(String[] args) {
-        interfaceMethods();
-        simpleIntArrays();
-        stringsAndNatives();
-//        threadingTests();
-        stringLength();
+    public static void main(String[] args) throws IOException {
+//        for (int i = 0; i < 100; i++) {
+//            threadingTests();
+//            simpleIntArrays();
+//            interfaceMethods();
+//            stringsAndNatives();
+//            stringLength();
+//            readFile();
+//        }
+//        readFromClassPath();
+        scanner();
+//        testZip();
+//        assignableFrom();
+    }
+
+    private static void assignableFrom() {
+        System.out.println(List.class.isAssignableFrom(ArrayList.class));
+        System.out.println(ArrayList.class.isAssignableFrom(List.class));
+        System.out.println(List.class.isAssignableFrom(List.class));
+        System.out.println(ArrayList.class.isAssignableFrom(ArrayList.class));
+
+        System.out.println(new ArrayList<>() instanceof List);
+        System.out.println(new HashSet<>() instanceof List);
+    }
+
+    private static void testZip() throws IOException {
+        File file = new File(System.getProperty("user.dir") + "/docs/zipped.zip");
+
+        ZipFile zipFile = new ZipFile(file);
+
+        Enumeration<? extends ZipEntry> it = zipFile.entries();
+        ZipEntry contents = it.nextElement();
+
+        System.out.println(contents.getName());
+        System.out.println(toString(zipFile.getInputStream(contents)));
+
+        contents = zipFile.getEntry("zipped.txt");
+        System.out.println(contents.getName());
+        System.out.println(toString(zipFile.getInputStream(contents)));
+    }
+
+    private static void scanner() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Ready for input");
+
+        String line;
+        while (true) {
+            line = scanner.nextLine();
+            System.out.println(reverse(line));
+        }
+    }
+
+    private static void readFile() throws IOException {
+        File file = new File(System.getProperty("user.dir") + "/docs/testFile.txt");
+        InputStream stream = new FileInputStream(file);
+
+        String string = toString(stream);
+
+        System.out.println(string);
+        System.err.println(string);
+
     }
 
     private static void threadingTests() {
@@ -32,6 +98,19 @@ public class Main {
         threadingTestSynchronizedNativeInstanceMethod();
         threadingTestSynchronizedNativeStaticMethodThrowingException();
         threadingTestSynchronizedNativeInstanceMethodThrowingException();
+    }
+
+    private static void readFromClassPath() throws IOException {
+        InputStream stream = Main.class.getResourceAsStream("/testFile.txt");
+
+        System.out.println(toString(stream));
+    }
+
+    private static String toString(InputStream stream) throws IOException {
+        byte[] bytes = new byte[1024];
+        stream.read(bytes);
+        stream.close();
+        return new String(bytes);
     }
 
     private static void stringLength() {
@@ -107,7 +186,7 @@ public class Main {
     // Test threading using a synchronized block
     private static void threadingTestSynchronizedBlock() {
         final int[] a = new int[1];
-        int num = 40;
+        int num = 4;
 
         doSimpleThreadingTest(num, new Runnable() {
             @Override

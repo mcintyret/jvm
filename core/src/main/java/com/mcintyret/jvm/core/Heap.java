@@ -30,7 +30,7 @@ public class Heap {
 
     private static final Logger LOG = LoggerFactory.getLogger(Heap.class);
 
-    private static final int INITIAL_HEAP_SIZE = 32;
+    private static final int INITIAL_HEAP_SIZE = 32000;
 
     private static final int MAX_HEAP_SIZE = 200000;
 

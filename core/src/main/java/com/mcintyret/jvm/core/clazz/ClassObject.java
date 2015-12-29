@@ -3,6 +3,7 @@ package com.mcintyret.jvm.core.clazz;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.OopClass;
+import com.mcintyret.jvm.core.oop.OopClassInflater;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.NonArrayType;
 import com.mcintyret.jvm.core.util.Utils;
@@ -69,7 +70,9 @@ public class ClassObject extends AbstractClassObject {
     }
 
     public OopClass newObject() {
-        return newObject(OopClass::new);
+        return getClassName().endsWith("/Inflater") ?
+            newObject(OopClassInflater::new) :
+            newObject(OopClass::new);
     }
 
     public <O extends OopClass> O newObject(NewObjectCreator<O> objectCreator) {

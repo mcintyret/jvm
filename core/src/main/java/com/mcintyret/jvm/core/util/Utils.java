@@ -23,7 +23,11 @@ import java.util.function.Function;
 
 import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
 
-public class Utils {
+public final class Utils {
+
+    private Utils() {
+
+    }
 
     public static OopArray newArray(Type type, int size) {
         ArrayClassObject aco = ArrayClassObject.forType(ArrayType.create(type, 1));
@@ -202,6 +206,30 @@ public class Utils {
                 variables.getTypes()[index++] = type;
             }
         }
+    }
+
+    public static byte[] convertByteArrayOop(OopArray array) {
+        if (array.getClassObject().getType().getComponentType() != SimpleType.BYTE) {
+            throw new IllegalArgumentException();
+        }
+
+        byte[] bytes = new byte[array.getLength()];
+
+        for (int i = 0; i < bytes.length; i++) {
+            bytes[i] = (byte) array.getFields().getRawValue(i);
+        }
+
+        return bytes;
+    }
+
+    public static OopArray convertByteArray(byte[] bytes) {
+        OopArray array = ArrayType.create(SimpleType.BYTE, 1).getClassObject().newArray(bytes.length);
+
+        for (int i = 0; i < bytes.length; i++) {
+            array.getFields().put(i, SimpleType.BYTE, bytes[i]);
+        }
+
+        return array;
     }
 
 }

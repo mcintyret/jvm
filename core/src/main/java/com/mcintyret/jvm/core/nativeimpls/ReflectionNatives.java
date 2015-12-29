@@ -20,8 +20,8 @@ public enum ReflectionNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
             // Literally no documentation in the world about what this no-arg form is.
-            // TODO: although I could make an educated guess...
-            Execution callerExecution = getSecond(ctx.getExecutionStack().getStack().iterator());
+            // Appears to need the stack frame 2 back to work properly...
+            Execution callerExecution = getThird(ctx.getExecutionStack().getStack().iterator());
             return NativeReturn.forReference(callerExecution.getMethod().getClassObject().getOop());
         }
     },
@@ -56,7 +56,8 @@ public enum ReflectionNatives implements NativeImplementation {
         return methodSignature;
     }
 
-    private static <T> T getSecond(Iterator<T> it) {
+    private static <T> T getThird(Iterator<T> it) {
+        it.next();
         it.next();
         return it.next();
     }

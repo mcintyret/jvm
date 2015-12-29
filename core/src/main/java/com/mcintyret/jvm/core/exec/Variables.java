@@ -66,6 +66,10 @@ public class Variables {
         put(i, SimpleType.FLOAT, Float.floatToIntBits(val));
     }
 
+    public void putBoolean(int i, boolean value) {
+        put(i, SimpleType.BOOLEAN, value ? 1 : 0);
+    }
+
     public void put(int i, SimpleType type, int value) {
         types[i] = type;
         values[i] = value;

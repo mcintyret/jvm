@@ -38,6 +38,47 @@ public enum MiscNatives implements NativeImplementation {
             return "sun/misc/VM";
         }
     },
+    SUN_MISC_PERF_REGISTER_NATIVES("registerNatives", "()V") {
+        @Override
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            return NativeReturn.forVoid();
+        }
+
+        @Override
+        public String getClassName() {
+            return "sun/misc/Perf";
+        }
+    },
+    SUN_MISC_PERF_CREATE_LONG("createLong", "(Ljava/lang/String;IIJ)Ljava/nio/ByteBuffer;") {
+        @Override
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            // This is getting pretty deep into stuff I don't want to worry about...
+            // For a decent explanation of what this is about see here: http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b27/sun/misc/Perf.java#Perf.createLong%28java.lang.String%2Cint%2Cint%2Clong%29
+            ClassObject byteBufferClass = ClassLoader.getDefaultClassLoader().getClassObject("java/nio/ByteBuffer");
+            Method allocate = byteBufferClass.findMethod("allocate", true);
+
+            Variables allocateArgs = allocate.newArgArray();
+            allocateArgs.putInt(0, 10);
+
+            return Utils.executeMethodAndThrow(allocate, allocateArgs, ctx.getThread());
+        }
+
+        @Override
+        public String getClassName() {
+            return "sun/misc/Perf";
+        }
+    },
+    JAR_FILE_GET_META_INF_ENTRY_NAMES("getMetaInfEntryNames", "()[Ljava/lang/String;") {
+        @Override
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            return NativeReturn.forNull();
+        }
+
+        @Override
+        public String getClassName() {
+            return "java/util/jar/JarFile";
+        }
+    },
     STRING_INTERN("intern", "()Ljava/lang/String;") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
