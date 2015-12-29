@@ -3,14 +3,8 @@ package com.mcintyret.jvm;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import com.mcintyret.jvm.core.exec.Execution;
-import com.mcintyret.jvm.core.exec.OperationContext;
-import com.mcintyret.jvm.core.exec.Variables;
-import com.mcintyret.jvm.core.nativeimpls.NativeImplementationAdapter;
+import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementationRegistry;
-import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
-import com.mcintyret.jvm.core.oop.OopClass;
-import com.mcintyret.jvm.core.type.MethodSignature;
-import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.AggregatingClassPath;
 import com.mcintyret.jvm.load.ClassPath;
 import com.mcintyret.jvm.load.DirectoryClassPath;
@@ -23,7 +17,7 @@ import java.util.List;
 
 public class Jvm {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException {
 
         setLogLevel();
 
@@ -55,7 +49,11 @@ public class Jvm {
             }
         }
 
-        installNativePrintMethod(mainClass);
+        String nativeImplClassName = System.getProperty("jvm.native.impls");
+        if (nativeImplClassName != null) {
+            Class<?> nativeImplClass = Class.forName(nativeImplClassName);
+            NativeImplementationRegistry.registerNatives((Class<? extends NativeImplementation>) nativeImplClass);
+        }
 
         Throwable error = null;
         try {
@@ -77,13 +75,4 @@ public class Jvm {
         rootLogger.setLevel(Level.toLevel(level));
     }
 
-    private static void installNativePrintMethod(String mainClass) {
-        NativeImplementationRegistry.registerNative(new NativeImplementationAdapter(mainClass, MethodSignature.parse("print", "(Ljava/lang/String;)V")) {
-            @Override
-            public NativeReturn execute(Variables args, OperationContext ctx) {
-                System.out.println("NATIVE METHOD!!!: " + Utils.toString(args.<OopClass>getOop(0)));
-                return NativeReturn.forVoid();
-            }
-        });
-    }
 }

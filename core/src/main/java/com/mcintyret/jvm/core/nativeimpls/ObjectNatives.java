@@ -27,7 +27,7 @@ public enum ObjectNatives implements NativeImplementation {
 
             for (Class<? extends NativeImplementation> clazz : classes) {
                 if (clazz.isEnum() && clazz != ObjectNatives.class) {
-                    registerNatives(clazz);
+                    NativeImplementationRegistry.registerNatives(clazz);
                 }
             }
             return NativeReturn.forVoid();
@@ -116,12 +116,6 @@ public enum ObjectNatives implements NativeImplementation {
     }
 
     public static void registerNatives() {
-        registerNatives(ObjectNatives.class);
-    }
-
-    static void registerNatives(Class<? extends NativeImplementation> clazz) {
-        for (NativeImplementation val : clazz.getEnumConstants()) {
-            NativeImplementationRegistry.registerNative(val);
-        }
+        NativeImplementationRegistry.registerNatives(ObjectNatives.class);
     }
 }

@@ -1,12 +1,11 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.mcintyret.jvm.core.type.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.mcintyret.jvm.core.type.MethodSignature;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * User: tommcintyre
@@ -17,6 +16,12 @@ public class NativeImplementationRegistry {
     private static final Logger LOG = LoggerFactory.getLogger(NativeImplementationRegistry.class);
 
     private static final Map<ClassNameAndMethodSignature, NativeImplementation> NATIVE_EXECUTION_MAP = new HashMap<>();
+
+    public static void registerNatives(Class<? extends NativeImplementation> clazz) {
+        for (NativeImplementation val : clazz.getEnumConstants()) {
+            NativeImplementationRegistry.registerNative(val);
+        }
+    }
 
     public static void registerNative(NativeImplementation nativeImplementation) {
         ClassNameAndMethodSignature key = new ClassNameAndMethodSignature(nativeImplementation);
