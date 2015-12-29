@@ -1,4 +1,4 @@
-package com.mcintyret2.jvm.test;
+package com.mcintyret.jvm.test.jvm;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,8 +29,8 @@ public class Main {
 //            stringLength();
 //            readFile();
 //        }
-        readFromClassPath();
-//        scanner();
+//        readFromClassPath();
+        scanner();
 //        testZip();
 //        assignableFrom();
     }
