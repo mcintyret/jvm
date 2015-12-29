@@ -70,7 +70,7 @@ public enum TestNativeImpls implements NativeImplementation {
 
     @Override
     public String getClassName() {
-        return "/com/mcintyret2/jvm/test/jvm/Main";
+        return "com/mcintyret/jvm/test/Main";
     }
 
     @Override
