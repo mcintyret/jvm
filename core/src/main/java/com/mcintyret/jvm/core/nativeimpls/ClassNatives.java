@@ -170,7 +170,7 @@ public enum ClassNatives implements NativeImplementation {
                 return NativeReturn.forBool(false);
             }
 
-            boolean instanceOf = getTypeClassObject(thisType).isInstanceOf(getTypeClassObject(thatType));
+            boolean instanceOf = getTypeClassObject(thatType).isInstanceOf(getTypeClassObject(thisType));
             return NativeReturn.forBool(instanceOf);
         }
 
