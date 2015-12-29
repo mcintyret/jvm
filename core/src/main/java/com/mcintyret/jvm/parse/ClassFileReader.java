@@ -1,10 +1,5 @@
 package com.mcintyret.jvm.parse;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-
 import com.google.common.io.ByteStreams;
 import com.mcintyret.jvm.core.util.ByteBufferIterator;
 import com.mcintyret.jvm.core.util.ByteIterator;
@@ -13,6 +8,9 @@ import com.mcintyret.jvm.parse.attribute.AttributeParser;
 import com.mcintyret.jvm.parse.attribute.Attributes;
 import com.mcintyret.jvm.parse.attribute.Parser;
 import com.mcintyret.jvm.parse.cp.ConstantPoolConstant;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 public class ClassFileReader {
 
@@ -65,11 +63,4 @@ public class ClassFileReader {
             throw new IllegalArgumentException();
         }
     }
-
-    public static void main(String[] args) throws IOException {
-        String file = "/Users/mcintyret2/Github/jvm/target/classes/com/mcintyret/jvm/core/Accessor.class";
-        ClassFile cf = new ClassFileReader().read(Files.newInputStream(Paths.get(file)));
-        System.out.println(cf);
-    }
-
 }
