@@ -47,5 +47,5 @@ To vary the output in the log file, change the log level in lib/logback.xml
 | DEBUG | See individual opcode executions |
 
 
-
+Please get in touch if you discover any bugs or have any issues running the demo!
 
