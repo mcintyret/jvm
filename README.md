@@ -41,7 +41,7 @@ In a separate window you may wish to run tail -f jvm.log to see what the JVM is 
 To vary the output in the log file, change the log level in lib/logback.xml
 
 | Level | Output |
-------------------
+|------|----------|
 | WARN | See when GC is running |
 | INFO | See method invocations |
 | DEBUG | See individual opcode executions |
