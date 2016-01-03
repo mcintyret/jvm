@@ -22,16 +22,18 @@ to work on any other platform!
 
 To try the demo and see the JVM in action, take the following steps:
 
-1. clone the repo
-2. run mvn clean install in the root directory. This will build the core jar (as well as confirming that the JVM will run on your platform)
-3. cd demo
-4. mvn assembly:single - this will build the demo jar
-5. cd target
-6. unzip jvm-demo.zip
-7. cd jvm-demo/jvm-cp
-8. javac Demo.java - compile the demo code
-9. cd ..
-10. ./javaJvm Demo
+1. make sure you have the full Java 7 SDK downloaded and installed
+2. set the JAVA_7_HOME environment variable to point to the Home directory of your Java 7 install
+3. clone the repo
+4. run mvn clean install in the root directory. This will build the core jar (as well as confirming that the JVM will run on your platform)
+5. cd demo
+6. mvn assembly:single - this will build the demo jar
+7. cd target
+8. unzip jvm-demo.zip
+9. cd jvm-demo/jvm-cp
+10. javac Demo.java - compile the demo code
+11. cd ..
+12. ./javaJvm Demo
 
 The provided Demo.java uses a Scanner to read from System.in and prints the reversed input. You can write your own demo code,
 just replace 'Demo' with 'YourClass' in the instructions above.
