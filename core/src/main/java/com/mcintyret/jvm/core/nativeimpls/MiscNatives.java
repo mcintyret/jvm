@@ -12,14 +12,18 @@ import com.mcintyret.jvm.core.oop.OopClassClass;
 import com.mcintyret.jvm.core.oop.OopClassMethod;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.type.NonArrayType;
+import com.mcintyret.jvm.core.util.ReflectionUtils;
 import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 public enum MiscNatives implements NativeImplementation {
     ATOMIC_LONG_VM_SUPPORTS_CS8("VMSupportsCS8", "()Z") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            return NativeReturn.forBool(false); //TODO: implement
+            Object ret = ReflectionUtils.executeStaticMethod(AtomicLong.class, "VMSupportsCS8");
+            return NativeReturn.forBool((Boolean) ret);
         }
 
         @Override

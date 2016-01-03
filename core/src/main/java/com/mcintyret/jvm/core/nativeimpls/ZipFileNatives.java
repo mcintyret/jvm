@@ -12,7 +12,7 @@ import com.mcintyret.jvm.core.util.Utils;
 import java.lang.reflect.Method;
 import java.util.zip.ZipFile;
 
-import static com.mcintyret.jvm.core.util.ReflectionUtils.executeMethod;
+import static com.mcintyret.jvm.core.util.ReflectionUtils.executeStaticMethod;
 
 public enum ZipFileNatives implements NativeImplementation {
     INIT_IDS("initIDs", "()V") {
@@ -27,7 +27,7 @@ public enum ZipFileNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
             String name = Utils.toString((OopClass) args.getOop(0));
-            Object ret = executeMethod(ZIP_FILE_OPEN,
+            Object ret = executeStaticMethod(ZIP_FILE_OPEN,
                 name,
                 args.getInt(1),
                 args.getLong(2),
@@ -42,7 +42,7 @@ public enum ZipFileNatives implements NativeImplementation {
 
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            Object ret = executeMethod(ZIP_FILE_GET_TOTAL, args.getLong(0));
+            Object ret = executeStaticMethod(ZIP_FILE_GET_TOTAL, args.getLong(0));
 
             return NativeReturn.forInt((Integer) ret);
         }
@@ -57,7 +57,7 @@ public enum ZipFileNatives implements NativeImplementation {
             OopArray byteArrayOop = args.getOop(2);
             byte[] byteArray = Utils.convertByteArrayOop(byteArrayOop);
 
-            Object ret = executeMethod(ZIP_FILE_GET_ENTRY,
+            Object ret = executeStaticMethod(ZIP_FILE_GET_ENTRY,
                 args.getLong(0),
                 byteArray,
                 args.getBoolean(3)
@@ -76,7 +76,7 @@ public enum ZipFileNatives implements NativeImplementation {
 
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            Object ret = executeMethod(ZIP_FILE_GET_ENTRY_FLAG, args.getLong(0));
+            Object ret = executeStaticMethod(ZIP_FILE_GET_ENTRY_FLAG, args.getLong(0));
 
             return NativeReturn.forInt((Integer) ret);
         }
@@ -87,7 +87,7 @@ public enum ZipFileNatives implements NativeImplementation {
 
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            Object ret = executeMethod(ZIP_FILE_GET_NEXT_ENTRY, args.getLong(0), args.getInt(2));
+            Object ret = executeStaticMethod(ZIP_FILE_GET_NEXT_ENTRY, args.getLong(0), args.getInt(2));
 
             return NativeReturn.forLong((Long) ret);
         }
@@ -98,7 +98,7 @@ public enum ZipFileNatives implements NativeImplementation {
 
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            Object ret = executeMethod(ZIP_FILE_GET_ENTRY_METHOD, args.getLong(0));
+            Object ret = executeStaticMethod(ZIP_FILE_GET_ENTRY_METHOD, args.getLong(0));
 
             return NativeReturn.forInt((Integer) ret);
         }
@@ -109,7 +109,7 @@ public enum ZipFileNatives implements NativeImplementation {
 
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            Object ret = executeMethod(ZIP_FILE_GET_ENTRY_TIME, args.getLong(0));
+            Object ret = executeStaticMethod(ZIP_FILE_GET_ENTRY_TIME, args.getLong(0));
 
             return NativeReturn.forLong((Long) ret);
         }
@@ -120,7 +120,7 @@ public enum ZipFileNatives implements NativeImplementation {
 
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            Object ret = executeMethod(ZIP_FILE_GET_ENTRY_CRC, args.getLong(0));
+            Object ret = executeStaticMethod(ZIP_FILE_GET_ENTRY_CRC, args.getLong(0));
 
             return NativeReturn.forLong((Long) ret);
         }
@@ -131,7 +131,7 @@ public enum ZipFileNatives implements NativeImplementation {
 
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            Object ret = executeMethod(ZIP_FILE_GET_ENTRY_SIZE, args.getLong(0));
+            Object ret = executeStaticMethod(ZIP_FILE_GET_ENTRY_SIZE, args.getLong(0));
 
             return NativeReturn.forLong((Long) ret);
         }
@@ -142,7 +142,7 @@ public enum ZipFileNatives implements NativeImplementation {
 
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            Object ret = executeMethod(ZIP_FILE_GET_ENTRY_C_SIZE, args.getLong(0));
+            Object ret = executeStaticMethod(ZIP_FILE_GET_ENTRY_C_SIZE, args.getLong(0));
 
             return NativeReturn.forLong((Long) ret);
         }
@@ -153,7 +153,7 @@ public enum ZipFileNatives implements NativeImplementation {
 
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            Object ret = executeMethod(ZIP_FILE_GET_ENTRY_BYTES, args.getLong(0), args.getInt(2));
+            Object ret = executeStaticMethod(ZIP_FILE_GET_ENTRY_BYTES, args.getLong(0), args.getInt(2));
 
             if (ret == null) {
                 return NativeReturn.forNull();
@@ -168,7 +168,7 @@ public enum ZipFileNatives implements NativeImplementation {
 
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            executeMethod(ZIP_FILE_FREE_ENTRY, args.getLong(0), args.getLong(2));
+            executeStaticMethod(ZIP_FILE_FREE_ENTRY, args.getLong(0), args.getLong(2));
 
             return NativeReturn.forVoid();
         }
@@ -182,7 +182,7 @@ public enum ZipFileNatives implements NativeImplementation {
             OopArray oopBytes = args.getOop(6);
             byte[] byteArray = Utils.convertByteArrayOop(oopBytes);
 
-            Object ret = executeMethod(ZIP_FILE_READ,
+            Object ret = executeStaticMethod(ZIP_FILE_READ,
                 args.getLong(0),
                 args.getLong(2),
                 args.getLong(4),
@@ -204,7 +204,7 @@ public enum ZipFileNatives implements NativeImplementation {
 
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            Object ret = executeMethod(ZIP_FILE_STARTS_WITH_LOC, args.getLong(0));
+            Object ret = executeStaticMethod(ZIP_FILE_STARTS_WITH_LOC, args.getLong(0));
 
             return NativeReturn.forBool((Boolean) ret);
         }

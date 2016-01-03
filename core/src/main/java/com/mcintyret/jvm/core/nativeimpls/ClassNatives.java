@@ -206,7 +206,7 @@ public enum ClassNatives implements NativeImplementation {
     GET_DECLARED_CONSTRUCTORS_0("getDeclaredConstructors0", "(Z)[Ljava/lang/reflect/Constructor;") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            // TODO: good god caching!
+            // Don't need to cache these since that is taken care of in the source code of java/lang/Class
             OopClassClass clazz = args.getOop(0);
             Type thisType = clazz.getThisType();
 
@@ -214,7 +214,7 @@ public enum ClassNatives implements NativeImplementation {
             ArrayClassObject ctorArrayClass = ArrayClassObject.forType(ArrayType.create(ctorClass.getType(), 1));
 
             if (thisType.isPrimitive() || thisType.isArray() || thisType.isInterface()) {
-                OopArray ctors = ctorArrayClass.newArray(0); // TODO: cache this?
+                OopArray ctors = ctorArrayClass.newArray(0);
                 return NativeReturn.forReference(ctors);
             } else {
                 ClassObject thisClassObj = ((NonArrayType) thisType).getClassObject();
@@ -275,7 +275,6 @@ public enum ClassNatives implements NativeImplementation {
     GET_MODIFIERS("getModifiers", "()I") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            // TODO: cache?
             return NativeReturn.forInt(Modifier.translate(args.<OopClassClass>getOop(0).getThisType().getOopClassClass().getClassObject().getModifiers()));
         }
     },

@@ -11,7 +11,11 @@ public final class ReflectionUtils {
 
     }
 
-    public static Object executeMethod(Method m, Object... args) {
+    public static Object executeStaticMethod(Class<?> clazz, String methodName, Object... args) {
+        return executeStaticMethod(findMethod(clazz, methodName, true), args);
+    }
+
+    public static Object executeStaticMethod(Method m, Object... args) {
         try {
             return m.invoke(null, args);
         } catch (ReflectiveOperationException e) {

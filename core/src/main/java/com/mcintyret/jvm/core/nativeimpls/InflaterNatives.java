@@ -11,7 +11,7 @@ import com.mcintyret.jvm.core.util.Utils;
 import java.lang.reflect.Method;
 import java.util.zip.Inflater;
 
-import static com.mcintyret.jvm.core.util.ReflectionUtils.executeMethod;
+import static com.mcintyret.jvm.core.util.ReflectionUtils.executeStaticMethod;
 import static com.mcintyret.jvm.core.util.ReflectionUtils.findMethod;
 import static com.mcintyret.jvm.core.util.ReflectionUtils.getFieldValue;
 import static com.mcintyret.jvm.core.util.ReflectionUtils.setFieldValue;
@@ -30,7 +30,7 @@ public enum InflaterNatives implements NativeImplementation {
 
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            Object ret = executeMethod(INFLATER_INIT, args.getBoolean(0));
+            Object ret = executeStaticMethod(INFLATER_INIT, args.getBoolean(0));
 
             return NativeReturn.forLong((Long) ret);
         }
@@ -41,7 +41,7 @@ public enum InflaterNatives implements NativeImplementation {
 
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            executeMethod(INFLATER_RESET, args.getLong(0));
+            executeStaticMethod(INFLATER_RESET, args.getLong(0));
 
             return NativeReturn.forVoid();
         }
