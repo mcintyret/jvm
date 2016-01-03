@@ -24,7 +24,7 @@ To try the demo and see the JVM in action, take the following steps:
 
 1. clone the repo
 2. run mvn clean install in the root directory. This will build the core jar (as well as confirming that the JVM will run on your platform)
-3. cd test
+3. cd demo
 4. mvn assembly:single - this will build the demo jar
 5. cd target
 6. unzip jvm-demo.zip
