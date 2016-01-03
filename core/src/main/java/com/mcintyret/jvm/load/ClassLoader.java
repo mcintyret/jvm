@@ -72,7 +72,7 @@ public class ClassLoader {
     private static final ClassLoader BOOTSTRAP_CLASSLOADER = makeBootstrapClassLoader();
 
     private static ClassLoader makeBootstrapClassLoader() {
-        String libJarPath = System.getProperty("java.jvm.home") + "/lib/rt.jar";
+        String libJarPath = System.getProperty("java.jvm.home") + "/jre/lib/rt.jar";
         try {
             return new ClassLoader(new ZipClassPath(libJarPath));
         } catch (IOException e) {

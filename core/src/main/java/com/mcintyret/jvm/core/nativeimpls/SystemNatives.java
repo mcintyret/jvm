@@ -144,27 +144,28 @@ public enum SystemNatives implements NativeImplementation {
 
     static {
         final String javaHome = System.getProperty("java.jvm.home");
+        final String javaHomeJre = javaHome + "/jre";
 
-        OVERRIDE_PROPERTIES.put("java.home", javaHome);
-        OVERRIDE_PROPERTIES.put("sun.boot.library.path", javaHome + "/lib");
-        OVERRIDE_PROPERTIES.put("sun.boot.class.path", javaHome + "/lib/resources.jar:" +
-            javaHome + "/lib/rt.jar:" +
-            javaHome + "/lib/jsse.jar:" +
-            javaHome + "/lib/jce.jar:" +
-            javaHome + "/lib/charsets.jar:" +
-            javaHome + "/lib/ext/localedata.jar:" +
-            javaHome + "/lib/jfr.jar");
+        OVERRIDE_PROPERTIES.put("java.home", javaHomeJre);
+        OVERRIDE_PROPERTIES.put("sun.boot.library.path", javaHomeJre + "/lib");
+        OVERRIDE_PROPERTIES.put("sun.boot.class.path", javaHomeJre + "/lib/resources.jar:" +
+            javaHomeJre + "/lib/rt.jar:" +
+            javaHomeJre + "/lib/jsse.jar:" +
+            javaHomeJre + "/lib/jce.jar:" +
+            javaHomeJre + "/lib/charsets.jar:" +
+            javaHomeJre + "/lib/ext/localedata.jar:" +
+            javaHomeJre + "/lib/jfr.jar");
         OVERRIDE_PROPERTIES.put("java.vm.specification.version", "1.7");
-        OVERRIDE_PROPERTIES.put("java.endorsed.dirs", javaHome + "/lib/endorsed");
+        OVERRIDE_PROPERTIES.put("java.endorsed.dirs", javaHomeJre + "/lib/endorsed");
         OVERRIDE_PROPERTIES.put("java.class.version", "51.0");
         OVERRIDE_PROPERTIES.put("java.runtime.version", "1.7.0_51-b13");
         OVERRIDE_PROPERTIES.put("java.version", "1.7.0_51");
 
         // TODO: add non-core classpath elements to this
-        Path javaHomePath = Paths.get(javaHome);
-        Path javaHomeLib = javaHomePath.getParent().resolve("lib");
-        final List<String> javaJars = getClassPath(Integer.MAX_VALUE, javaHomePath);
-        javaJars.addAll(getClassPath(1, javaHomeLib));
+        Path javaHomeJrePath = Paths.get(javaHomeJre);
+        Path javaHomeLibPath = Paths.get(javaHome + "/lib");
+        final List<String> javaJars = getClassPath(Integer.MAX_VALUE, javaHomeJrePath);
+        javaJars.addAll(getClassPath(1, javaHomeLibPath));
 
         StringBuilder classpath = new StringBuilder();
         Iterator<String> jarIt = javaJars.iterator();
@@ -186,7 +187,7 @@ public enum SystemNatives implements NativeImplementation {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     String name = file.toAbsolutePath().toString();
-                    if (name.endsWith(".jar") && !name.endsWith("alr-rt.jar")) { // don't want the alt one - confuses things!
+                    if (name.endsWith(".jar") && !name.endsWith("alt-rt.jar")) { // don't want the alt one - confuses things!
                         javaJars.add(name);
                     }
                     return FileVisitResult.CONTINUE;
