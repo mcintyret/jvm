@@ -22,17 +22,17 @@ public class Main {
 
     public static void main(String[] args) throws IOException {
 //        for (int i = 0; i < 100; i++) {
-//            threadingTests();
-//            simpleIntArrays();
-//            interfaceMethods();
-//            stringsAndNatives();
-//            stringLength();
-//            readFile();
+            threadingTests();
+            simpleIntArrays();
+            interfaceMethods();
+            stringsAndNatives();
+            stringLength();
+            readFile();
 //        }
-//        readFromClassPath();
+        readFromClassPath();
         scanner();
-//        testZip();
-//        assignableFrom();
+        testZip();
+        assignableFrom();
     }
 
     private static void assignableFrom() {

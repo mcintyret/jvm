@@ -20,6 +20,8 @@ class JvmTestUtils {
 
     private static final String JAR_LOCATION = PROJECT_BASE_DIR + "target/javaJvm.jar";
 
+    private static final String MAIN_CLASS = "com.mcintyret.jvm.Jvm";
+
     private static String getProjectBaseDir() {
         String projectBaseDir = System.getProperty("user.dir");
         if (projectBaseDir.endsWith("test")) {
@@ -59,13 +61,14 @@ class JvmTestUtils {
             command.add("-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y");
         }
 
-        command.add("-jar");
+        command.add("-cp");
+        command.add(PROJECT_BASE_DIR + "test/src/test/resources:" + JAR_LOCATION);
         command.add("-Xmx1024m");
         command.add("-D" + JAVA_JVM_HOME + "=" + System.getProperty(JAVA_JVM_HOME));
         if (classPath != null) {
             command.add("-Djvm.classpath=" + classPath);
         }
-        command.add(JAR_LOCATION);
+        command.add(MAIN_CLASS);
         command.add(mainClass);
         if (args != null && args.length > 0) {
             Collections.addAll(command, args);
