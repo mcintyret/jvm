@@ -405,8 +405,8 @@ public class ClassLoader {
             if (info.hasModifier(Modifier.NATIVE)) {
                 NativeImplementation nativeImplementation = NativeImplementationRegistry.getNativeExecution(mis.className, mis.sig);
                 if (nativeImplementation == null) {
-//                throw new IllegalStateException("No NativeImplementation registered for " + mis.className + "." + mis.sig);
-                    LOG.warn("NATIVE METHOD MISSING: {}.{}", mis.className, mis.sig);
+                    // This will only be an issue if we actually try to use this method, in which case an exception is thrown
+                    LOG.info("Native method missing: {}.{}", mis.className, mis.sig);
                 }
                 return new NativeMethod(info.getModifiers(), info.getAttributes(), mis.sig, offset, nativeImplementation);
             } else {
