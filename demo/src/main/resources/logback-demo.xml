@@ -1,0 +1,13 @@
+<configuration>
+
+    <appender name="jvm-log" class="ch.qos.logback.core.FileAppender">
+        <file>jvm.log</file>
+        <encoder>
+            <pattern>[%t] %-5p [%c{0}] - %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="DEBUG">
+        <appender-ref ref="jvm-log"/>
+    </root>
+</configuration>
