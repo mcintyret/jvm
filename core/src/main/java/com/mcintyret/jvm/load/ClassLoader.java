@@ -113,9 +113,6 @@ public class ClassLoader {
 
     public void afterInitialLoad() {
         if (this == BOOTSTRAP_CLASSLOADER) {
-            // Do this somewhere else!
-//            setSystemProperties();
-//            setSystemOut();
 
             ClassObject system = getClassObject("java/lang/System");
             Method init = system.findMethod("initializeSystemClass", true);
