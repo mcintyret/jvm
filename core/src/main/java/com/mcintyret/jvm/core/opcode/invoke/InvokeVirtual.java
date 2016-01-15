@@ -4,7 +4,7 @@ package com.mcintyret.jvm.core.opcode.invoke;
 import com.mcintyret.jvm.core.clazz.Method;
 import com.mcintyret.jvm.core.oop.Oop;
 
-class InvokeVirtual extends InvokeIndirect {
+class InvokeVirtual extends Invoke {
 
     @Override
     public byte getByte() {

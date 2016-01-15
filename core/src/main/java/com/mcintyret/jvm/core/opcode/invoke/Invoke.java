@@ -8,10 +8,12 @@ import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.nativeimpls.NativeImplementation;
 import com.mcintyret.jvm.core.nativeimpls.NativeReturn;
+import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.opcode.AThrow;
 import com.mcintyret.jvm.core.opcode.OpCode;
 import com.mcintyret.jvm.core.type.SimpleType;
 import com.mcintyret.jvm.core.type.Type;
+import com.mcintyret.jvm.parse.Modifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,13 +27,35 @@ abstract class Invoke extends OpCode {
     @Override
     public final void execute(OperationContext ctx) {
         Method method = ctx.getConstantPool().getMethod(ctx.getByteIterator().nextShortUnsigned());
+        boolean isStatic = method.isStatic();
+
+        // Because the method signature is the same regardless of the implementation, we can work out the args before
+        // we work out the actual method to use
+        Variables args = getMethodArgs(ctx, method, isStatic);
+
+        Oop oop = isStatic ? null : args.getOop(0);
+
+        method = getImplementationMethod(method, oop);
+
+        boolean isNative = method.hasModifier(Modifier.NATIVE);
 
         if (LOG.isInfoEnabled()) {
-            LOG.info("{}Invoking {}.{}", makeSpace(ctx), method.getClassObject().getClassName(), method.getSignature());
+            LOG.info("{}Invoking {}.{}{}", makeSpace(ctx), method.getClassObject().getClassName(), method.getSignature(), isNative ? "        NATIVE" : "");
         }
 
-        Variables args = getMethodArgs(ctx, method);
-        doInvoke(method, args, ctx);
+        if (isNative) {
+            invokeNativeMethod((NativeMethod) method, args, ctx);
+        } else {
+            // Because the implementation may have changed
+            int maxLocalVars = method.getCode().getMaxLocals();
+            if (maxLocalVars > args.length()) {
+                args = args.copy(maxLocalVars);
+            }
+            ctx.getExecutionStack().push(
+                new Execution(method, args, ctx.getThread()));
+        }
+
+        afterInvoke(ctx);
     }
 
     private String makeSpace(OperationContext ctx) {
@@ -42,9 +66,18 @@ abstract class Invoke extends OpCode {
         return sb.toString();
     }
 
-    protected abstract void doInvoke(Method method, Variables args, OperationContext ctx);
 
-    protected void invokeNativeMethod(NativeMethod nativeMethod, Variables args, OperationContext ctx) {
+    protected Method getImplementationMethod(Method method, Oop oop) {
+        return method;
+    }
+
+
+    protected void afterInvoke(OperationContext ctx) {
+        // Do nothing by default
+    }
+
+
+    private void invokeNativeMethod(NativeMethod nativeMethod, Variables args, OperationContext ctx) {
         Execution nativeExecution = new Execution(nativeMethod, args, ctx.getThread());
 
         NativeImplementation nativeImplementation = nativeMethod.getNativeImplementation();
@@ -68,9 +101,7 @@ abstract class Invoke extends OpCode {
         }
     }
 
-    private Variables getMethodArgs(OperationContext ctx, Method method) {
-        boolean isStatic = method.isStatic();
-
+    private Variables getMethodArgs(OperationContext ctx, Method method, boolean isStatic) {
         int shift = isStatic ? 0 : 1;
 
         Variables args = method.newArgArray();
@@ -104,7 +135,7 @@ abstract class Invoke extends OpCode {
 
     // Method invocations are a safe point to stop and do GC
     @Override
-    public boolean isSafePoint() {
+    public final boolean isSafePoint() {
         return true;
     }
 }

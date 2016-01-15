@@ -6,7 +6,7 @@ import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.oop.Oop;
 import com.mcintyret.jvm.core.oop.OopClass;
 
-class InvokeInterface extends InvokeIndirect {
+class InvokeInterface extends Invoke {
 
     @Override
     public byte getByte() {
