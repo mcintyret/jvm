@@ -226,6 +226,28 @@ public enum UnsafeNatives implements NativeImplementation {
             // Dont' think we need to do anything here...
             return NativeReturn.forNull();
         }
+    },
+    STATIC_FIELD_OFFSET("staticFieldOffset", "(Ljava/lang/reflect/Field;)J") {
+        @Override
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            OopClass field = args.getOop(1);
+            String name = Utils.toString(field.getFields().getCheckedValue(4, SimpleType.REF));
+            OopClassClass theClass = field.getFields().getOop(2);
+            NonArrayType type = (NonArrayType) theClass.getThisType();
+
+            com.mcintyret.jvm.core.clazz.Field theField = type.getClassObject().findField(name, true);
+
+            return NativeReturn.forLong(theField.getOffset());
+        }
+    },
+    STATIC_FIELD_BASE("staticFieldBase", "(Ljava/lang/reflect/Field;)Ljava/lang/Object;") {
+        @Override
+        public NativeReturn execute(Variables args, OperationContext ctx) {
+            OopClass field = args.getOop(1);
+            OopClassClass theClass = field.getFields().getOop(2);
+
+            return NativeReturn.forReference(theClass);
+        }
     };
 
 
