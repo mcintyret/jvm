@@ -90,11 +90,10 @@ public final class Thread {
         } catch (Throwable t) {
             String threadName = thread == null ? "main" : thread.getName();
             System.out.println("ERROR on thread '" + threadName + "': " + t.getMessage());
-            t.printStackTrace();
             System.out.println("Caused By:");
-            executionStacks.descendingIterator().forEachRemaining(stack -> {
-                stack.getStack().descendingIterator().forEachRemaining(exec -> {
-                    System.out.println(exec.getMethod());
+            executionStacks.forEach(stack -> {
+                stack.getStack().forEach(exec -> {
+                    System.out.println("\t" + exec.getMethod());
                 });
             });
 
