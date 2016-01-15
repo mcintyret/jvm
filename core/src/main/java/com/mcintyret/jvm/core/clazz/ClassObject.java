@@ -1,5 +1,6 @@
 package com.mcintyret.jvm.core.clazz;
 
+import com.google.common.collect.ImmutableMap;
 import com.mcintyret.jvm.core.constantpool.ConstantPool;
 import com.mcintyret.jvm.core.exec.Variables;
 import com.mcintyret.jvm.core.oop.OopClass;
@@ -10,10 +11,19 @@ import com.mcintyret.jvm.core.util.Utils;
 import com.mcintyret.jvm.load.ClassLoader;
 import com.mcintyret.jvm.parse.Modifier;
 
+import java.util.Map;
 import java.util.Set;
 
 // The internal representation of a Class
 public class ClassObject extends AbstractClassObject {
+
+    private static final Map<String, NewOopCreator> SUPPLIERS = ImmutableMap.<String, NewOopCreator>builder()
+        .put("java/util/zip/Inflater", OopClassInflater::new)
+        .build();
+
+    private static NewOopCreator objectCreatorForClass(String className) {
+        return SUPPLIERS.getOrDefault(className, OopClass::new);
+    }
 
     private final NonArrayType type;
 
@@ -30,6 +40,8 @@ public class ClassObject extends AbstractClassObject {
     private final Variables staticFieldValues;
 
     private final ClassLoader classLoader;
+
+    private NewOopCreator newOopCreator;
 
     public ClassObject(NonArrayType type, Set<Modifier> modifiers, ClassObject parent, ClassObject[] interfaces,
                        ConstantPool constantPool, Method[] instanceMethods, Method[] constructors, Method[] staticMethods,
@@ -51,6 +63,8 @@ public class ClassObject extends AbstractClassObject {
         finalizeMembers(staticFields);
         finalizeMembers(staticMethods);
         finalizeMembers(constructors);
+
+        newOopCreator = objectCreatorForClass(getClassName());
     }
 
     public ConstantPool getConstantPool() {
@@ -70,12 +84,10 @@ public class ClassObject extends AbstractClassObject {
     }
 
     public OopClass newObject() {
-        return getClassName().endsWith("/Inflater") ?
-            newObject(OopClassInflater::new) :
-            newObject(OopClass::new);
+        return newObject(newOopCreator);
     }
 
-    public <O extends OopClass> O newObject(NewObjectCreator<O> objectCreator) {
+    public <O extends OopClass> O newObject(NewOopCreator<O> objectCreator) {
         return objectCreator.newObject(this, newInstanceFieldsValuesArray(instanceFields));
     }
 
@@ -176,7 +188,7 @@ public class ClassObject extends AbstractClassObject {
         }
     }
 
-    public interface NewObjectCreator<O extends OopClass> {
+    public interface NewOopCreator<O extends OopClass> {
 
         O newObject(ClassObject clazz, Variables fields);
 
