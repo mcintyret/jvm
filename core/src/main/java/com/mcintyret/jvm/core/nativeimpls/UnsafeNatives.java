@@ -1,6 +1,7 @@
 package com.mcintyret.jvm.core.nativeimpls;
 
 import com.mcintyret.jvm.core.Heap;
+import com.mcintyret.jvm.core.clazz.AbstractClassObject;
 import com.mcintyret.jvm.core.clazz.ClassObject;
 import com.mcintyret.jvm.core.exec.OperationContext;
 import com.mcintyret.jvm.core.exec.Threads;
@@ -246,7 +247,16 @@ public enum UnsafeNatives implements NativeImplementation {
             OopClass field = args.getOop(1);
             OopClassClass theClass = field.getFields().getOop(2);
 
-            return NativeReturn.forReference(theClass);
+            Variables vars = ((NonArrayType) theClass.getThisType()).getClassObject().getStaticFieldValues();
+            // If this gets GC'd before it's used we're fucked
+            Oop temp = new Oop(vars) {
+                @Override
+                public AbstractClassObject getClassObject() {
+                    throw new AssertionError("Please don't call me");
+                }
+            };
+
+            return NativeReturn.forReference(temp);
         }
     };
 
