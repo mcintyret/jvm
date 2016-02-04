@@ -1,5 +1,6 @@
 package com.mcintyret.jvm.load;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.ZipEntry;
@@ -27,6 +28,6 @@ public class ZipClassFileResource implements ClassFileResource {
 
     @Override
     public InputStream getInputStream() throws IOException {
-        return file.getInputStream(entry);
+        return new BufferedInputStream(file.getInputStream(entry));
     }
 }

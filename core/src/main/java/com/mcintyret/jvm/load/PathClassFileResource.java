@@ -1,5 +1,6 @@
 package com.mcintyret.jvm.load;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -24,6 +25,6 @@ public class PathClassFileResource implements ClassFileResource {
 
     @Override
     public InputStream getInputStream() throws IOException {
-        return Files.newInputStream(path);
+        return new BufferedInputStream(Files.newInputStream(path));
     }
 }
