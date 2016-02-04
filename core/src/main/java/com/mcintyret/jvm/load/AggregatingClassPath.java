@@ -1,9 +1,5 @@
 package com.mcintyret.jvm.load;
 
-import com.google.common.collect.Iterables;
-
-import java.util.Iterator;
-
 import static java.util.Arrays.asList;
 
 /**
@@ -20,11 +16,6 @@ public class AggregatingClassPath implements ClassPath {
 
     public AggregatingClassPath(ClassPath... classPaths) {
         this(asList(classPaths));
-    }
-
-    @Override
-    public Iterator<ClassFileResource> iterator() {
-        return Iterables.concat(classPaths).iterator();
     }
 
     @Override

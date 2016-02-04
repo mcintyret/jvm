@@ -2,8 +2,6 @@ package com.mcintyret.jvm.load;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -25,24 +23,6 @@ public class ZipClassPath implements ClassPath {
 
     public ZipClassPath(String file) {
         this(new File(file));
-    }
-
-    @Override
-    public Iterator<ClassFileResource> iterator() {
-        return classFileFilteringIterator(new Iterator<ClassFileResource>() {
-
-            private final Enumeration<? extends ZipEntry> it = file.entries();
-
-            @Override
-            public boolean hasNext() {
-                return it.hasMoreElements();
-            }
-
-            @Override
-            public ClassFileResource next() {
-                return new ZipClassFileResource(file, it.nextElement());
-            }
-        });
     }
 
     @Override
