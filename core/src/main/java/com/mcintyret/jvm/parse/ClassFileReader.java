@@ -17,7 +17,10 @@ public class ClassFileReader {
     private static final int MAGIC_NUMBER = 0xCAFEBABE;
 
     public ClassFile read(InputStream is) throws IOException {
-        ByteIterator bi = new ByteBufferIterator(ByteStreams.toByteArray(is));
+        ByteIterator bi;
+        try (InputStream inputStream = is) {
+            bi = new ByteBufferIterator(ByteStreams.toByteArray(inputStream));
+        }
         verifyMagicNumber(bi);
 
         ClassFile classFile = new ClassFile();
