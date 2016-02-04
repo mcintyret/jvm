@@ -44,4 +44,10 @@ public class ZipClassPath implements ClassPath {
             }
         });
     }
+
+    @Override
+    public ClassFileResource get(String name) {
+        ZipEntry entry = file.getEntry(name + ".class");
+        return entry != null ? new ZipClassFileResource(file, entry) : null;
+    }
 }

@@ -48,7 +48,7 @@ public enum UnsafeNatives implements NativeImplementation {
     OBJECT_FIELD_OFFSET("objectFieldOffset", "(Ljava/lang/reflect/Field;)J") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            ClassObject fieldClass = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/reflect/Field");
+            ClassObject fieldClass = ClassLoader.getClassLoader().getClassObject("java/lang/reflect/Field");
             OopClass field = args.getOop(1);
 
             OopClassClass declaringClassOop = (OopClassClass) fieldClass.findField("clazz", false).getOop(field);

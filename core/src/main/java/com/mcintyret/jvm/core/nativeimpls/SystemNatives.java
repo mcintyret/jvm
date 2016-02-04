@@ -90,7 +90,7 @@ public enum SystemNatives implements NativeImplementation {
     SET_OUT_0("setOut0", "(Ljava/io/PrintStream;)V") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            ClassObject system = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/System");
+            ClassObject system = ClassLoader.getClassLoader().getClassObject("java/lang/System");
             Field out = system.findField("out", true);
             out.set(null, args.getRawValue(0));
             return NativeReturn.forVoid();
@@ -99,7 +99,7 @@ public enum SystemNatives implements NativeImplementation {
     SET_ERR_0("setErr0", "(Ljava/io/PrintStream;)V") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            ClassObject system = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/System");
+            ClassObject system = ClassLoader.getClassLoader().getClassObject("java/lang/System");
             Field err = system.findField("err", true);
             err.set(null, args.getRawValue(0));
             return NativeReturn.forVoid();
@@ -108,7 +108,7 @@ public enum SystemNatives implements NativeImplementation {
     SET_IN_0("setIn0", "(Ljava/io/InputStream;)V") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            ClassObject system = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/System");
+            ClassObject system = ClassLoader.getClassLoader().getClassObject("java/lang/System");
             system.findField("in", true).set(null, args.getRawValue(0));
             return NativeReturn.forVoid();
         }

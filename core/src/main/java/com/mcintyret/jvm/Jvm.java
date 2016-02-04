@@ -15,6 +15,7 @@ import java.util.List;
 public class Jvm {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
+        long start = System.currentTimeMillis();
         if (args.length < 1) {
             throw new IllegalArgumentException("No Main class given");
         }
@@ -61,5 +62,6 @@ public class Jvm {
                 System.err.println("Total operations: " + Execution.TOTAL_OPCODES_EXECUTED.get());
             }
         }
+//        System.out.println("Ran program in " + (System.currentTimeMillis() - start) + " millis");
     }
 }

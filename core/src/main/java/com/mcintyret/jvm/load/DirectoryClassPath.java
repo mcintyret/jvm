@@ -70,4 +70,10 @@ public class DirectoryClassPath implements ClassPath {
         }
         return classFileFilteringIterator(list.iterator());
     }
+
+    @Override
+    public ClassFileResource get(String name) {
+        Path classFile = path.resolve(name + ".class");
+        return Files.exists(classFile) ? new PathClassFileResource(classFile) : null;
+    }
 }

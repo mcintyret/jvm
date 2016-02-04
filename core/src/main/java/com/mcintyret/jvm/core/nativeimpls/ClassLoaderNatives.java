@@ -7,7 +7,7 @@ import com.mcintyret.jvm.core.oop.OopClass;
 import com.mcintyret.jvm.core.type.MethodSignature;
 import com.mcintyret.jvm.core.util.Utils;
 
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
+import static com.mcintyret.jvm.load.ClassLoader.getClassLoader;
 
 public enum ClassLoaderNatives implements NativeImplementation {
     REGISTER_NATIVES("registerNatives", "()V") {
@@ -21,7 +21,7 @@ public enum ClassLoaderNatives implements NativeImplementation {
         public NativeReturn execute(Variables args, OperationContext ctx) {
             String className = Utils.toJvmClassName(Utils.toString((OopClass) args.getOop(1)));
 
-            ClassObject co = getDefaultClassLoader().getClassObject(className);
+            ClassObject co = getClassLoader().getClassObject(className);
             return NativeReturn.forReference(co.getOop());
         }
     };

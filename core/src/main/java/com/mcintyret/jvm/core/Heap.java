@@ -171,7 +171,7 @@ public class Heap {
             });
 
             // finally look at static objects
-            for (ClassObject classObject : ClassLoader.getDefaultClassLoader().getLoadedClasses()) {
+            for (ClassObject classObject : ClassLoader.getClassLoader().getLoadedClasses()) {
                 gcOop(classObject.getOop(true)); // this will keep any reflection data.
 
                 gcVariables(classObject.getStaticFieldValues(), null);

@@ -73,7 +73,7 @@ public enum ClassNatives implements NativeImplementation {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
             Type thisType = getThisType(args);
-            ClassObject fieldClass = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/reflect/Field");
+            ClassObject fieldClass = ClassLoader.getClassLoader().getClassObject("java/lang/reflect/Field");
 
             ArrayClassObject fieldArrayType = ArrayClassObject.forType(ArrayType.create(fieldClass.getType(), 1));
 
@@ -138,10 +138,10 @@ public enum ClassNatives implements NativeImplementation {
             className = className.replaceAll("\\.", "/");
 
             try {
-                return NativeReturn.forReference(ClassLoader.getDefaultClassLoader().getClassObject(className).getOop());
+                return NativeReturn.forReference(ClassLoader.getClassLoader().getClassObject(className).getOop());
             } catch (AssertionError e) {
                 // TODO: proper error, or some other system!
-                return NativeReturn.forThrowable(ClassLoader.getDefaultClassLoader().getClassObject("java/lang/ClassNotFoundException").newObject());
+                return NativeReturn.forThrowable(ClassLoader.getClassLoader().getClassObject("java/lang/ClassNotFoundException").newObject());
             }
         }
     },
@@ -210,7 +210,7 @@ public enum ClassNatives implements NativeImplementation {
             OopClassClass clazz = args.getOop(0);
             Type thisType = clazz.getThisType();
 
-            ClassObject ctorClass = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/reflect/Constructor");
+            ClassObject ctorClass = ClassLoader.getClassLoader().getClassObject("java/lang/reflect/Constructor");
             ArrayClassObject ctorArrayClass = ArrayClassObject.forType(ArrayType.create(ctorClass.getType(), 1));
 
             if (thisType.isPrimitive() || thisType.isArray() || thisType.isInterface()) {

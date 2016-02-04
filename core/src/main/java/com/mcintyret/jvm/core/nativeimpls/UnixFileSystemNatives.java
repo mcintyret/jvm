@@ -17,7 +17,7 @@ import com.mcintyret.jvm.core.util.Utils;
 import java.io.File;
 import java.util.Set;
 
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
+import static com.mcintyret.jvm.load.ClassLoader.getClassLoader;
 
 /**
  * User: tommcintyre
@@ -33,7 +33,7 @@ public enum UnixFileSystemNatives implements NativeImplementation {
     GET_BOOLEAN_ATTRIBUTES_0("getBooleanAttributes0", "(Ljava/io/File;)I") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            Field filePath = getDefaultClassLoader().getClassObject("java/io/File").findField("path", false);
+            Field filePath = getClassLoader().getClassObject("java/io/File").findField("path", false);
 
             String path = Utils.toString(filePath.getInt(args.getOop(1)));
 

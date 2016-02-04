@@ -29,17 +29,15 @@ public class Runner {
     public static Thread MAIN_THREAD = new Thread(null, (java.lang.Thread) null); // Just for bootstrap!
 
     public void run(ClassPath classPath, String mainClassName, String... args) throws IOException {
-        ClassLoader loader = ClassLoader.getDefaultClassLoader();
-
-        loader.load(classPath);
+        ClassLoader classLoader = ClassLoader.createClassLoader(classPath);
 
         // This happens early!
         Heap.registerThread();
         MAIN_THREAD = createMainThread();
 
-        loader.afterInitialLoad(); // Sets System.out. Can I do this anywhere else??
+        classLoader.afterInitialLoad(); // Sets System.out. Can I do this anywhere else??
 
-        ClassObject mainClass = loader.getClassObject(mainClassName);
+        ClassObject mainClass = classLoader.getClassObject(mainClassName);
 
         Method mainMethod = findMainMethod(mainClass);
 
@@ -60,7 +58,7 @@ public class Runner {
             ret.applyValue(stack);
             try {
                 OopClass obj = stack.popOop();
-                if (obj.getClassObject().isInstanceOf(loader.getClassObject("java/lang/Throwable"))) {
+                if (obj.getClassObject().isInstanceOf(classLoader.getClassObject("java/lang/Throwable"))) {
                     System.out.println("Died with Exception of type: " + obj.getClassObject().getClassName());
                 }
 
@@ -83,8 +81,8 @@ public class Runner {
 
 
     private static Thread createMainThread() {
-        ClassObject threadClass = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/Thread");
-        ClassObject threadGroupClass = ClassLoader.getDefaultClassLoader().getClassObject("java/lang/ThreadGroup");
+        ClassObject threadClass = ClassLoader.getClassLoader().getClassObject("java/lang/Thread");
+        ClassObject threadGroupClass = ClassLoader.getClassLoader().getClassObject("java/lang/ThreadGroup");
 
         Method systemThreadGroupCtor = threadGroupClass.getDefaultConstructor();
         OopClass systemThreadGroup = threadGroupClass.newObject();

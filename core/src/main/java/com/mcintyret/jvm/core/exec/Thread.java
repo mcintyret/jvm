@@ -12,7 +12,7 @@ import com.mcintyret.jvm.core.util.Utils;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
+import static com.mcintyret.jvm.load.ClassLoader.getClassLoader;
 
 /**
  * User: tommcintyre
@@ -139,7 +139,7 @@ public final class Thread {
 
     public class ActualThread extends java.lang.Thread {
 
-        private final ClassObject THREAD_CLASS = getDefaultClassLoader().getClassObject("java/lang/Thread");
+        private final ClassObject THREAD_CLASS = getClassLoader().getClassObject("java/lang/Thread");
 
         private final Method THREAD_RUN = THREAD_CLASS.findMethod("run", "()V", false);
 

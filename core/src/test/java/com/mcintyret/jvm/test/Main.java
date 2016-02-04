@@ -21,18 +21,18 @@ import java.util.zip.ZipFile;
 public class Main {
 
     public static void main(String[] args) throws IOException {
-//        for (int i = 0; i < 100; i++) {
-            threadingTests();
-            simpleIntArrays();
-            interfaceMethods();
-            stringsAndNatives();
-            stringLength();
-            readFile();
-//        }
-        readFromClassPath();
-        scanner();
+        for (int i = 0; i < 100; i++) {
+//            threadingTests();
+//            simpleIntArrays();
+//            interfaceMethods();
+//            stringsAndNatives();
+//            stringLength();
+//            readFile();
+        }
+//        readFromClassPath();
+//        scanner();
         testZip();
-        assignableFrom();
+//        assignableFrom();
     }
 
     private static void assignableFrom() {

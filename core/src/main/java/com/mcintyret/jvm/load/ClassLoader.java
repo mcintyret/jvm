@@ -45,7 +45,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -58,6 +57,7 @@ import static java.util.Arrays.asList;
 import static java.util.Collections.emptySet;
 
 public class ClassLoader {
+    private static final ClassFileReader CLASS_FILE_READER = new ClassFileReader();
 
     private static final Logger LOG = LoggerFactory.getLogger(ClassLoader.class);
 
@@ -69,18 +69,16 @@ public class ClassLoader {
         }
     };
 
-    private static final ClassLoader BOOTSTRAP_CLASSLOADER = makeBootstrapClassLoader();
+    private static ClassLoader CLASSLOADER;
 
-    private static ClassLoader makeBootstrapClassLoader() {
-        String libJarPath = System.getProperty("java.jvm.home") + "/jre/lib/rt.jar";
-        try {
-            return new ClassLoader(new ZipClassPath(libJarPath));
-        } catch (IOException e) {
-            throw new IllegalStateException("Java standard library not found at " + libJarPath);
+    public synchronized static ClassLoader createClassLoader(ClassPath applicationClassPath) {
+        if (CLASSLOADER != null) {
+            throw new IllegalStateException();
         }
+        String libJarPath = System.getProperty("java.jvm.home") + "/jre/lib/rt.jar";
+        CLASSLOADER = new ClassLoader(new AggregatingClassPath(new ZipClassPath(libJarPath), applicationClassPath));
+        return CLASSLOADER;
     }
-
-    private final Map<String, ClassFile> classFiles = new HashMap<>();
 
     private final Map<FieldKey, Field> fields = new ConcurrentHashMap<>();
 
@@ -88,31 +86,15 @@ public class ClassLoader {
 
     private final Map<String, ClassObject> classes = new ConcurrentHashMap<>();
 
-    protected ClassLoader() {
+    private final ClassPath classPath;
 
-    }
-
-    protected ClassLoader(ClassPath classPath) throws IOException {
-        load(classPath);
-    }
-
-    public void load(ClassPath classPath) throws IOException {
-        ClassFileReader reader = new ClassFileReader();
-        boolean firstLoad = classFiles.isEmpty();
-
-        for (ClassFileResource resource : classPath) {
-            LOG.debug("Reading: {}", resource.getName());
-            ClassFile file = reader.read(resource.getInputStream());
-            classFiles.put(getClassName(file.getThisClass(), file.getConstantPool()), file);
-        }
-
-        if (firstLoad) {
-            ObjectNatives.registerNatives();
-        }
+    private ClassLoader(ClassPath classPath) {
+        this.classPath = classPath;
+        ObjectNatives.registerNatives();
     }
 
     public void afterInitialLoad() {
-        if (this == BOOTSTRAP_CLASSLOADER) {
+        if (this == CLASSLOADER) {
 
             ClassObject system = getClassObject("java/lang/System");
             Method init = system.findMethod("initializeSystemClass", true);
@@ -120,23 +102,24 @@ public class ClassLoader {
         }
     }
 
+    private ClassFile loadClassFile(String name) {
+        ClassFileResource fileResource = classPath.get(name);
+        if (fileResource != null) {
+            try {
+                return CLASS_FILE_READER.read(fileResource.getInputStream());
+            } catch (IOException e) {
+                throw new AssertionError(e);
+            }
+        }
+        return null;
+    }
+
     public ClassObject getClassObject(String className) {
         ClassObject co = classes.get(className);
         if (co == null) {
-            ClassFile file = classFiles.get(className);
-
+            ClassFile file = loadClassFile(className);
             if (file == null) {
-                /*
-                    Could be null for 2 reasons:
-                    1) Another thread got here first and initialized this class, which which case we can take the ClassObject
-                    2) The provided className is invalid
-                 */
-
-                co = classes.get(className);
-
-                if (co == null) {
-                    throw new IllegalArgumentException("No class file for " + className);
-                }
+                throw new IllegalArgumentException("No class file for " + className);
             } else {
                 synchronized (file) {
                     // double-check locking
@@ -155,7 +138,6 @@ public class ClassLoader {
 
                         co = makeClassObject(className, file, parent);
                         classes.put(className, co);
-                        classFiles.remove(className);
                         executeStaticInitMethod(co);
                         LOG.debug("Done Loading: {}", className);
                     }
@@ -656,8 +638,11 @@ public class ClassLoader {
         }
     }
 
-    public static ClassLoader getDefaultClassLoader() {
-        return BOOTSTRAP_CLASSLOADER;
+    public static ClassLoader getClassLoader() {
+        if (CLASSLOADER == null) {
+            throw new IllegalStateException();
+        }
+        return CLASSLOADER;
     }
 
 }

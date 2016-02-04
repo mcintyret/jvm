@@ -52,7 +52,7 @@ public final class NonArrayType extends ReferenceType {
 
     @Override
     public ClassObject getClassObject() {
-        return ClassLoader.getDefaultClassLoader().getClassObject(className);
+        return ClassLoader.getClassLoader().getClassObject(className);
     }
 
     @Override

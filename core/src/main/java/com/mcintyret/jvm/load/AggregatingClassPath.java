@@ -1,10 +1,10 @@
 package com.mcintyret.jvm.load;
 
-import static java.util.Arrays.asList;
+import com.google.common.collect.Iterables;
 
 import java.util.Iterator;
 
-import com.google.common.collect.Iterables;
+import static java.util.Arrays.asList;
 
 /**
  * User: tommcintyre
@@ -25,5 +25,16 @@ public class AggregatingClassPath implements ClassPath {
     @Override
     public Iterator<ClassFileResource> iterator() {
         return Iterables.concat(classPaths).iterator();
+    }
+
+    @Override
+    public ClassFileResource get(String name) {
+        for (ClassPath classPath : classPaths) {
+            ClassFileResource cfr = classPath.get(name);
+            if (cfr != null) {
+                return cfr;
+            }
+        }
+        return null;
     }
 }

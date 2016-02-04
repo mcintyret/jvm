@@ -58,7 +58,7 @@ public enum MiscNatives implements NativeImplementation {
         public NativeReturn execute(Variables args, OperationContext ctx) {
             // This is getting pretty deep into stuff I don't want to worry about...
             // For a decent explanation of what this is about see here: http://grepcode.com/file/repository.grepcode.com/java/root/jdk/openjdk/6-b27/sun/misc/Perf.java#Perf.createLong%28java.lang.String%2Cint%2Cint%2Clong%29
-            ClassObject byteBufferClass = ClassLoader.getDefaultClassLoader().getClassObject("java/nio/ByteBuffer");
+            ClassObject byteBufferClass = ClassLoader.getClassLoader().getClassObject("java/nio/ByteBuffer");
             Method allocate = byteBufferClass.findMethod("allocate", true);
 
             Variables allocateArgs = allocate.newArgArray();
@@ -109,7 +109,7 @@ public enum MiscNatives implements NativeImplementation {
     FILE_SYSTEM_GET_FILE_SYSTEM("getFileSystem", "()Ljava/io/FileSystem;") {
         @Override
         public NativeReturn execute(Variables args, OperationContext ctx) {
-            ClassObject unixFileSystem = ClassLoader.getDefaultClassLoader().getClassObject("java/io/UnixFileSystem");
+            ClassObject unixFileSystem = ClassLoader.getClassLoader().getClassObject("java/io/UnixFileSystem");
 
             return NativeReturn.forReference(Utils.construct(unixFileSystem, ctx.getThread()));
         }

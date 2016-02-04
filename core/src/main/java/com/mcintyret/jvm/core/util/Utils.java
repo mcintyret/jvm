@@ -21,7 +21,7 @@ import java.lang.reflect.Array;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
+import static com.mcintyret.jvm.load.ClassLoader.getClassLoader;
 
 public final class Utils {
 
@@ -85,7 +85,7 @@ public final class Utils {
             return null;
         }
 
-        ClassObject stringClass = getDefaultClassLoader().getClassObject("java/lang/String");
+        ClassObject stringClass = getClassLoader().getClassObject("java/lang/String");
         OopClass stringOop = stringClass.newObject();
         Heap.allocate(stringOop);
 
@@ -150,7 +150,7 @@ public final class Utils {
 
     // TODO: proper stack-traces for Throwables thrown from native code!
     public static OopClass toThrowableOop(Throwable t, Thread thread) {
-        ClassObject co = getDefaultClassLoader().getClassObject(toJvmClassName(t.getClass()));
+        ClassObject co = getClassLoader().getClassObject(toJvmClassName(t.getClass()));
 
         OopClass messageOop = toOopString(t.getMessage());
 
@@ -176,7 +176,7 @@ public final class Utils {
     }
 
     public static ClassObject getClassObject(String className) {
-        return getDefaultClassLoader().getClassObject(className);
+        return getClassLoader().getClassObject(className);
     }
 
     public static Thread currentThread() {

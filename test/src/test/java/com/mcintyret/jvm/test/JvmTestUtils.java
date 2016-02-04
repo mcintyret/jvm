@@ -36,7 +36,7 @@ class JvmTestUtils {
 
     static TestOutput runTest(Class<?> testClass) {
         String mainClass = testClass.getName() + "$Test";
-        String classPath = TEST_MODULE_TARGET_DIR + "test-classes/" + testClass.getPackage().getName().replaceAll("\\.", "/");
+        String classPath = TEST_MODULE_TARGET_DIR + "test-classes/";
         return runTestClass(mainClass, classPath);
     }
 

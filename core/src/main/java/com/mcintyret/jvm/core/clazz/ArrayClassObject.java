@@ -12,15 +12,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.mcintyret.jvm.load.ClassLoader.getDefaultClassLoader;
+import static com.mcintyret.jvm.load.ClassLoader.getClassLoader;
 
 public class ArrayClassObject extends AbstractClassObject {
 
-    private static final ClassObject PARENT = getDefaultClassLoader().getClassObject(ImportantClasses.JAVA_LANG_OBJECT);
+    private static final ClassObject PARENT = getClassLoader().getClassObject(ImportantClasses.JAVA_LANG_OBJECT);
 
     private static final ClassObject[] INTERFACES = {
-        getDefaultClassLoader().getClassObject(ImportantClasses.JAVA_LANG_CLONEABLE),
-        getDefaultClassLoader().getClassObject(ImportantClasses.JAVA_IO_SERIALIZABLE)
+        getClassLoader().getClassObject(ImportantClasses.JAVA_LANG_CLONEABLE),
+        getClassLoader().getClassObject(ImportantClasses.JAVA_IO_SERIALIZABLE)
     };
 
     private static final Set<Modifier> MODIFIERS = EnumSet.of(Modifier.PUBLIC, Modifier.FINAL, Modifier.ABSTRACT);
